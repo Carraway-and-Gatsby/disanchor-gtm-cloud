@@ -2,6 +2,8 @@
 
 [English](README.md) · [공개 GitHub 저장소](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)
 
+**나중에 배포할 때:** [한국어 배포 체크리스트 — 실행 명령어 · $20 예산 · API 게시 OFF · 계정 보호](docs/deployment-checklist.ko.md)
+
 Disanchor의 초기 반응을 살펴보는 **7일간의 유용한 콘텐츠 중심 실험**입니다. 계정별로 다른 글을 준비하고, 확인 가능한 성과와 반응을 모아 다음 리서치와 기획에 반영합니다. 제품은 개발 중이며, 이 사실을 글의 맥락 안에서 자연스럽게 밝힙니다.
 
 소스 저장소는 **PUBLIC**입니다. 코드, 계정별 전략 예제와 배포 안내를 공개합니다. 자격 증명, 실제 계정 바인딩, 운영 DB와 생성 보고서는 계속 비공개로 보관하고 Git에서 제외합니다. 소스 공개, Cloud 배포, 실제 게시 시작은 서로 다른 상태입니다.

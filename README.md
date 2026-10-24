@@ -1,5 +1,7 @@
 # Disanchor · Cloud marketing worker
 
+**Deploy later:** [한국어 배포 체크리스트 — commands, USD 20 budget, publishing OFF and account protection](docs/deployment-checklist.ko.md).
+
 [한국어 안내](README.ko.md) · [Repository](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)
 
 A Python 3.12 / SQLite worker for a **seven-day, organic-first Disanchor experiment** on X and Threads. It prepares useful, account-specific content, records performance, and turns evidence into the next research and planning cycle. Disanchor is still being developed; drafts explain that naturally within the writing.

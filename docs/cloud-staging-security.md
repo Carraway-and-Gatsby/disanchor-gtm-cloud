@@ -2,6 +2,8 @@
 
 [한국어 운영 안내](../README.ko.md) · [English overview](../README.md) · [Deployment](cloud-deployment.md)
 
+바로 실행할 순서와 명령어: [한국어 배포 체크리스트](deployment-checklist.ko.md).
+
 현재 단계는 **새 Cloud 인스턴스에 올릴 소스 준비**다. 실제 API 게시를 허용하지 않는다. 로컬 검사나 CI 통과를 Cloud 배포·호스트 보안 검증으로 표시하지 않는다.
 
 `python3.12 scripts/staging-smoke.py`는 배포 ZIP을 임시 비공개 디렉터리에 풀고, 빈 환경 파일·네트워크 소켓 차단 상태에서 초기화·상태 조회·비활성 Telegram 명령을 검증한다. 실험 시작은 거부되고 DB는 `NEW`, 게시 작업은 0건이어야 한다. 이 검사는 GitHub Actions에서도 실행한다.
