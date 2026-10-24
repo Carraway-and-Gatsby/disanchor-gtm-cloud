@@ -252,7 +252,8 @@ class NativeSkillWriter:
             raise ValueError("native_skill_input_too_large")
         try:
             result = self.runner([str(self.python), "-I", "-c", NATIVE_WORKER], input=request,
-                                 text=True, capture_output=True, timeout=30, check=False)
+                                 text=True, capture_output=True, timeout=30, check=False,
+                                 env={"HERMES_HOME": str(home), "PATH": os.defpath, "LANG": "C.UTF-8"})
             receipt = json.loads(result.stdout)
             if result.returncode or not isinstance(receipt, dict) or receipt.get("success") is not True:
                 raise ValueError("native_skill_write_not_confirmed")

@@ -39,9 +39,6 @@ from pathlib import Path
 repo = Path(os.environ['GTM_REPO']).resolve()
 python = os.environ['GTM_PYTHON']
 scripts = Path(os.environ['GTM_SCRIPT_DIR']).resolve()
-allowed = {'UPLOAD_POST_API_KEY', 'CLONE_APP_KEY', 'CLONE_USER_ID',
-           'GA4_ACCESS_TOKEN', 'GOOGLE_APPLICATION_CREDENTIALS', 'GA4_PROPERTY_ID', 'GTM_LEADS_AGGREGATE_PATH',
-           'TELEGRAM_BOT_TOKEN', 'TELEGRAM_CHAT_ID', 'TELEGRAM_USER_ID'}
 commands = ('daily', 'collect', 'reconcile', 'watchdog', 'report', 'telegram')
 for command in commands:
     destination = scripts / ('disanchor-gtm-' + command + '.py')
@@ -49,25 +46,14 @@ for command in commands:
         raise SystemExit('Existing wrapper: ' + str(destination))
 for command in commands:
     destination = scripts / ('disanchor-gtm-' + command + '.py')
-    # A private env file is parsed as literal key=value, never sourced as shell.
-    source = f'''import os, pathlib, stat
+    # The CLI owns the single secure credential parser. Wrappers do not inspect
+    # or read secret contents; a missing/unsafe file fails closed in that parser.
+    source = f'''import os, pathlib
 repo = pathlib.Path({str(repo)!r})
-secret_file = repo / 'state' / 'runtime.env'
-allowed = {allowed!r}
-if secret_file.exists() or secret_file.is_symlink():
-    metadata = secret_file.lstat()
-    if not stat.S_ISREG(metadata.st_mode) or metadata.st_uid != os.getuid() or metadata.st_mode & 0o077:
-        raise SystemExit('runtime.env must be a regular owner-only file owned by the worker user')
-    for line in secret_file.read_text().splitlines():
-        if not line.strip() or line.lstrip().startswith('#'):
-            continue
-        key, separator, value = line.partition('=')
-        if not separator or key not in allowed:
-            raise SystemExit('Unsupported runtime.env key or syntax')
-        os.environ[key] = value
 os.chdir(repo)
 os.execv({python!r}, [{python!r}, '-m', 'gtm', '--config', str(repo/'config.toml'),
-    '--state', str(repo/'state'/'gtm.sqlite'), '--output', str(repo/'reports'), {command!r}])
+    '--state', str(repo/'state'/'gtm.sqlite'), '--output', str(repo/'reports'),
+    '--env-file', str(repo/'state'/'runtime.env'), {command!r}])
 '''
     destination.write_text(source)
     destination.chmod(0o700)

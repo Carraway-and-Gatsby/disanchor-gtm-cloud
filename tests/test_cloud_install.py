@@ -165,7 +165,22 @@ class CloudInstallerTests(unittest.TestCase):
         self.assertEqual(output.getvalue(), "")
         return calls
 
-    def test_telegram_secrets_are_literal_allowlisted_and_never_printed(self):
+    def run_worker_from_wrapper(self, environment=None):
+        """Run captured CLI arguments with disabled Telegram and real env parsing."""
+        from gtm.__main__ import main
+        calls = self.run_wrapper()
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0][2], {})  # The wrapper itself loads no credentials.
+        output = io.StringIO()
+        with patch.dict(os.environ, environment or {}, clear=True), \
+                patch("socket.socket", side_effect=AssertionError("Network forbidden in installer tests")), \
+                patch("gtm.__main__.live_engine", side_effect=AssertionError("Disabled Telegram must not construct providers")), \
+                contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+            code = main(calls[0][1][3:])
+            loaded = dict(os.environ)
+        return code, output.getvalue(), loaded
+
+    def test_wrapper_passes_private_file_to_cli_without_reading_secrets(self):
         result = self.install()
         secret = self.repo / "state" / "runtime.env"
         secret.parent.mkdir()
@@ -179,28 +194,66 @@ class CloudInstallerTests(unittest.TestCase):
         canonical_repo = self.repo.resolve()
         self.assertEqual(args, [sys.executable, "-m", "gtm", "--config", str(canonical_repo / "config.toml"),
                                 "--state", str(canonical_repo / "state" / "gtm.sqlite"),
-                                "--output", str(canonical_repo / "reports"), "telegram"])
-        self.assertEqual(env["TELEGRAM_BOT_TOKEN"], literal)
+                                "--output", str(canonical_repo / "reports"),
+                                "--env-file", str(canonical_repo / "state" / "runtime.env"), "telegram"])
+        self.assertEqual(env, {})
         self.assertNotIn(literal, result.stdout + result.stderr)
         self.assertNotIn(literal, (self.wrappers / "disanchor-gtm-telegram.py").read_text())
+        code, output, loaded = self.run_worker_from_wrapper()
+        self.assertEqual(code, 0, output)
+        self.assertEqual(loaded["TELEGRAM_BOT_TOKEN"], literal)
+        self.assertEqual(json.loads(output), {"status": "disabled", "network_calls": 0})
+        self.assertNotIn(literal, output)
 
-    def test_wrapper_rejects_unsafe_file_and_unknown_keys_without_secret_echo(self):
+    def test_central_cli_parser_rejects_unsafe_fields_and_permissions_atomically(self):
         self.install()
         secret = self.repo / "state" / "runtime.env"
         secret.parent.mkdir()
         for body, mode in (("TELEGRAM_BOT_TOKEN=fixture-secret\n", 0o644),
                            ("UNKNOWN=fixture-secret\n", 0o600),
-                           ("fixture-secret-without-equals\n", 0o600)):
+                           ("fixture-secret-without-equals\n", 0o600),
+                           ("UPLOAD_POST_API_KEY=fixture-secret\nUNKNOWN=invalid\n", 0o600),
+                           ("UPLOAD_POST_API_KEY=fixture-secret\nUPLOAD_POST_API_KEY=duplicate\n", 0o600),
+                           ("TELEGRAM_BOT_TOKEN=fixture-secret\x00\n", 0o600),
+                           ("TELEGRAM_BOT_TOKEN=" + "x" * 32768, 0o600)):
             with self.subTest(mode=mode, malformed=body.startswith("fixture")):
                 secret.write_text(body)
                 secret.chmod(mode)
-                with self.assertRaises(SystemExit) as caught:
-                    self.run_wrapper()
-                self.assertNotIn("fixture-secret", str(caught.exception))
+                code, output, loaded = self.run_worker_from_wrapper({"UPLOAD_POST_API_KEY": "original-fixture"})
+                self.assertEqual(code, 2)
+                self.assertEqual(json.loads(output)["status"], "blocked")
+                self.assertEqual(loaded, {"UPLOAD_POST_API_KEY": "original-fixture"})
+                self.assertNotIn("fixture-secret", output)
+                self.assertNotIn("original-fixture", output)
+
+    def test_central_cli_parser_rejects_symlink_and_missing_file_without_fallback(self):
+        self.install()
+        secret = self.repo / "state" / "runtime.env"
+        secret.parent.mkdir()
+        code, output, loaded = self.run_worker_from_wrapper()
+        self.assertEqual(code, 2)
+        self.assertEqual(loaded, {})
+        target = self.root / "unread-credentials.env"
+        target.write_text("TELEGRAM_BOT_TOKEN=fixture-secret\n")
+        target.chmod(0o600)
+        secret.symlink_to(target)
+        code, output, loaded = self.run_worker_from_wrapper()
+        self.assertEqual(code, 2)
+        self.assertEqual(loaded, {})
+        self.assertNotIn("fixture-secret", output)
         secret.unlink()
         secret.symlink_to(self.root / "absent")
-        with self.assertRaises(SystemExit):
-            self.run_wrapper()
+        self.assertEqual(self.run_worker_from_wrapper()[0], 2)
+
+    def test_empty_private_file_supports_disabled_offline_worker(self):
+        self.install()
+        secret = self.repo / "state" / "runtime.env"
+        secret.parent.mkdir()
+        secret.touch(mode=0o600)
+        code, output, loaded = self.run_worker_from_wrapper()
+        self.assertEqual(code, 0, output)
+        self.assertEqual(json.loads(output), {"status": "disabled", "network_calls": 0})
+        self.assertEqual(loaded, {})
 
 
 if __name__ == "__main__":

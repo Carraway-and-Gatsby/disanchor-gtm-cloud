@@ -232,6 +232,8 @@ class NativeWriterTests(unittest.TestCase):
         argv, kwargs = self.calls[0]
         self.assertEqual(argv[:3], [str(self.python), "-I", "-c"])
         self.assertEqual(kwargs["timeout"], 30)
+        self.assertEqual(set(kwargs["env"]), {"HERMES_HOME", "PATH", "LANG"})
+        self.assertEqual(kwargs["env"]["HERMES_HOME"], str(loop.home))
         self.assertNotIn("api_key", kwargs["input"])
 
     def test_claimed_success_without_file_is_not_success(self):

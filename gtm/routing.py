@@ -16,7 +16,7 @@ from .clone import CHOICES, safe_context
 from .inference import HermesInference, validate_draft
 from .policy import POLICY_VERSION, seed_text, validate_content, content_hash
 from .engine import GuardError
-from .process import bounded_run
+from .process import bounded_run, child_environment
 
 STAGES = ("research", "planning", "writing", "execution")
 ANGLES = CHOICES["topic"]
@@ -139,7 +139,8 @@ class HermesStageRunner:
             # ceilings also include the runtime system prompt in terminal usage.
             if len(prompt.encode()) > route.max_input_tokens:
                 return {"status": "blocked", "reason": "input_bound_exceeded"}
-            result = self.runner(client.command(), input=prompt, capture_output=True, text=True, timeout=90, check=False)
+            result = self.runner(client.command(), input=prompt, capture_output=True, text=True, timeout=90, check=False,
+                                 env=child_environment(hermes=True, provider=route.provider))
             if result.returncode or len(result.stdout.encode()) > 65536:
                 return {"status": "unknown", "reason": "inference_incomplete"}
             records = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]

@@ -124,6 +124,83 @@ class DeploymentTests(unittest.TestCase):
             package.build_bundle(self.root, self.output)
         self.assertNotIn("a" * 30, str(caught.exception))
 
+    def test_hardcoded_python_credentials_and_env_fallbacks_are_blocked(self):
+        cases = [
+            'UPLOAD_POST_API_KEY = "opaque-production-literal"',
+            'api_key: str = "opaque-production-literal"',
+            'self._token = "opaque-production-literal"',
+            'os.environ["CLONE_APP_KEY"] = "opaque-production-literal"',
+            'settings = {"password": "opaque-production-literal"}',
+            'client(api_key="opaque-production-literal")',
+            'def client(api_key="opaque-production-literal"): pass',
+            'API_KEY = "opaque-" + "production-literal"',
+            'API_KEY = os.getenv("UPLOAD_POST_API_KEY", "opaque-production-literal")',
+            'API_KEY = os.environ.get("UPLOAD_POST_API_KEY", "opaque-production-literal")',
+        ]
+        for source in cases:
+            with self.subTest(source=source.split("=")[0]), self.assertRaises(checks.ValidationError) as caught:
+                checks._scan_source("gtm/accidental.py", source.encode())
+            self.assertNotIn("opaque-production-literal", str(caught.exception))
+
+    def test_hardcoded_javascript_shell_and_document_literals_are_blocked(self):
+        cases = [
+            ("web/accidental.js", 'const apiKey = "opaque-production-literal";'),
+            ("web/accidental.js", 'const settings = {"APIKey": "opaque-production-literal"};'),
+            ("web/accidental.js", 'const API_KEY = process.env.API_KEY || "opaque-production-literal";'),
+            ("scripts/accidental.sh", 'export UPLOAD_POST_API_KEY=opaque-production-literal'),
+            ("scripts/accidental.sh", "UPLOAD_POST_API_KEY='opaque-production-literal'"),
+            ("scripts/accidental.sh", 'UPLOAD_POST_API_KEY="${UPLOAD_POST_API_KEY:-opaque-production-literal}"'),
+            ("docs/accidental.yml", 'UPLOAD_POST_API_KEY: opaque-production-literal'),
+            ("docs/accidental.yaml", 'api_key: "opaque-production-literal"'),
+            ("docs/accidental.md", '{"api_key": "opaque-production-literal"}'),
+            ("docs/accidental.toml", 'upload_post_api_key = "opaque-production-literal"'),
+            (".github/workflows/accidental.yml", '      TOKEN: opaque-production-literal'),
+        ]
+        for filename, source in cases:
+            with self.subTest(filename=filename), self.assertRaises(checks.ValidationError) as caught:
+                checks._scan_source(filename, source.encode())
+            self.assertNotIn("opaque-production-literal", str(caught.exception))
+
+    def test_runtime_lookups_empty_values_and_explicit_placeholders_are_preserved(self):
+        cases = [
+            ("gtm/example.py", 'api_key = os.getenv("UPLOAD_POST_API_KEY", "")'),
+            ("gtm/example.py", 'api_key = os.environ["UPLOAD_POST_API_KEY"]'),
+            ("gtm/example.py", 'self._token = token'),
+            ("gtm/example.py", 'client(api_key=None)'),
+            ("gtm/example.py", 'settings = {"api_key": "<secret>"}'),
+            ("web/example.js", 'const apiKey = process.env.UPLOAD_POST_API_KEY;'),
+            ("web/example.js", "const apiKey = process.env['UPLOAD_POST_API_KEY'];"),
+            ("scripts/example.sh", 'export UPLOAD_POST_API_KEY="$UPLOAD_POST_API_KEY"'),
+            ("scripts/example.sh", 'UPLOAD_POST_API_KEY=${UPLOAD_POST_API_KEY}'),
+            ("docs/example.yml", 'api_key: <secret>'),
+            ("docs/example.md", '{"api_key": "<secret>"}'),
+            (".github/workflows/example.yml", '      TOKEN: ${{ secrets.TEST_TOKEN }}'),
+            (".env.example", 'UPLOAD_POST_API_KEY=\nTELEGRAM_BOT_TOKEN=\n'),
+        ]
+        for filename, source in cases:
+            with self.subTest(filename=filename):
+                checks._scan_source(filename, source.encode())
+
+    def test_mock_exception_is_scoped_and_unknown_test_literals_still_blocked(self):
+        fixture = 'api_key = "fixture-not-a-real-credential"'
+        checks._scan_source("tests/test_example.py", fixture.encode())
+        with self.assertRaises(checks.ValidationError):
+            checks._scan_source("gtm/example.py", fixture.encode())
+        with self.assertRaises(checks.ValidationError):
+            checks._scan_source("tests/test_example.py", b'api_key = "unmarked-opaque-production-literal"')
+
+    def test_jwt_shape_is_blocked_without_printing_or_real_credentials(self):
+        synthetic = "eyJ" + "a" * 25 + "." + "b" * 30 + "." + "c" * 30
+        with self.assertRaises(checks.ValidationError) as caught:
+            checks._scan_source("docs/accidental.md", synthetic.encode())
+        self.assertNotIn(synthetic, str(caught.exception))
+
+    def test_literal_scan_blocks_bundle_before_artifact_is_written(self):
+        self.write("docs/accidental.yml", "UPLOAD_POST_API_KEY: opaque-production-literal\n")
+        with self.assertRaises(checks.ValidationError):
+            package.build_bundle(self.root, self.output)
+        self.assertFalse(self.output.exists())
+
     def test_live_defaults_missing_files_and_source_symlinks_are_refused(self):
         config = self.root / "config.toml"
         original = config.read_text()

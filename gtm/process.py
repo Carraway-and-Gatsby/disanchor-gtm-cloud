@@ -11,6 +11,33 @@ import time
 
 MAX_OUTPUT_BYTES = 64 * 1024
 _SAFE_COMMAND = "bounded subprocess"
+_OS_ENVIRONMENT = frozenset({"PATH", "LANG", "LC_ALL", "LC_CTYPE", "TZ", "TMPDIR", "TMP", "TEMP", "SYSTEMROOT"})
+_HERMES_ENVIRONMENT = frozenset({"HOME", "HERMES_HOME", "OPENROUTER_API_KEY"})
+
+
+def child_environment(*, hermes=False, provider=None):
+    """Copy only runtime necessities; social/analytics credentials never inherit.
+
+    Hermes still owns its separately configured provider credential files. This
+    whitelist prevents inheritance of the GTM worker's credentials; it is not
+    an OS sandbox or a guarantee about a separately configured Hermes profile.
+    """
+    keys = set(_OS_ENVIRONMENT)
+    if hermes:
+        keys.update(("HOME", "HERMES_HOME"))
+        if provider == "openrouter":
+            keys.add("OPENROUTER_API_KEY")
+    result = {key: os.environ[key] for key in keys if key in os.environ}
+    result.setdefault("PATH", os.defpath)
+    result.setdefault("LANG", "C.UTF-8")
+    return result
+
+
+def _validate_environment(env):
+    if (not isinstance(env, dict) or set(env) - (_OS_ENVIRONMENT | _HERMES_ENVIRONMENT)
+        or any(not isinstance(value, str) or "\x00" in value for value in env.values())):
+        raise ValueError("bounded_process_environment_not_allowlisted")
+    return dict(env)
 
 
 def _kill_group(process):
@@ -25,7 +52,7 @@ def _kill_group(process):
         process.wait()
 
 
-def bounded_run(args, *, input=None, capture_output=True, text=True, timeout=90, check=False):
+def bounded_run(args, *, input=None, capture_output=True, text=True, timeout=90, check=False, env=None):
     """Run an argv command with at most 64 KiB of stdout and stderr combined.
 
     Supports the ``subprocess.run`` options used by the model adapter. Input is
@@ -41,11 +68,12 @@ def bounded_run(args, *, input=None, capture_output=True, text=True, timeout=90,
         raise TypeError("bounded_run_requires_text_input")
     if isinstance(timeout, bool) or not isinstance(timeout, (float, int)) or not math.isfinite(timeout) or timeout <= 0:
         raise ValueError("bounded_run_requires_positive_finite_timeout")
+    environment = _validate_environment(child_environment() if env is None else env)
     payload = memoryview((input or "").encode("utf-8"))
     deadline = time.monotonic() + timeout
     try:
         process = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE, start_new_session=True, bufsize=0)
+                                   stderr=subprocess.PIPE, start_new_session=True, bufsize=0, env=environment)
     except OSError:
         raise subprocess.SubprocessError("bounded_process_start_failed") from None
 

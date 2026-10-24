@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -24,12 +25,131 @@ REQUIRED = {"README.md", "config.toml", "pyproject.toml", ".env.example", ".giti
             "gtm/__main__.py", "gtm/config.py", "scripts/hermes-install.sh",
             "scripts/cloud-preflight.py", "scripts/package-cloud.py",
             "prompts/research.md", "prompts/planning.md", "prompts/content-system.md", "prompts/execution.md"}
-SECRET_SIGNATURE = re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\b(?:sk-proj-|sk-ant-|clnp_|ghp_)[A-Za-z0-9_-]{20,}|\bAKIA[A-Z0-9]{16}\b|\b[0-9]{6,}:AA[A-Za-z0-9_-]{25,}")
-SECRET_ASSIGNMENT = re.compile(r"^[ \t]*(?:export[ \t]+)?([A-Za-z_][A-Za-z0-9_]*)[ \t]*=[ \t]*([^\n]*)$", re.M)
+SECRET_SIGNATURE = re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\b(?:sk-proj-|sk-ant-|clnp_|ghp_)[A-Za-z0-9_-]{20,}|\bAKIA[A-Z0-9]{16}\b|\b[0-9]{6,}:AA[A-Za-z0-9_-]{25,}|\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b")
+# This is a prevention layer for accidental literals, not a proof of absence:
+# dynamically assembled, encrypted or deliberately disguised secrets need an
+# independent repository/history scan and credential rotation when exposed.
+QUOTED_ASSIGNMENT = re.compile(r'''(?<![\w])(?P<name>["']?[A-Za-z_$][A-Za-z0-9_$.-]*["']?)\s*(?::\s*(?:str|bytes|string))?\s*[:=]\s*(?:[rub]{1,2})?(?P<quote>["'`])(?P<value>(?:\\.|[^"'`\\])*)(?P=quote)''', re.I)
+BARE_ASSIGNMENT = re.compile(r'''^[ \t]*(?:export[ \t]+|(?:const|let|var)[ \t]+)?(?P<name>["']?[A-Za-z_$][A-Za-z0-9_$.-]*["']?)[ \t]*(?::[ \t]*(?:str|bytes|string))?[ \t]*[:=][ \t]*(?P<value>[^\n]*)$''', re.M)
 
 
 class ValidationError(ValueError):
     """Messages contain only fixed codes and relative source names."""
+
+
+def _credential_name(value):
+    if not isinstance(value, str):
+        return False
+    value = value.strip("\"'").rsplit(".", 1)[-1]
+    value = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", value).lower().strip("_$")
+    return value in {"clone_app_key", "authorization", "apikey"} or bool(re.search(r"(?:^|_)(?:token|api_key|secret|password|private_key)$", value))
+
+
+def _allowed_literal(value, relative):
+    if isinstance(value, bytes):
+        value = value.decode("utf-8", errors="replace")
+    if value is None or value == "":
+        return True
+    if not isinstance(value, str):
+        return False
+    value = value.strip()
+    if not value or re.fullmatch(r"<[^<>\n]{1,100}>", value):
+        return True
+    # Explicit local documentation examples are intentionally nonoperational.
+    if value.startswith("local-preview-only-") and relative.startswith("docs/"):
+        return True
+    # Never exempt arbitrary production literals or all tests wholesale.
+    return (relative.startswith("tests/") and (value in {"original-value", "key", "token", "secret", "unused", "invalid",
+                                                        "refreshed-token", "short", "private", "private person",
+                                                        "123456:abcdefghijklmnopqrstuvwxyz_0123456789"}
+            or value.startswith("offline-")
+            or any(marker in value.lower() for marker in
+                   ("fixture", "not-a-real", "test-key", "test-token", "test-secret", "secret-do-not-log"))))
+
+
+def _literal_ast(node):
+    if isinstance(node, ast.Constant) and isinstance(node.value, (str, bytes, int, float, type(None))):
+        return True, node.value
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        left_known, left = _literal_ast(node.left)
+        right_known, right = _literal_ast(node.right)
+        if left_known and right_known and type(left) is type(right) and isinstance(left, (str, bytes)):
+            return True, left + right
+    return False, None
+
+
+def _target_name(node):
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        return node.attr
+    if isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Constant):
+        return node.slice.value
+    return None
+
+
+def _scan_python_literals(relative, content):
+    try:
+        tree = ast.parse(content)
+    except SyntaxError:
+        raise ValidationError("source_python_syntax_invalid:" + relative) from None
+    pairs = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            pairs.extend((_target_name(target), node.value) for target in node.targets)
+        elif isinstance(node, ast.AnnAssign):
+            pairs.append((_target_name(node.target), node.value))
+        elif isinstance(node, ast.keyword):
+            pairs.append((node.arg, node.value))
+        elif isinstance(node, ast.Dict):
+            pairs.extend((key.value, value) for key, value in zip(node.keys, node.values)
+                         if isinstance(key, ast.Constant))
+        elif isinstance(node, ast.Call) and len(node.args) >= 2:
+            # Credential environment lookups may have an accidentally pasted
+            # literal fallback even when the primary expression is dynamic.
+            function = node.func
+            is_env = ((isinstance(function, ast.Attribute) and function.attr == "getenv"
+                       and isinstance(function.value, ast.Name) and function.value.id == "os") or
+                      (isinstance(function, ast.Attribute) and function.attr == "get"
+                       and isinstance(function.value, ast.Attribute) and function.value.attr == "environ"))
+            if is_env and isinstance(node.args[0], ast.Constant):
+                pairs.append((node.args[0].value, node.args[1]))
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            positional = node.args.posonlyargs + node.args.args
+            pairs.extend((arg.arg, value) for arg, value in zip(positional[-len(node.args.defaults):], node.args.defaults))
+            pairs.extend((arg.arg, value) for arg, value in zip(node.args.kwonlyargs, node.args.kw_defaults) if value is not None)
+    for name, node in pairs:
+        known, value = _literal_ast(node)
+        if known and _credential_name(name) and not _allowed_literal(value, relative):
+            raise ValidationError("hardcoded_credential_literal:" + relative)
+
+
+def _runtime_reference(value, quote=None):
+    # Only recognisable environment/configuration lookups are allowed here.
+    # Single-quoted shell values are always literal, including '$VARIABLE'.
+    if quote != "'" and (re.fullmatch(r"\$[A-Za-z_][A-Za-z0-9_]*|\$\{[A-Za-z_][A-Za-z0-9_]*\}", value)
+                          or re.fullmatch(r"\$\{\{\s*(?:secrets|env)\.[A-Za-z_][A-Za-z0-9_]*\s*\}\}", value)):
+        return True
+    return bool(re.fullmatch(r'''process\.env(?:\.[A-Za-z_][A-Za-z0-9_]*|\[["'][A-Za-z_][A-Za-z0-9_]*["']\])|os\.environ\[["'][A-Za-z_][A-Za-z0-9_]*["']\]|os\.(?:getenv|environ\.get)\(["'][A-Za-z_][A-Za-z0-9_]*["'](?:,\s*["']["'])?\)''', value))
+
+
+def _scan_text_literals(relative, content):
+    for match in QUOTED_ASSIGNMENT.finditer(content):
+        if not _credential_name(match["name"]):
+            continue
+        value = match["value"]
+        if not _allowed_literal(value, relative) and not _runtime_reference(value, match["quote"]):
+            raise ValidationError("hardcoded_credential_literal:" + relative)
+    for match in BARE_ASSIGNMENT.finditer(content):
+        if not _credential_name(match["name"]):
+            continue
+        value = match["value"].strip()
+        if not value or value.startswith(("\"", "'", "`", 'b"', "b'")):
+            continue  # Quoted forms are checked independently, including inline maps.
+        value = value.split(" #", 1)[0].rstrip(";,").strip()
+        if value.lower() in {"none", "null", "~"} or _allowed_literal(value, relative) or _runtime_reference(value):
+            continue
+        raise ValidationError("hardcoded_credential_literal:" + relative)
 
 
 def _scan_source(relative, data):
@@ -39,15 +159,10 @@ def _scan_source(relative, data):
         raise ValidationError("source_not_utf8:" + relative) from None
     if SECRET_SIGNATURE.search(content):
         raise ValidationError("possible_secret_signature:" + relative)
-    if Path(relative).suffix not in {".py", ".js", ".sh", ".html", ".css"}:
-        for match in SECRET_ASSIGNMENT.finditer(content):
-            if Path(relative).suffix != ".toml" and match.group(1) != match.group(1).upper():
-                continue
-            if not re.search(r"(?:^|_)(?:token|api_key|secret|password)$", match.group(1), re.I):
-                continue
-            value = match.group(2).strip().strip("\"'")
-            if value and not (value.startswith("<") and value.endswith(">")):
-                raise ValidationError("nonempty_secret_assignment:" + relative)
+    if Path(relative).suffix == ".py":
+        _scan_python_literals(relative, content)
+    else:
+        _scan_text_literals(relative, content)
     if relative == ".env.example":
         for line in content.splitlines():
             if not line.strip() or line.lstrip().startswith("#"):

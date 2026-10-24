@@ -667,6 +667,21 @@ class NativeRoutingContractTests(unittest.TestCase):
         self.assertIn("You have no web-search access", kwargs["input"])
         self.assertIn("UNTRUSTED_INPUT_JSON", kwargs["input"])
 
+    def test_model_stage_environment_has_only_selected_provider_not_publishing_credentials(self):
+        config, process, runner = self.make()
+        environment = {"OPENROUTER_API_KEY": "offline-provider", "UPLOAD_POST_API_KEY": "offline-social",
+                       "TELEGRAM_BOT_TOKEN": "offline-chat", "CLONE_APP_KEY": "offline-clone",
+                       "GA4_ACCESS_TOKEN": "offline-ga4", "PYTHONPATH": "/unexpected/import",
+                       "HERMES_PROFILE": "unexpected-profile"}
+        with patch.dict("os.environ", environment, clear=True):
+            result = runner.run("research", config.routing.research, {"evidence": [], "slots": []})
+        self.assertEqual(result["status"], "succeeded")
+        for _, kwargs in process.calls:
+            self.assertIn("env", kwargs)
+            for key in set(environment) - {"OPENROUTER_API_KEY"}:
+                self.assertNotIn(key, kwargs["env"])
+            self.assertEqual("OPENROUTER_API_KEY" in kwargs["env"], "input" in kwargs)
+
     def test_tool_request_and_over_cap_tokens_are_rejected(self):
         for violation in ("tools", "tokens", "missingusage"):
             config, process, runner = self.make()

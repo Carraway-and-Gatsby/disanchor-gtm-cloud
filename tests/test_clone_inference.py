@@ -231,6 +231,21 @@ class InferenceTests(unittest.TestCase):
         self.assertNotIn("shell", kwargs)
         self.assertIn("UNTRUSTED_AGGREGATE_CONTEXT_JSON", kwargs["input"])
 
+    def test_preflight_and_generation_strip_project_credentials_before_spawn(self):
+        runner, client = self.ready()
+        client.provider = "openrouter"
+        environment = {"OPENROUTER_API_KEY": "offline-provider", "UPLOAD_POST_API_KEY": "offline-social",
+                       "TELEGRAM_BOT_TOKEN": "offline-chat", "CLONE_APP_KEY": "offline-clone",
+                       "GA4_ACCESS_TOKEN": "offline-ga4", "GOOGLE_APPLICATION_CREDENTIALS": "/private/fixture.json"}
+        with patch.dict("os.environ", environment, clear=True):
+            self.assertEqual(client.generate({"goal": "Research"})["status"], "proposed")
+        self.assertEqual(len(runner.calls), 3)
+        for _, kwargs in runner.calls:
+            self.assertIn("env", kwargs)
+            for key in set(environment) - {"OPENROUTER_API_KEY"}:
+                self.assertNotIn(key, kwargs["env"])
+            self.assertEqual("OPENROUTER_API_KEY" in kwargs["env"], "input" in kwargs)
+
     def test_runtime_token_limits_tool_calls_and_malformed_output(self):
         for scenario in ("tokens", "tools", "badrecord", "badusage", "missing"):
             with self.subTest(scenario=scenario):

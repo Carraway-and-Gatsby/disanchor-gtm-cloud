@@ -35,7 +35,7 @@
 
 1. [Hermes Cloud](https://portal.nousresearch.com/cloud)에서 Small의 실제 사양·현재 가격·정지 후 저장 비용을 확인한다. 프로젝트, `.venv`, 설정, `state/gtm.sqlite`, `state/runtime.env`, 보고서를 인스턴스의 영속 저장소에 둔다. 단일 작업자와 동일한 Hermes 사용자/프로필로 운영한다.
 2. `config.toml`을 검토하고 게시·모델·Telegram을 비활성 상태로 초기 점검한다. 모델은 실제 Cloud 버전, 단계별 provider/model, provider 측 출력·지출 한도와 비용 정산 검증 후 활성화한다. 로컬 CLI capability 검사는 이 검증을 대신하지 않는다.
-3. 자격 증명은 `state/runtime.env`에 따옴표 없는 `KEY=value`로 저장하고 권한을 `600`으로 설정한다. 파일은 작업자 소유의 일반 파일이어야 한다. 허용 키는 `UPLOAD_POST_API_KEY`, `CLONE_APP_KEY`, `CLONE_USER_ID`, `GA4_ACCESS_TOKEN`, `GOOGLE_APPLICATION_CREDENTIALS`, `GA4_PROPERTY_ID`, `GTM_LEADS_AGGREGATE_PATH`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `TELEGRAM_USER_ID`다. 파일을 shell로 source하지 않는다. 모델 자격 증명은 Hermes의 별도 설정에서 관리한다.
+3. 자격 증명은 `state/runtime.env`에 따옴표 없는 `KEY=value`로 저장하고 권한을 `600`으로 설정한다. 파일은 작업자 소유의 일반 파일이어야 한다. 허용 키는 `UPLOAD_POST_API_KEY`, `CLONE_APP_KEY`, `CLONE_USER_ID`, `GA4_ACCESS_TOKEN`, `GOOGLE_APPLICATION_CREDENTIALS`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `TELEGRAM_USER_ID`다. GA4 속성과 리드 DB 경로는 `config.toml`의 `[analytics]`에 설정한다. 파일을 shell로 source하지 않는다. 스케줄러 wrapper도 같은 중앙 `--env-file` 검증을 사용하며, 자격 증명이 없어도 빈 파일을 `600` 권한으로 준비한다. 모델 자격 증명은 Hermes의 별도 설정에서 관리한다.
 4. 초기화와 실험 시작 시각 기록, 계정·게시 후보 검토, 비용 검증을 [한국어 운영 안내](../README.ko.md)에 따라 진행한다. 시작 시각은 168시간 종료 경계의 기준이며 재시작할 때 변경하지 않는다.
 5. 실제 Cloud에서 설치 명령을 실행한다. `GTM_EXPECTED_HERMES_VERSION`에는 직접 검토한 `hermes --version` 첫 줄 전체를 넣는다. 아래 `--check`는 파일이나 cron을 만들지 않는다.
 

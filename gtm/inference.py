@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from .process import child_environment
 import re
 import subprocess
 from typing import Callable
@@ -69,10 +70,12 @@ class HermesInference:
         if self.provider in {"auto", "custom"}:
             return {"status": "blocked", "reason": "explicit_named_provider_required"}
         try:
-            version = self.runner([self.executable, "--version"], capture_output=True, text=True, timeout=15, check=True)
+            version = self.runner([self.executable, "--version"], capture_output=True, text=True, timeout=15, check=True,
+                                  env=child_environment(hermes=True))
             if version.stdout.splitlines()[0] != self.expected_version:
                 return {"status": "blocked", "reason": "runtime_version_changed"}
-            help_result = self.runner([self.executable, "chat", "--help"], capture_output=True, text=True, timeout=15, check=True)
+            help_result = self.runner([self.executable, "chat", "--help"], capture_output=True, text=True, timeout=15, check=True,
+                                      env=child_environment(hermes=True))
             flags = ("--query-file", "--format", "--quiet", "--provider", "--model", "--safe-mode", "--toolsets", "--max-turns")
             if not all(flag in help_result.stdout for flag in flags):
                 return {"status": "blocked", "reason": "installed_cli_contract_unsupported"}
@@ -93,7 +96,7 @@ class HermesInference:
             if len(prompt.encode()) > self.max_input_tokens:
                 return {"status": "blocked", "reason": "input_bound_exceeded", "draft": None, "cost_usd": None}
             result = self.runner(self.command(), input=prompt, text=True, capture_output=True,
-                                 timeout=90, check=False)
+                                 timeout=90, check=False, env=child_environment(hermes=True, provider=self.provider))
             if result.returncode or len(result.stdout.encode()) > 65536:
                 return {"status": "unknown", "reason": "inference_did_not_complete", "draft": None, "cost_usd": None}
             records = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]

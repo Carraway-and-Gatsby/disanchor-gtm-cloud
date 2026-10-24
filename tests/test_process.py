@@ -6,8 +6,9 @@ import tempfile
 import threading
 import time
 import unittest
+from unittest.mock import patch
 
-from gtm.process import MAX_OUTPUT_BYTES, bounded_run
+from gtm.process import MAX_OUTPUT_BYTES, bounded_run, child_environment
 
 
 @unittest.skipUnless(os.name == "posix", "Cloud subprocess isolation requires POSIX")
@@ -96,6 +97,40 @@ class BoundedProcessTests(unittest.TestCase):
                 self.run_python("raise AssertionError('should not spawn')", **kwargs)
         with self.assertRaises(TypeError):
             self.run_python("raise AssertionError('should not spawn')", input=b"bytes")
+
+    def test_parent_social_analytics_and_shell_credentials_are_absent_at_child_startup(self):
+        denied = {key: "offline-fixture" for key in ("UPLOAD_POST_API_KEY", "TELEGRAM_BOT_TOKEN", "CLONE_APP_KEY",
+                  "GA4_ACCESS_TOKEN", "GOOGLE_APPLICATION_CREDENTIALS", "OPENROUTER_API_KEY", "GITHUB_TOKEN",
+                  "PYTHONPATH", "PYTHONSTARTUP", "BASH_ENV", "HERMES_PROFILE", "HERMES_CONFIG", "HERMES_ENV",
+                  "HTTP_PROXY", "HTTPS_PROXY")}
+        with patch.dict(os.environ, denied, clear=True):
+            result = self.run_python("import os; print(sorted(os.environ))")
+        for key in denied:
+            self.assertNotIn(key, result.stdout)
+        self.assertIn("PATH", result.stdout)
+        self.assertNotIn("offline-fixture", result.stdout)
+
+    def test_model_environment_keeps_only_selected_provider_and_runtime_profile(self):
+        source = {"HOME": "/home/fixture", "HERMES_HOME": "/home/fixture/hermes", "PATH": os.defpath,
+                  "OPENROUTER_API_KEY": "offline-provider-fixture", "UPLOAD_POST_API_KEY": "offline-social-fixture",
+                  "TELEGRAM_BOT_TOKEN": "offline-chat-fixture", "ANTHROPIC_API_KEY": "offline-other-fixture",
+                  "HERMES_PROFILE": "unexpected-profile", "PYTHONPATH": "/untrusted/import"}
+        with patch.dict(os.environ, source, clear=True):
+            provider = child_environment(hermes=True, provider="openrouter")
+            preflight = child_environment(hermes=True)
+        self.assertEqual(provider["OPENROUTER_API_KEY"], "offline-provider-fixture")
+        self.assertEqual(provider["HERMES_HOME"], source["HERMES_HOME"])
+        self.assertEqual(provider["HOME"], source["HOME"])
+        for key in ("UPLOAD_POST_API_KEY", "TELEGRAM_BOT_TOKEN", "ANTHROPIC_API_KEY", "HERMES_PROFILE", "PYTHONPATH"):
+            self.assertNotIn(key, provider)
+        self.assertNotIn("OPENROUTER_API_KEY", preflight)
+
+    def test_explicit_environment_cannot_reintroduce_forbidden_credentials(self):
+        for env in ({"UPLOAD_POST_API_KEY": "offline-fixture"}, {"PATH": "/bin\x00bad"}, {"PATH": 3}, []):
+            with self.subTest(env=env), patch("gtm.process.subprocess.Popen") as spawn:
+                with self.assertRaisesRegex(ValueError, "environment_not_allowlisted"):
+                    self.run_python("raise AssertionError('must not run')", env=env)
+                spawn.assert_not_called()
 
 
 if __name__ == "__main__":
