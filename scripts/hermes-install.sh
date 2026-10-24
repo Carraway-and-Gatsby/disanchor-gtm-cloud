@@ -3,6 +3,7 @@
 # These jobs are headless coordinators. --no-agent suppresses the scheduler's
 # LLM loop; a guarded daily route can still invoke paid Hermes model stages.
 set -euo pipefail
+umask 077
 GTM_INSTALL_MODE="${1:---check}"
 if [[ "$GTM_INSTALL_MODE" != "--check" && "$GTM_INSTALL_MODE" != "--install" ]]; then
   echo 'Usage: bash scripts/hermes-install.sh [--check|--install]' >&2
@@ -49,11 +50,13 @@ for command in commands:
     # The CLI owns the single secure credential parser. Wrappers do not inspect
     # or read secret contents; a missing/unsafe file fails closed in that parser.
     source = f'''import os, pathlib
+os.umask(0o077)
 repo = pathlib.Path({str(repo)!r})
 os.chdir(repo)
+os.environ['GTM_POSTING_LOCK'] = '1'
 os.execv({python!r}, [{python!r}, '-m', 'gtm', '--config', str(repo/'config.toml'),
     '--state', str(repo/'state'/'gtm.sqlite'), '--output', str(repo/'reports'),
-    '--env-file', str(repo/'state'/'runtime.env'), {command!r}])
+    '--env-file', str(repo/'state'/'runtime.env'), '--no-publish', {command!r}])
 '''
     destination.write_text(source)
     destination.chmod(0o700)
@@ -74,4 +77,5 @@ hermes cron list
 echo 'Save the six returned job IDs; partial installs must be reconciled before retrying.'
 echo 'Verify hosted scheduler health and persistent state; run the first jobs after recording experiment start.'
 echo 'Telegram is a read-only status channel. Model and publication authorization gates still apply.'
+echo 'Staging wrappers force GTM_POSTING_LOCK and --no-publish; Upload-Post writes remain locked.'
 echo 'Job repeat counts and experiment end_at do not stop Cloud billing; stop the instance separately.'

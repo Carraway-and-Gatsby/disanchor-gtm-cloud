@@ -24,6 +24,7 @@ EXCLUDED_PARTS = {"state", "reports", "__pycache__", ".venv", "node_modules", ".
 REQUIRED = {"README.md", "config.toml", "pyproject.toml", ".env.example", ".gitignore",
             "gtm/__main__.py", "gtm/config.py", "scripts/hermes-install.sh",
             "scripts/cloud-preflight.py", "scripts/package-cloud.py",
+            "gtm/safety.py", "scripts/cloud-security.py", "scripts/staging-smoke.py",
             "prompts/research.md", "prompts/planning.md", "prompts/content-system.md", "prompts/execution.md"}
 SECRET_SIGNATURE = re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\b(?:sk-proj-|sk-ant-|clnp_|ghp_)[A-Za-z0-9_-]{20,}|\bAKIA[A-Z0-9]{16}\b|\b[0-9]{6,}:AA[A-Za-z0-9_-]{25,}|\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b")
 # This is a prevention layer for accidental literals, not a proof of absence:

@@ -78,6 +78,8 @@ The core worker and tests use the standard library. Only optional GA4 service-ac
 
 ## Prepare Cloud deployment
 
+The current target is **publication-locked staging**. Follow the [bilingual Cloud security and budget guide](docs/cloud-staging-security.md). Initial staging receives no API credentials; installed wrappers force `--no-publish`. The later live-experiment instructions require a separate future user instruction.
+
 1. Read [Cloud deployment](docs/cloud-deployment.md) and [Cloud operations](docs/cloud-operations.md). Verify the actual Hermes Cloud runtime, persistent disk and current price within the $20 total.
 2. Install this source and a Python virtual environment on Cloud. Keep publishing, model routing and Telegram disabled for initial checks.
 3. Put required credentials in owner-only `state/runtime.env` (directory `700`, file `600`). The source ZIP contains no credentials. The CLI reads this file only with an explicit `--env-file`; never shell-source it.

@@ -16,6 +16,7 @@ import re
 from datetime import datetime, timedelta, timezone
 from typing import Callable
 from urllib import error, parse, request
+from .safety import posting_locked
 
 
 class PublisherError(Exception):
@@ -184,6 +185,8 @@ class _NoRedirect(request.HTTPRedirectHandler):
 
 
 def _http_transport(method, url, headers, body):
+    if method != "GET" and posting_locked():
+        raise ValidationError("cloud_posting_locked")
     req = request.Request(url, data=body, headers=headers, method=method)
     opener = request.build_opener(_NoRedirect())
     try:
@@ -222,6 +225,10 @@ class UploadPostPublisher:
         self._transport = transport or _http_transport
 
     def _call(self, method, path, *, query=None, form=None, headers=None):
+        # Reject before building headers or invoking even an injected transport.
+        # GET observations remain available; no write or cancellation can escape.
+        if method != "GET" and posting_locked():
+            raise ValidationError("cloud_posting_locked")
         url = self.BASE + path
         if query:
             url += "?" + parse.urlencode(query)

@@ -170,7 +170,7 @@ class CloudInstallerTests(unittest.TestCase):
         from gtm.__main__ import main
         calls = self.run_wrapper()
         self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0][2], {})  # The wrapper itself loads no credentials.
+        self.assertEqual(calls[0][2], {"GTM_POSTING_LOCK": "1"})  # No credentials; lock is forced.
         output = io.StringIO()
         with patch.dict(os.environ, environment or {}, clear=True), \
                 patch("socket.socket", side_effect=AssertionError("Network forbidden in installer tests")), \
@@ -195,8 +195,8 @@ class CloudInstallerTests(unittest.TestCase):
         self.assertEqual(args, [sys.executable, "-m", "gtm", "--config", str(canonical_repo / "config.toml"),
                                 "--state", str(canonical_repo / "state" / "gtm.sqlite"),
                                 "--output", str(canonical_repo / "reports"),
-                                "--env-file", str(canonical_repo / "state" / "runtime.env"), "telegram"])
-        self.assertEqual(env, {})
+                                "--env-file", str(canonical_repo / "state" / "runtime.env"), "--no-publish", "telegram"])
+        self.assertEqual(env, {"GTM_POSTING_LOCK": "1"})
         self.assertNotIn(literal, result.stdout + result.stderr)
         self.assertNotIn(literal, (self.wrappers / "disanchor-gtm-telegram.py").read_text())
         code, output, loaded = self.run_worker_from_wrapper()

@@ -20,6 +20,7 @@ def parser():
     p.add_argument("--state", default="state/gtm.sqlite")
     p.add_argument("--output", default="reports/live")
     p.add_argument("--env-file", help="Explicit owner-only KEY=value file; never executed as shell")
+    p.add_argument("--no-publish", action="store_true", help="Staging lock: reject all Upload-Post writes, even if config enables publishing")
     commands = p.add_subparsers(dest="command", required=True)
     for name in ("init", "pause", "stop", "inspect", "daily", "collect", "reconcile", "watchdog", "report", "dry-run", "preflight", "preview-library", "route", "telegram", "status", "connection-check", "account-prompts", "feedback", "learn"):
         commands.add_parser(name)
@@ -151,8 +152,18 @@ def import_metrics(engine, filename, now):
 
 def main(argv=None):
     args = parser().parse_args(argv)
+    from .safety import publication_lock
+    with publication_lock(args.no_publish):
+        return run(args)
+
+
+def run(args):
     try:
         c = Config.load(args.config)
+        if args.no_publish:
+            c = replace(c, publishing=replace(c.publishing, auto_publish=False, dry_run=True))
+            if args.command in {"authorize", "approve", "resume", "start"}:
+                raise GuardError("Cloud staging lock blocks experiment start and publication authorization")
         if args.env_file:
             from .environment import load_private_environment
             load_private_environment(args.env_file)

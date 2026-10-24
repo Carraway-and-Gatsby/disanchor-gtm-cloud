@@ -177,8 +177,9 @@ class TelegramMonitor:
         expired = bool(e["end_at"] and timestamp(now) >= timestamp(e["end_at"]))
         if expired and status not in _TERMINAL:
             status = "ENDED"
+        from .safety import posting_locked
         pub = self.engine.c.publishing
-        publishing = bool(status == "RUNNING" and e["start_at"] and timestamp(now) >= timestamp(e["start_at"])
+        publishing = bool(not posting_locked() and status == "RUNNING" and e["start_at"] and timestamp(now) >= timestamp(e["start_at"])
                           and pub.auto_publish and not pub.dry_run and pub.account_reviewed
                           and valid_profile_link(pub.x_profile_url, self.engine.c.landing.campaign)
                           and e["authorization_hash"] == self.engine.authorization_hash()

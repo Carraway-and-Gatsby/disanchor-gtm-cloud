@@ -146,6 +146,9 @@ class Engine:
                 "external_spend_usd": sum(r["amount_usd"] or 0 for r in non_infra if r["category"] == "external")}
 
     def publishing_guard(self, now):
+        from .safety import posting_locked
+        if not self.simulated and posting_locked():
+            raise GuardError("Cloud staging lock keeps external posting disabled")
         e = self.active(now)
         if self.simulated:
             if not getattr(self.publisher, "simulated", False):

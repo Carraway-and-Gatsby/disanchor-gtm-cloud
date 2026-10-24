@@ -1,5 +1,7 @@
 # Cloud 운영과 Telegram 현황 확인
 
+현재 설치되는 wrapper는 `--no-publish`와 `GTM_POSTING_LOCK=1`을 강제한다. 실제 API 게시·취소는 잠금 상태이며 초기 실험 시작도 차단한다. 먼저 [staging 보안·예산 점검](cloud-staging-security.md)을 적용한다.
+
 [English overview](../README.md) · [한국어 운영 안내](../README.ko.md) · [Cloud 배포 준비](cloud-deployment.md)
 
 운영 기준은 Cloud의 SQLite 상태와 비용 원장이다. HTML 화면은 검토용 스냅샷이며 운영에 브라우저나 로컬 Mac이 필요하지 않다. Telegram은 개인 운영자에게 상태를 전달하는 창구다. 이 문서는 배포 절차이며, 실제 Cloud 배포·모델 호출·Telegram 전송이 완료됐다는 증거가 아니다.

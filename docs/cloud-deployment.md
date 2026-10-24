@@ -1,5 +1,7 @@
 # Cloud 배포 준비와 소스 패키지
 
+현재는 [게시 잠금 staging 보안 절차](cloud-staging-security.md)를 먼저 적용한다. 초기 Cloud에는 API 키를 복사하지 않으며, 설치 wrapper의 `--no-publish` 잠금을 유지한다. 아래의 실제 계정 연결·실험 시작은 향후 별도 승인 단계다.
+
 [English overview](../README.md) · [한국어 운영 안내](../README.ko.md) · [Public GitHub repository](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)
 
 배포물은 Python 3.12+에서 실행하는 소스 ZIP이다. Docker나 UI 서버는 필요하지 않다. GitHub CI와 로컬 preflight는 코드·기본 설정·패키지만 검증하며, Upload-Post 인증 성공이나 Hermes Cloud 배포 완료를 뜻하지 않는다. 실제 토큰은 저장소·ZIP·CI에 넣지 않는다.

@@ -101,6 +101,8 @@ GA4 서비스 계정 갱신이 필요할 때만 다음 선택 의존성을 설�
 
 ## Cloud 연결 준비
 
+현재 배포 대상은 **게시 잠금 staging**입니다. [Cloud 보안·예산 점검 안내](docs/cloud-staging-security.md)에 따라 초기 Cloud에는 API 키를 넣지 않습니다. 설치 wrapper는 `--no-publish`를 강제하며, 아래의 실제 실험 시작·게시 승인 절차는 향후 별도 지시가 있을 때만 적용합니다.
+
 상세 순서는 [배포 안내](docs/cloud-deployment.md)와 [Cloud 운영](docs/cloud-operations.md)에 있습니다.
 
 1. 실제 Cloud 사양·가격·영속 저장소와 Hermes 버전을 확인하고 소스와 `.venv`를 배치합니다. 게시·모델·Telegram은 비활성 상태로 시작합니다.
