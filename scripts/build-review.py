@@ -126,6 +126,7 @@ def review_html(entries, output_dir):
         ("reports/native-skill-verification.json", "설치된 Hermes native skill 생성·수정·복구 검증"),
         ("reports/learning-independent-review.json", "학습 보호 장치 독립 검토"),
         ("reports/readiness.json", "최종 준비 상태와 GitHub Actions 결과"),
+        ("reports/public-history-audit.json", "공개 전환 전 Git 이력 검사"),
         ("reports/demo/index.html", "시뮬레이션 대시보드"),
         ("reports/demo/final_report.md", "시뮬레이션 최종 보고서"),
         ("reports/demo/daily_metrics.csv", "시뮬레이션 일별 지표"),

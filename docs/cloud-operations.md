@@ -4,6 +4,8 @@
 
 운영 기준은 Cloud의 SQLite 상태와 비용 원장이다. HTML 화면은 검토용 스냅샷이며 운영에 브라우저나 로컬 Mac이 필요하지 않다. Telegram은 개인 운영자에게 상태를 전달하는 창구다. 이 문서는 배포 절차이며, 실제 Cloud 배포·모델 호출·Telegram 전송이 완료됐다는 증거가 아니다.
 
+코드와 운영 문서는 [공개 GitHub 저장소](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud)에서 검토한다. 자격 증명·실제 계정 바인딩·운영 DB·생성 보고서는 공개 대상에 포함하지 않으며 Cloud의 접근 제한된 디렉터리에 둔다. 배포할 커밋의 CI 결과는 [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)에서 따로 확인한다.
+
 ## USD 20 운영 한도
 
 전체 실험 예산은 **$20**이며 Cloud 인프라·모델·기타 유료 도구 비용을 모두 포함한다. 모델 상한 $5와 외부 도구 상한 $2는 이 전체 한도 안에서 유지한다. 예산 계산은 168시간의 인프라 예상 비용과 확정·미확정 비용을 반영하며, $14(70%)에서 경고하고 $18(90%)에서 신규 선택 유료 작업·게시의 예산 검사를 차단한다.

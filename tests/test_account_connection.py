@@ -89,7 +89,7 @@ class AccountClientTests(unittest.TestCase):
         self.assertEqual(len(self.transport.calls),1)
 
     def test_integer_native_ids_preserve_all_digits_and_bool_is_not_id(self):
-        identifier=2063373653874724864
+        identifier=1840000000000000001  # Synthetic 19-digit fixture, not a connected account.
         self.transport.single["profile"]["social_accounts"]["x"]["username"]=identifier
         row=self.client.verify_binding("disanchor","x",str(identifier))
         self.assertEqual(row["native_account_id"],str(identifier))

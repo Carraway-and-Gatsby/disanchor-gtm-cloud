@@ -4,7 +4,7 @@
 
 A Python 3.12 / SQLite worker for a **seven-day, organic-first Disanchor experiment** on X and Threads. It prepares useful, account-specific content, records performance, and turns evidence into the next research and planning cycle. Disanchor is still being developed; drafts explain that naturally within the writing.
 
-**This repository is private.** Open it while signed in as the owner or an invited collaborator. GitHub may show a 404 to an account without access. The repository contains code and deployment instructions; it does not mean a Cloud instance or a live campaign has been started.
+**This source repository is public.** It contains code, account strategy templates and deployment instructions. Credentials, actual account bindings, runtime databases and generated reports stay private and are excluded from Git. Publishing the source does not start a Cloud instance or a live campaign.
 
 ## What is ready
 
@@ -15,7 +15,7 @@ A Python 3.12 / SQLite worker for a **seven-day, organic-first Disanchor experim
 | Model routing | Research → planning → writing → execution review; 80% of the model allowance goes to the first two stages | Paid inference disabled until the Cloud runtime and provider caps are verified |
 | Feedback and skill learning | Own-post feedback, account-specific aggregates and automatic versioned skill compilation; optional isolated Hermes native writer | No real audience sentiment or learned-skill effectiveness is claimed |
 | Operations | Persistent SQLite, six bounded Hermes cron jobs, owner-only Telegram status | Cloud deployment, restart recovery and Telegram delivery still need verification |
-| Tests and delivery | Offline test suite, preflight, reproducible source ZIP and GitHub workflow | [The earlier workflow rerun passed](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions/runs/40078252934); check Actions for the latest commit |
+| Tests and delivery | Offline test suite, preflight, reproducible source ZIP and GitHub workflow | Check [Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions) for the result on the exact commit being deployed |
 
 ## How it works
 

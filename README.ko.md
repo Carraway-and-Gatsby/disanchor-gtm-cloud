@@ -1,10 +1,10 @@
 # Disanchor · Cloud 마케팅 워커
 
-[English](README.md) · [비공개 GitHub 저장소](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)
+[English](README.md) · [공개 GitHub 저장소](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)
 
 Disanchor의 초기 반응을 살펴보는 **7일간의 유용한 콘텐츠 중심 실험**입니다. 계정별로 다른 글을 준비하고, 확인 가능한 성과와 반응을 모아 다음 리서치와 기획에 반영합니다. 제품은 개발 중이며, 이 사실을 글의 맥락 안에서 자연스럽게 밝힙니다.
 
-저장소는 **PRIVATE**입니다. 소유자 계정이나 초대받은 계정으로 로그인해야 열 수 있습니다. 권한 없는 계정에서는 GitHub가 404를 표시할 수 있습니다. 소스 업로드, Cloud 배포, 실제 게시 시작은 서로 다른 상태입니다.
+소스 저장소는 **PUBLIC**입니다. 코드, 계정별 전략 예제와 배포 안내를 공개합니다. 자격 증명, 실제 계정 바인딩, 운영 DB와 생성 보고서는 계속 비공개로 보관하고 Git에서 제외합니다. 소스 공개, Cloud 배포, 실제 게시 시작은 서로 다른 상태입니다.
 
 ## 지금 준비된 것과 남은 것
 
@@ -15,7 +15,7 @@ Disanchor의 초기 반응을 살펴보는 **7일간의 유용한 콘텐츠 중�
 | 모델 라우팅 | 리서치 → 기획 → 작성 → 실행 검토 | 유료 호출 비활성; Cloud 런타임과 제공자 측 비용·출력 상한 확인 필요 |
 | 성과·반응 학습 | 계정별 집계, 자동 버전 관리 skill 작성, 선택형 Hermes native writer | 실제 사용자 감정·성과 개선을 확인했다는 뜻이 아님 |
 | 운영 | SQLite 상태, 제한된 Hermes cron, Telegram 개인 현황 | 실제 Cloud 배포·재시작 복구·Telegram 수신 검증 필요 |
-| 검증·전달 | 오프라인 테스트, preflight, 재현 가능한 ZIP, GitHub workflow | [기존 workflow 재실행 통과](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions/runs/40078252934); 최신 커밋 결과는 Actions에서 확인 |
+| 검증·전달 | 오프라인 테스트, preflight, 재현 가능한 ZIP, GitHub workflow | 배포할 정확한 커밋의 결과를 [Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)에서 확인 |
 
 게시·모델·Telegram은 기본 비활성입니다. 로컬 테스트나 모의 보고서가 통과해도 실제 캠페인이 켜지지 않습니다.
 
