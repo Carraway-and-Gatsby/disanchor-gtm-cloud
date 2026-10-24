@@ -46,9 +46,11 @@ CREATE TABLE IF NOT EXISTS cost_reconciliations (
 """
 
 JSON_TABLES = ("audience_hypotheses", "content_ideas", "post_metrics_snapshots", "website_metrics_snapshots",
-               "lead_aggregate_snapshots", "clone_predictions", "experiment_decisions")
+               "lead_aggregate_snapshots", "clone_predictions", "experiment_decisions",
+               "sentiment_snapshots", "marketing_feedback", "learning_events")
 IMMUTABLE = ("cost_ledger", "cost_reconciliations", "post_metrics_snapshots", "website_metrics_snapshots", "lead_aggregate_snapshots",
-             "experiment_decisions", "clone_predictions", "execution_logs")
+             "experiment_decisions", "clone_predictions", "execution_logs", "sentiment_snapshots",
+             "marketing_feedback", "learning_events")
 
 
 @contextmanager
@@ -69,6 +71,7 @@ def process_lock(path):
 class Store:
     def __init__(self, path):
         path = Path(path)
+        self.path = path.absolute()
         path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.db = sqlite3.connect(path, timeout=10, isolation_level=None)
         os.chmod(path, 0o600)

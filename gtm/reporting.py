@@ -32,6 +32,9 @@ def export(engine, now, output):
     dest.mkdir(parents=True, exist_ok=True)
     e, s = engine.experiment(), engine.s
     budget = engine.budget(now)
+    feedback = engine.feedback(now)
+    learning_events = s.records("learning_events")
+    learning = learning_events[-1]["payload"] if learning_events else {"status": "no_record"}
     posts = s.rows("SELECT * FROM post_drafts ORDER BY scheduled_at")
     post_records = s.records("post_metrics_snapshots")
     website_records = s.records("website_metrics_snapshots")
@@ -59,6 +62,9 @@ def export(engine, now, output):
         rows.append({"metric": name, "value": "NULL" if value is None else value, "source": source, "period": observed, "note": note})
 
     metric("Experiment status", e["status"], "SQLite lifecycle", iso(now))
+    metric("Feedback observed posts", len(feedback["posts"]), "latest own-post aggregates", iso(now), "Same account/platform/denominator only; unknown sentiment remains unknown")
+    metric("Directional comparison groups", sum(c["status"] == "directional_only" for c in feedback["cohorts"]), "bounded feedback aggregation", iso(now), "Observational ranking; no causal winner")
+    metric("Learning skill state", learning.get("status"), "append-only learning events", iso(now), learning.get("mechanism", "not generated"))
     metric("Model pipeline runs", len(routes), "SQLite routing_runs", iso(now), "SIMULATED" if engine.simulated else "Paid path requires runtime and provider cap verification")
     for stage in ("research", "planning", "writing", "execution"):
         records = [r for r in stages if r["stage"] == stage]
@@ -121,9 +127,12 @@ def export(engine, now, output):
         "runs": routes, "stages": stages}, indent=2), encoding="utf-8")
     from .telegram import TelegramMonitor
     (dest / "telegram-preview.txt").write_text("LOCAL PREVIEW — NOT SENT TO TELEGRAM\n\n" + TelegramMonitor(engine, None).preview(now) + "\n", encoding="utf-8")
+    (dest / "marketing-feedback.json").write_text(json.dumps(feedback, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    (dest / "learning-status.json").write_text(json.dumps(learning, indent=2) + "\n", encoding="utf-8")
     esc = lambda v: str(v).replace("|", "\\|").replace("\n", " ")
     lines = ["# Disanchor seven-day experiment", "", f"**{mode}**", "", f"Generated: {timestamp(now).astimezone(ZoneInfo(engine.c.experiment.reporting_timezone)).isoformat()}", f"Start: {e['start_at']}", f"End: {e['end_at']}", "", "| Metric | Value | Source | Observation period | Caveat |", "|---|---|---|---|---|"]
     lines.extend("| " + " | ".join(esc(row[k]) for k in ("metric", "value", "source", "period", "note")) + " |" for row in rows)
+    lines.extend(["", "## Feedback and learning", "", "[Account-specific feedback](marketing-feedback.json) · [Skill status](learning-status.json)", "", "Observed rankings are directional comparisons, not causal winners. Missing comments remain unknown. Raw comments and author identities are not retained."])
     lines.extend(["", "## Reviewable drafts", "", "| ID | State | Time UTC | Copy |", "|---|---|---|---|"])
     lines.extend("| " + " | ".join(esc(post[k]) for k in ("id", "state", "scheduled_at", "text")) + " |" for post in posts)
     lines.extend(["", "## Measurement gaps", "", "GA4 missing reasons: " + esc(json.dumps(web.get("missing", {}))), "GA4 warnings: " + esc(json.dumps(web.get("warnings", []))), "Attribution limitations: " + esc(json.dumps(web.get("attribution_limitations", []))), "Lead aggregate: " + esc(json.dumps(leads))])
@@ -132,6 +141,6 @@ def export(engine, now, output):
     h = html.escape
     table = "".join("<tr>" + "".join(f"<td>{h(str(row[k]))}</td>" for k in ("metric", "value", "source", "period", "note")) + "</tr>" for row in rows)
     cards = "".join(f"<article><span>{h(p['id'])} · {h(p['state'])} · {h(p['hypothesis'])}</span><p>{h(p['text'])}</p><small>{h(p['scheduled_at'])}</small></article>" for p in posts)
-    document = f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><title>Disanchor · Experiment report</title><style>body{{font:15px/1.5 system-ui;margin:0;background:#f4f5f1;color:#182922}}main{{max-width:1200px;margin:auto;padding:40px 24px}}h1{{font-size:42px;letter-spacing:-1.5px}}.flag{{background:#ffe3a2;padding:12px 18px;border-radius:6px}}small,span{{color:#456354}}table{{border-collapse:collapse;width:100%;font-size:12px}}td,th{{text-align:left;border-bottom:1px solid #cad6cd;padding:12px;vertical-align:top}}.scroll{{overflow:auto}}article{{background:white;border:1px solid #d2ddd6;padding:20px;border-radius:10px}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}}a{{color:#155f46}}footer{{margin-top:32px;color:#456354}}</style><main><span>DISANCHOR / RESEARCH OPERATIONS</span><h1>Seven days. Measured honestly.</h1><p class="flag">{h(mode)}</p><p>{h(period)} · reports in Asia/Seoul</p><p><a href="final_report.md">Full report</a> · <a href="daily_metrics.csv">Daily observations</a> · <a href="post_metrics.csv">Post observations</a> · <a href="cost_ledger.csv">Costs</a> · <a href="experiment_decisions.json">Decisions</a></p><h2>Evidence and limits</h2><div class="scroll"><table><thead><tr><th>Metric</th><th>Value</th><th>Source</th><th>Period</th><th>Caveat</th></tr></thead><tbody>{table}</tbody></table></div><h2>Content queue</h2><div class="grid">{cards}</div><footer>NULL means unavailable, never zero. Platform views are not unique people. This report does not verify live deployment. Termination does not stop Cloud billing.</footer></main></html>'''
+    document = f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><title>Disanchor · Experiment report</title><style>body{{font:15px/1.5 system-ui;margin:0;background:#f4f5f1;color:#182922}}main{{max-width:1200px;margin:auto;padding:40px 24px}}h1{{font-size:42px;letter-spacing:-1.5px}}.flag{{background:#ffe3a2;padding:12px 18px;border-radius:6px}}small,span{{color:#456354}}table{{border-collapse:collapse;width:100%;font-size:12px}}td,th{{text-align:left;border-bottom:1px solid #cad6cd;padding:12px;vertical-align:top}}.scroll{{overflow:auto}}article{{background:white;border:1px solid #d2ddd6;padding:20px;border-radius:10px}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}}a{{color:#155f46}}footer{{margin-top:32px;color:#456354}}</style><main><span>DISANCHOR / RESEARCH OPERATIONS</span><h1>Seven days. Measured honestly.</h1><p class="flag">{h(mode)}</p><p>{h(period)} · reports in Asia/Seoul</p><p><a href="final_report.md">Full report</a> · <a href="daily_metrics.csv">Daily observations</a> · <a href="post_metrics.csv">Post observations</a> · <a href="cost_ledger.csv">Costs</a> · <a href="experiment_decisions.json">Decisions</a> · <a href="marketing-feedback.json">Marketing feedback</a> · <a href="learning-status.json">Skill learning</a></p><h2>Evidence and limits</h2><div class="scroll"><table><thead><tr><th>Metric</th><th>Value</th><th>Source</th><th>Period</th><th>Caveat</th></tr></thead><tbody>{table}</tbody></table></div><h2>Content queue</h2><div class="grid">{cards}</div><footer>NULL means unavailable, never zero. Platform views are not unique people. This report does not verify live deployment. Termination does not stop Cloud billing.</footer></main></html>'''
     (dest / "index.html").write_text(document, encoding="utf-8")
-    return {"output": str(dest.resolve()), "mode": mode, "files": ["index.html", "final_report.md", "daily_metrics.csv", "post_metrics.csv", "cost_ledger.csv", "experiment_decisions.json", "routing_runs.json", "telegram-preview.txt"]}
+    return {"output": str(dest.resolve()), "mode": mode, "files": ["index.html", "final_report.md", "daily_metrics.csv", "post_metrics.csv", "cost_ledger.csv", "experiment_decisions.json", "routing_runs.json", "telegram-preview.txt", "marketing-feedback.json", "learning-status.json"]}

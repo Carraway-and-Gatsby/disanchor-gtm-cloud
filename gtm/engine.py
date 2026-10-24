@@ -19,7 +19,7 @@ class GuardError(RuntimeError):
 
 
 class Engine:
-    def __init__(self, config: Config, store: Store, publisher=None, ga4=None, clone=None, simulated=False):
+    def __init__(self, config: Config, store: Store, publisher=None, ga4=None, clone=None, simulated=False, feedback_factory=None):
         config.validate()
         self.c, self.s = config, store
         self.accounts = AccountRegistry(config.accounts.registry_file)
@@ -27,6 +27,9 @@ class Engine:
             if self.accounts.get(self.account_key(platform))["platform"] != platform:
                 raise GuardError("Account target platform mismatch")
         self.publisher, self.ga4, self.clone = publisher, ga4, clone
+        self.feedback_factory = feedback_factory
+        if feedback_factory and simulated and not getattr(feedback_factory, "simulated", False):
+            raise GuardError("Simulation cannot use a live feedback client")
         self.simulated = simulated
         self.source = "SIMULATED" if simulated else "worker"
         if publisher and bool(getattr(publisher, "simulated", False)) != simulated:
@@ -359,6 +362,7 @@ class Engine:
         base_now = timestamp(now)
         current = lambda: base_now + timedelta(seconds=max(0, time.monotonic() - started))
         e = self.active(now)
+        learning = self.learn(now)
         routing = {"status": "disabled"}
         if self.c.routing.enabled and not self.simulated:
             from .routing import StageRouter
@@ -415,6 +419,12 @@ class Engine:
                         "suggestion": suggestion, "accepted": accepted, "changed": changed,
                         "outcome": "pending later observations", "fallback": not accepted,
                         "next_action": "prepare approved seed or request owner review of new copy", "source": self.source}
+            feedback = self.feedback(now)
+            decision["feedback"] = {"observed_posts": len(feedback["posts"]),
+                                    "directional_cohorts": sum(c["status"] == "directional_only" for c in feedback["cohorts"]),
+                                    "skill_status": learning["status"]}
+            if decision["feedback"]["directional_cohorts"]:
+                decision["reason"] = "Within-account directional engagement observations inform research/planning. Preserve balanced exploration and test one variable; observational rankings are not causal winners or evidence of positive sentiment."
             self.s.record("experiment_decisions", key, now, self.source, decision)
             if self.clone and prediction.get("request_id") and prediction.get("status") == "suggested":
                 try:
@@ -427,7 +437,67 @@ class Engine:
                 outcomes[post_id] = self.schedule(post_id, now if self.simulated else current())
             except GuardError:
                 outcomes[post_id] = "blocked_by_guard"
-        return {"drafts": drafts, "outcomes": outcomes, "model_generation": routing}
+        return {"drafts": drafts, "outcomes": outcomes, "model_generation": routing, "learning": learning}
+
+    def feedback(self, now):
+        """Read-only local aggregation; latest bounded observations, no HTTP."""
+        from .feedback import aggregate_feedback
+        self.experiment()
+        f = self.c.feedback
+        current = self.account_fingerprint()
+        selected = {self.account_key(platform) for platform in ("x", "threads")}
+        def matching(table):
+            return [row for row in self.s.records(table)
+                    if row["payload"].get("account_fingerprint") == current
+                    and row["payload"].get("account_key") in selected]
+        result = aggregate_feedback(matching("post_metrics_snapshots"), matching("sentiment_snapshots"),
+                                    now=now, minimum_posts=f.minimum_posts,
+                                    minimum_exposures=f.minimum_exposures, min_comments=f.minimum_comments)
+        return {**result, "simulated": self.simulated, "network_calls": 0}
+
+    def learning_loop(self):
+        from .learning import LearningLoop, NativeSkillWriter
+        config = self.c.learning
+        writer = None
+        if not self.simulated and config.hermes_source_dir and config.hermes_python:
+            writer = NativeSkillWriter(config.hermes_source_dir, config.hermes_python)
+        return LearningLoop(self.s.path.parent / "learning", native_writer=writer)
+
+    def learn(self, now):
+        """Regenerate local skill only from aggregate data; no model or HTTP call."""
+        if not self.c.learning.enabled or not self.c.feedback.enabled:
+            return {"status": "disabled", "network_calls": 0, "model_calls": 0}
+        feedback = self.feedback(now)
+        fingerprint = hashlib.sha256(json.dumps(feedback, sort_keys=True).encode()).hexdigest()
+        self.s.record("marketing_feedback", "feedback:" + fingerprint, now, self.source, feedback)
+        loop = None
+        try:
+            loop = self.learning_loop()
+            result = loop.update(feedback, now=now, policy_version=POLICY_VERSION,
+                                 account_fingerprint=self.account_fingerprint())
+        except (ValueError, OSError, RuntimeError):
+            result = {"status": "unavailable", "reason": "local_skill_validation_failed"}
+        finally:
+            if loop:
+                loop.close()
+        safe = {key: result[key] for key in ("status", "revision", "mechanism", "lesson_count", "evidence_status") if key in result}
+        event = hashlib.sha256(json.dumps(safe, sort_keys=True).encode()).hexdigest()
+        self.s.record("learning_events", "learning:" + fingerprint + ":" + event, now, self.source, safe)
+        return {**safe, "network_calls": 0, "model_calls": 0}
+
+    def learning_context(self, now):
+        if not self.c.learning.enabled or not self.c.feedback.enabled:
+            return {}
+        loop = None
+        try:
+            loop = self.learning_loop()
+            return loop.context(policy_version=POLICY_VERSION,
+                                account_fingerprint=self.account_fingerprint(), now=now)
+        except (ValueError, OSError, RuntimeError):
+            return {}
+        finally:
+            if loop:
+                loop.close()
 
     def collect(self, now, final=False):
         e = self.experiment()
@@ -450,10 +520,13 @@ class Engine:
                 website["status"] = "unavailable"
         website["attribution_limitations"] = ["GA4 report dates use the property's reporting timezone and may include partial boundary days.", "Consent, blocking, processing delays, and GA4 retention can undercount visits; X profile visits are channel-level only."]
         self.s.record("website_metrics_snapshots", key, now, self.source + "/ga4", website)
-        posts = self.s.rows("SELECT d.*,p.provider_request_id FROM post_drafts d LEFT JOIN platform_posts p ON p.post_id=d.id")
+        posts = self.s.rows("SELECT d.*,p.provider_request_id,p.platform_post_id FROM post_drafts d LEFT JOIN platform_posts p ON p.post_id=d.id")
+        allowed_feedback = []
         for post in posts:
-            metric_names = ("views", "impressions", "likes", "replies", "reposts", "quotes", "link_clicks", "followers")
+            metric_names = ("views", "impressions", "reach", "likes", "replies", "comments", "reposts", "shares", "quotes", "link_clicks", "followers")
             payload = {"post_id": post["id"], "platform": post["platform"], "hypothesis": post["hypothesis"],
+                       "account_key": post["account_key"], "account_fingerprint": post["account_fingerprint"],
+                       "hook_type": post["hook_type"], "published_at": post["scheduled_at"],
                        "period_start": post["created_at"], "period_end": iso(end),
                        "metrics": dict.fromkeys(metric_names), "missing": dict.fromkeys(metric_names, "not published or provider metric unavailable"),
                        "provenance": self.source, "definition": "cumulative per-post native observations; not unique reach"}
@@ -468,6 +541,33 @@ class Engine:
                 except Exception:
                     self.s.log("collection_failed", now=now)
             self.s.record("post_metrics_snapshots", f"{key}:{post['id']}", now, payload["provenance"], payload)
+            if post["state"] in {"PUBLISHED", "CONFIRMED"} and post["platform_post_id"]:
+                try:
+                    self.check_draft_account(post)
+                    account = self.accounts.get(post["account_key"])
+                    if account["native_account_id"]:
+                        allowed_feedback.append({"post_id": post["id"], "account_key": post["account_key"],
+                            "account_fingerprint": post["account_fingerprint"], "profile_username": account["upload_post_profile"],
+                            "platform": post["platform"], "platform_post_id": post["platform_post_id"],
+                            "native_account_id": account["native_account_id"]})
+                except (GuardError, ValueError):
+                    pass
+        # Current own published IDs only. No history search, unsolicited replies or writes.
+        if self.c.feedback.enabled and self.feedback_factory and allowed_feedback and not e["incident"]:
+            try:
+                client = self.feedback_factory(allowed_feedback[:self.c.feedback.max_posts_per_collection])
+                if bool(getattr(client, "simulated", False)) != self.simulated:
+                    raise GuardError("Feedback client mode mismatch")
+                for post in allowed_feedback[:self.c.feedback.max_posts_per_collection]:
+                    observation = client.collect(post["post_id"])
+                    self.s.record("sentiment_snapshots", f"{key}:{post['post_id']}", now,
+                                  self.source + "/Upload-Post comments", observation)
+                    if observation.get("status") == "unavailable":
+                        if observation.get("reason") == "rate_limited" and e["status"] in {"RUNNING", "PAUSED"}:
+                            self.incident(now, "provider_account_or_rate_limit")
+                        break  # No retries or more account reads after a provider/permission error.
+            except Exception:
+                self.s.log("collection_failed", now=now)
         leads = {"stored_leads": None, "qualified_leads": None, "reason": "No lead database configured", "period_start": start_date, "period_end": end_date}
         if not self.simulated and self.c.analytics.lead_db and Path(self.c.analytics.lead_db).is_file():
             try:
@@ -479,7 +579,8 @@ class Engine:
         self.s.record("lead_aggregate_snapshots", key, now, self.source + "/server lead store", leads)
         if final:
             self.s.db.execute("UPDATE experiments SET final_collected=1 WHERE id=?", (e["id"],))
-        return {"status": "collected", "mode": self.source}
+        learning = self.learn(now)
+        return {"status": "collected", "mode": self.source, "learning": learning}
 
     def watchdog(self, now):
         e = self.experiment()

@@ -28,7 +28,8 @@ x_profile_url = ""
 account_reviewed = false
 
 [budget]
-target_total_usd = 10.0
+# Total Cloud operation envelope: infrastructure, models and external tools.
+target_total_usd = 20.0
 model_budget_usd = 5.0
 external_tools_budget_usd = 2.0
 warning_threshold = 0.70
@@ -116,3 +117,18 @@ daily_hour = 9
 registry_file = "accounts.example.toml"
 x_account = "disanchor_x"
 threads_account = "default_threads"
+
+[feedback]
+enabled = true
+max_posts_per_collection = 10
+max_comments_per_post = 40
+max_comment_pages = 2
+minimum_posts = 3
+minimum_exposures = 100
+minimum_comments = 5
+
+[learning]
+# Native skill creation from validated aggregates; no extra paid model call.
+enabled = true
+hermes_source_dir = ""
+hermes_python = ""

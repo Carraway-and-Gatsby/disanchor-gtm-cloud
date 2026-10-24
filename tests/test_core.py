@@ -132,10 +132,11 @@ class CoreTests(unittest.TestCase):
             self.assertIsNone(prediction["suggestion"])
 
     def test_budget_warning_stop_and_unknown_billing(self):
-        self.c.budget.infrastructure_hourly_usd = 7.0 / 168
+        self.assertEqual(self.c.budget.target_total_usd, 20.0)
+        self.c.budget.infrastructure_hourly_usd = 14.0 / 168
         self.assertTrue(self.e.budget(self.now)["warning"])
         self.assertFalse(self.e.budget(self.now)["halt_optional"])
-        self.c.budget.infrastructure_hourly_usd = 9.0 / 168
+        self.c.budget.infrastructure_hourly_usd = 18.0 / 168
         self.assertTrue(self.e.budget(self.now)["halt_optional"])
         self.assertTrue(self.e.budget(self.now)["unknown_charges"])
 
@@ -200,7 +201,11 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(db.execute("SELECT count(*) FROM routing_stage_runs WHERE state='SUCCEEDED'").fetchone()[0], 28)
         self.assertEqual(db.execute("SELECT count(*) FROM telegram_outbox").fetchone()[0], 0)
         self.assertIn("NOT SENT TO TELEGRAM", (self.path / "demo/telegram-preview.txt").read_text())
-        self.assertEqual(set(result["files"]), {"index.html", "final_report.md", "daily_metrics.csv", "post_metrics.csv", "cost_ledger.csv", "experiment_decisions.json", "routing_runs.json", "telegram-preview.txt"})
+        self.assertEqual(set(result["files"]), {"index.html", "final_report.md", "daily_metrics.csv", "post_metrics.csv", "cost_ledger.csv", "experiment_decisions.json", "routing_runs.json", "telegram-preview.txt", "marketing-feedback.json", "learning-status.json"})
+        feedback = json.loads((self.path / "demo/marketing-feedback.json").read_text())
+        self.assertTrue(feedback["simulated"])
+        self.assertEqual(feedback["network_calls"], 0)
+        self.assertIn("marketing-feedback.json", (self.path / "demo/index.html").read_text())
 
     def test_cli_preflight_never_uses_network(self):
         with patch("urllib.request.OpenerDirector.open", side_effect=AssertionError("network forbidden")), contextlib.redirect_stdout(io.StringIO()) as output:

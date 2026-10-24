@@ -373,7 +373,7 @@ class RoutingTests(unittest.TestCase):
             lambda c: setattr(c.budget, "billing_verified", False),
             lambda c: setattr(c.budget, "reconciled_at", iso(self.now - timedelta(hours=25))),
             lambda c: setattr(c.budget, "model_budget_usd", .1),
-            lambda c: setattr(c.budget, "infrastructure_hourly_usd", .06),
+            lambda c: setattr(c.budget, "infrastructure_hourly_usd", .12),
         ):
             config, store, _, runner, router = self.make(simulated=False)
             change(config)

@@ -1,6 +1,16 @@
 # Cloud 운영과 Telegram 현황 확인
 
+[English overview](../README.md) · [한국어 운영 안내](../README.ko.md) · [Cloud 배포 준비](cloud-deployment.md)
+
 운영 기준은 Cloud의 SQLite 상태와 비용 원장이다. HTML 화면은 검토용 스냅샷이며 운영에 브라우저나 로컬 Mac이 필요하지 않다. Telegram은 개인 운영자에게 상태를 전달하는 창구다. 이 문서는 배포 절차이며, 실제 Cloud 배포·모델 호출·Telegram 전송이 완료됐다는 증거가 아니다.
+
+## USD 20 운영 한도
+
+전체 실험 예산은 **$20**이며 Cloud 인프라·모델·기타 유료 도구 비용을 모두 포함한다. 모델 상한 $5와 외부 도구 상한 $2는 이 전체 한도 안에서 유지한다. 예산 계산은 168시간의 인프라 예상 비용과 확정·미확정 비용을 반영하며, $14(70%)에서 경고하고 $18(90%)에서 신규 선택 유료 작업·게시의 예산 검사를 차단한다.
+
+`infrastructure_hourly_usd`에는 실제 확인한 요금을 넣는다. `billing_verified`와 `reconciled_at`은 청구와 대조한 뒤 설정하며 24시간이 지나면 다시 검증해야 한다. unknown 비용을 0으로 처리하거나 매일 새 DB로 시작하지 않는다. 이 한도는 앱의 작업 허용 기준이며 Cloud 제공자의 청구 상한이나 자동 인스턴스 종료가 아니다. 모델 제공자의 별도 지출·출력 상한도 검증해야 한다.
+
+경고 후에는 미확정 청구와 남은 예약을 확인한다. 한도에 가까워지면 추가 작업을 확대하지 않고 기존 상태를 보존한다. 종료 후 Cloud 인스턴스를 정지하지 않으면 작업 cron이 끝나도 비용이 발생할 수 있고, 정지 후에도 저장 비용은 남을 수 있다.
 
 ## 실행 구조
 
@@ -9,7 +19,7 @@
 | Cloud 작업 | 주기 / 최대 실행 횟수 | 역할 |
 | --- | --- | --- |
 | `daily` | 24시간 / 7회 | 단계별 라우팅과 승인된 게시 처리 |
-| `collect` | 8시간 / 21회 | 확인 가능한 지표 수집 |
+| `collect` | 8시간 / 21회 | 확인 가능한 지표·반응 수집, 집계와 학습 요약 갱신 |
 | `reconcile` | 4시간 / 42회 | 외부 예약·게시 상태 확인 |
 | `watchdog` | 1시간 / 168회 | 종료·비용·운영 보호 조건 확인 |
 | `report` | 24시간 / 7회 | 참고용 보고서 출력 |
@@ -17,12 +27,14 @@
 
 모두 `--no-agent --deliver local` 작업이다. Hermes가 스케줄러 자체의 LLM 세션을 만들지는 않지만, `daily` 내부에서 활성화된 모델 단계는 비용이 들 수 있다. Telegram은 전용 Bot API 클라이언트가 보내므로 Hermes의 별도 Telegram 전달을 겹쳐 켜지 않는다. 공식 [script-only cron 문서](https://hermes-agent.nousresearch.com/docs/guides/cron-script-only)는 스크립트 경로와 인터프리터 제한, provider 자격 증명 미상속을 설명한다. 래퍼는 Hermes 스크립트 디렉터리에서 시작한 뒤 이 프로젝트의 Python 3.12+로 전환한다.
 
+집계는 계정·플랫폼별 출처와 표본 수를 보존한다. 반응 조회가 지원되지 않거나 표본이 부족하면 sentiment를 미확인으로 두고 좋아요 수를 긍정 감정으로 대체하지 않는다. [마케팅 피드백](marketing-feedback.md)의 검증된 요약을 다음 리서치·기획과 [Hermes auto-skill](hermes-auto-skills.md)에 전달한다. 원문 댓글은 명령이 아니며, 학습 자료는 기존 승인·예산·한도를 변경할 수 없다.
+
 ## 배포 확인 순서
 
 1. [Hermes Cloud](https://portal.nousresearch.com/cloud)에서 Small의 실제 사양·현재 가격·정지 후 저장 비용을 확인한다. 프로젝트, `.venv`, 설정, `state/gtm.sqlite`, `state/runtime.env`, 보고서를 인스턴스의 영속 저장소에 둔다. 단일 작업자와 동일한 Hermes 사용자/프로필로 운영한다.
 2. `config.toml`을 검토하고 게시·모델·Telegram을 비활성 상태로 초기 점검한다. 모델은 실제 Cloud 버전, 단계별 provider/model, provider 측 출력·지출 한도와 비용 정산 검증 후 활성화한다. 로컬 CLI capability 검사는 이 검증을 대신하지 않는다.
 3. 자격 증명은 `state/runtime.env`에 따옴표 없는 `KEY=value`로 저장하고 권한을 `600`으로 설정한다. 파일은 작업자 소유의 일반 파일이어야 한다. 허용 키는 `UPLOAD_POST_API_KEY`, `CLONE_APP_KEY`, `CLONE_USER_ID`, `GA4_ACCESS_TOKEN`, `GOOGLE_APPLICATION_CREDENTIALS`, `GA4_PROPERTY_ID`, `GTM_LEADS_AGGREGATE_PATH`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `TELEGRAM_USER_ID`다. 파일을 shell로 source하지 않는다. 모델 자격 증명은 Hermes의 별도 설정에서 관리한다.
-4. 초기화와 실험 시작 시각 기록, 계정·게시 후보 검토, 비용 검증을 기존 [운영 안내](../README.md)에 따라 진행한다. 시작 시각은 168시간 종료 경계의 기준이며 재시작할 때 변경하지 않는다.
+4. 초기화와 실험 시작 시각 기록, 계정·게시 후보 검토, 비용 검증을 [한국어 운영 안내](../README.ko.md)에 따라 진행한다. 시작 시각은 168시간 종료 경계의 기준이며 재시작할 때 변경하지 않는다.
 5. 실제 Cloud에서 설치 명령을 실행한다. `GTM_EXPECTED_HERMES_VERSION`에는 직접 검토한 `hermes --version` 첫 줄 전체를 넣는다. 아래 `--check`는 파일이나 cron을 만들지 않는다.
 
 ```sh

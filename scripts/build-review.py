@@ -122,6 +122,10 @@ def review_html(entries, output_dir):
     reports = [
         ("reports/verification.txt", "검증 실행 기록"),
         ("reports/upload-post-connection.json", "Upload-Post 정규화 연결 조회 결과"),
+        ("reports/upload-post-feedback-check.json", "Upload-Post 자체 게시물 조회 점검"),
+        ("reports/native-skill-verification.json", "설치된 Hermes native skill 생성·수정·복구 검증"),
+        ("reports/learning-independent-review.json", "학습 보호 장치 독립 검토"),
+        ("reports/readiness.json", "최종 준비 상태와 GitHub Actions 결과"),
         ("reports/demo/index.html", "시뮬레이션 대시보드"),
         ("reports/demo/final_report.md", "시뮬레이션 최종 보고서"),
         ("reports/demo/daily_metrics.csv", "시뮬레이션 일별 지표"),
@@ -130,6 +134,8 @@ def review_html(entries, output_dir):
         ("reports/demo/experiment_decisions.json", "시뮬레이션 의사결정"),
         ("reports/demo/routing_runs.json", "시뮬레이션 4단계 라우팅"),
         ("reports/demo/telegram-preview.txt", "미전송 Telegram 요약 예시"),
+        ("reports/demo/marketing-feedback.json", "시뮬레이션 마케팅 집계"),
+        ("reports/demo/learning-status.json", "시뮬레이션 학습 상태"),
     ]
     for relative, label in reports:
         path = ROOT / relative

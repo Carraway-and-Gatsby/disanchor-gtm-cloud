@@ -187,7 +187,41 @@ class TelegramMonitor:
         return {"status": status, "incident": bool(e["incident"]), "expired": expired,
                 "unknown_jobs": unresolved, "posts": counts, "budget": budget,
                 "mode": "모의 실행" if self.engine.simulated else f"실제 상태(게시 {'ON' if publishing else 'OFF'})",
-                "end_at": e["end_at"], "routing": self._routing_state(), "route_status": self._routing_status()}
+                "end_at": e["end_at"], "routing": self._routing_state(), "route_status": self._routing_status(),
+                "feedback": self._feedback_snapshot(now)}
+
+    def _feedback_snapshot(self, now):
+        result = {"posts": 0, "directional_cohorts": 0, "positive": 0, "negative": 0,
+                  "mixed": 0, "unknown": 0, "rankings": [], "learning": "no_record", "mechanism": "none"}
+        try:
+            feedback = self.engine.feedback(now)
+            result["posts"] = len(feedback["posts"])
+            for post in feedback["posts"]:
+                label = post["sentiment"]["label"]
+                result[label if label in {"positive", "negative", "mixed", "unknown"} else "unknown"] += 1
+            for cohort in feedback["cohorts"]:
+                if cohort["status"] == "directional_only":
+                    result["directional_cohorts"] += 1
+                    result["rankings"].append({"account": cohort["account_key"], "platform": cohort["platform"],
+                                               "posts": cohort["ranked_post_ids"][:3]})
+            events = self.s.records("learning_events")
+            if events:
+                latest = events[-1]["payload"]
+                result["learning"] = latest.get("status") if latest.get("status") in {"created", "updated", "unchanged", "disabled", "unavailable"} else "unavailable"
+                result["mechanism"] = latest.get("mechanism") if latest.get("mechanism") in {"native_tool", "compiled"} else "none"
+        except (ValueError, RuntimeError, OSError, KeyError, TypeError):
+            result["learning"] = "unavailable"
+        return result
+
+    def _feedback_text(self, snap):
+        f = snap["feedback"]
+        mechanism = {"native_tool": "Hermes native skill_manage", "compiled": "native 형식 생성", "none": "실행 기록 없음"}[f["mechanism"]]
+        text = (f"반응 집계: 최근 관측 글 {f['posts']} · 비교 가능 그룹 {f['directional_cohorts']}\n"
+                f"댓글 표본 판정(글 수): 긍정 {f['positive']} · 부정 {f['negative']} · 혼합 {f['mixed']} · 미확인 {f['unknown']}\n"
+                f"학습 스킬: {f['learning']} · {mechanism}")
+        for ranking in f["rankings"][:2]:
+            text += f"\n{ranking['account']}/{ranking['platform']} 참고 순위: " + ", ".join(ranking["posts"])
+        return text + "\n표본·관측 기반이며 인과적 우승이나 전체 이용자 여론이 아닙니다."
 
     def _routing_state(self):
         # A missing routing table is a supported pre-migration state.
@@ -266,7 +300,7 @@ class TelegramMonitor:
         risk = "\n계정·게시 사고 발생: 콘솔에서 원인과 보류 작업을 확인하세요." if snap["incident"] else ""
         final = "\n실험이 종료되어 Telegram 명령 조회를 중단합니다. Cloud 서버 과금은 별도 중지가 필요합니다." if snap["status"] in _TERMINAL else ""
         return (f"{title}\n{snap['mode']} · {_STATUS.get(snap['status'], '상태 미확인')}\n종료 예정: {end}\n"
-                f"{self._budget_text(snap)}\n{self._posts_text(snap)}\n{self._routing(snap)}"
+                f"{self._budget_text(snap)}\n{self._posts_text(snap)}\n{self._routing(snap)}\n{self._feedback_text(snap)}"
                 f"{risk}{final}\n제품: 개발 중 · 초기 7일은 비광고성 콘텐츠")
 
     def preview(self, now):
@@ -278,7 +312,8 @@ class TelegramMonitor:
         signature = {"status": snap["status"], "incident": snap["incident"], "unknown_jobs": snap["unknown_jobs"],
                      "warning": snap["budget"]["warning"], "halt_optional": snap["budget"]["halt_optional"],
                      "billing_verified": snap["budget"]["billing_verified"], "routing": snap["routing"],
-                     "route_status": snap["route_status"], "posts": snap["posts"], "mode": snap["mode"]}
+                     "route_status": snap["route_status"], "posts": snap["posts"], "mode": snap["mode"],
+                     "feedback": snap["feedback"]}
         local = timestamp(now).astimezone(ZoneInfo("Asia/Seoul"))
         with self.s.transaction():
             previous = self._get("snapshot")
@@ -350,8 +385,10 @@ class TelegramMonitor:
             return "Disanchor 예산\n" + self._budget_text(snap)
         if text == "/posts":
             return "Disanchor 게시 집계\n" + self._posts_text(snap)
+        if text == "/feedback":
+            return "Disanchor 마케팅 학습\n" + self._feedback_text(snap)
         if text == "/help":
-            return "조회 명령: /status /budget /posts /help\n게시·승인·재개·모델 실행은 Cloud 콘솔에서 처리합니다. Telegram 입력은 실행되지 않습니다."
+            return "조회 명령: /status /budget /posts /feedback /help\n게시·승인·재개·모델 실행은 Cloud 콘솔에서 처리합니다. Telegram 입력은 실행되지 않습니다."
         return None
 
     def notify(self, now, daily=False):

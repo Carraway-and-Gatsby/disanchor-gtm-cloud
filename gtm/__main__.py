@@ -21,7 +21,7 @@ def parser():
     p.add_argument("--output", default="reports/live")
     p.add_argument("--env-file", help="Explicit owner-only KEY=value file; never executed as shell")
     commands = p.add_subparsers(dest="command", required=True)
-    for name in ("init", "pause", "stop", "inspect", "daily", "collect", "reconcile", "watchdog", "report", "dry-run", "preflight", "preview-library", "route", "telegram", "status", "connection-check", "account-prompts"):
+    for name in ("init", "pause", "stop", "inspect", "daily", "collect", "reconcile", "watchdog", "report", "dry-run", "preflight", "preview-library", "route", "telegram", "status", "connection-check", "account-prompts", "feedback", "learn"):
         commands.add_parser(name)
     commands.add_parser("start").add_argument("--at", required=True, help="Explicit timestamp with UTC offset; immutable")
     resume = commands.add_parser("resume")
@@ -65,7 +65,14 @@ def live_engine(c, store, monitoring_only=False):
         ga4 = GA4Client(c.analytics.ga4_property_id, os.environ["GA4_ACCESS_TOKEN"], include_content=True, key_event_registered=c.analytics.key_event_registered)
     clone = CloneClient(enabled=c.clone.enabled, monthly_limit=c.clone.monthly_limit, mode=c.clone.mode,
                         session_id=c.experiment.id)
-    return Engine(c, store, publisher=publisher, ga4=ga4, clone=clone)
+    feedback_factory = None
+    if os.environ.get("UPLOAD_POST_API_KEY") and c.feedback.enabled:
+        from .feedback import UploadPostFeedbackClient
+        credential = os.environ["UPLOAD_POST_API_KEY"]
+        feedback_factory = lambda posts: UploadPostFeedbackClient(credential, posts,
+            max_pages=c.feedback.max_comment_pages, max_comments=c.feedback.max_comments_per_post,
+            min_comments=c.feedback.minimum_comments)
+    return Engine(c, store, publisher=publisher, ga4=ga4, clone=clone, feedback_factory=feedback_factory)
 
 
 def dry_run(c, output):
@@ -129,12 +136,14 @@ def import_metrics(engine, filename, now):
     observed = timestamp(body["observed_at"])
     if observed > now or not timestamp(body["period_start"]) <= timestamp(body["period_end"]) <= observed:
         raise GuardError("Invalid observation period")
-    allowed = {"views", "impressions", "likes", "replies", "reposts", "quotes", "link_clicks", "followers"}
+    allowed = {"views", "impressions", "reach", "likes", "replies", "comments", "reposts", "shares", "quotes", "link_clicks", "followers"}
     metrics = body["metrics"]
     if not isinstance(metrics, dict) or set(metrics) - allowed or any(v is not None and (type(v) not in (int, float) or not math.isfinite(v) or v < 0) for v in metrics.values()):
         raise GuardError("Invalid native metrics")
     engine.s.record("post_metrics_snapshots", f"manual:{body['post_id']}:{iso(observed)}", observed, "MANUAL platform insights", {
-        **body, "platform": post["platform"], "hypothesis": post["hypothesis"], "metrics": {k: metrics.get(k) for k in allowed},
+        **body, "platform": post["platform"], "hypothesis": post["hypothesis"],
+        "account_key": post["account_key"], "account_fingerprint": post["account_fingerprint"],
+        "hook_type": post["hook_type"], "published_at": post["scheduled_at"], "metrics": {k: metrics.get(k) for k in allowed},
         "missing": {k: "manual import omitted" for k in allowed if metrics.get(k) is None},
         "provenance": "MANUAL operator-imported platform insights", "definition": "native cumulative post metrics; not unique reach"})
     return {"status": "manual_observation_imported"}
@@ -212,7 +221,7 @@ def main(argv=None):
         else:
             with process_lock(args.state):
                 s = Store(args.state)
-                engine = live_engine(c, s, monitoring_only=args.command in {"status", "telegram"})
+                engine = live_engine(c, s, monitoring_only=args.command in {"status", "telegram", "feedback", "learn"})
                 command = args.command
                 if command == "init":
                     engine.init(now)
@@ -235,6 +244,10 @@ def main(argv=None):
                     from .telegram import TelegramMonitor
                     result = {"status": "local_preview", "text": TelegramMonitor(engine, None, daily_hour=c.telegram.daily_hour).preview(now),
                               "network_calls": 0}
+                elif command == "feedback":
+                    result = engine.feedback(now)
+                elif command == "learn":
+                    result = engine.learn(now)
                 elif command == "telegram":
                     from .telegram import TelegramClient, TelegramMonitor
                     client = TelegramClient(os.environ.get("TELEGRAM_BOT_TOKEN", ""),

@@ -15,7 +15,7 @@ import tomllib
 sys.dont_write_bytecode = True
 
 
-ROOT_FILES = {"README.md", "config.toml", "pyproject.toml", "requirements.txt",
+ROOT_FILES = {"README.md", "README.ko.md", "config.toml", "pyproject.toml", "requirements.txt",
               "requirements-live.txt", ".env.example", ".gitignore", "accounts.example.toml"}
 SOURCE_DIRS = {"gtm", "tests", "docs", "prompts", "scripts", "web", ".github"}
 SOURCE_SUFFIXES = {".py", ".sh", ".md", ".toml", ".txt", ".html", ".js", ".css", ".yml", ".yaml"}

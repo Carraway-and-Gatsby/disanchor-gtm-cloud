@@ -60,7 +60,7 @@ class Publishing:
 
 @dataclass
 class Budget:
-    target_total_usd: float = 10.0
+    target_total_usd: float = 20.0
     model_budget_usd: float = 5.0
     external_tools_budget_usd: float = 2.0
     warning_threshold: float = .70
@@ -143,6 +143,24 @@ class Accounts:
 
 
 @dataclass
+class Feedback:
+    enabled: bool = True
+    max_posts_per_collection: int = 10
+    max_comments_per_post: int = 40
+    max_comment_pages: int = 2
+    minimum_posts: int = 3
+    minimum_exposures: int = 100
+    minimum_comments: int = 5
+
+
+@dataclass
+class Learning:
+    enabled: bool = True
+    hermes_source_dir: str = ""
+    hermes_python: str = ""
+
+
+@dataclass
 class Config:
     experiment: Experiment = field(default_factory=Experiment)
     platforms: Platforms = field(default_factory=Platforms)
@@ -155,6 +173,8 @@ class Config:
     routing: Routing = field(default_factory=Routing)
     telegram: Telegram = field(default_factory=Telegram)
     accounts: Accounts = field(default_factory=Accounts)
+    feedback: Feedback = field(default_factory=Feedback)
+    learning: Learning = field(default_factory=Learning)
 
     @classmethod
     def load(cls, path: str | Path) -> Config:
@@ -162,7 +182,8 @@ class Config:
             raw = tomllib.load(handle)
         types = {"experiment": Experiment, "platforms": Platforms, "publishing": Publishing,
                  "budget": Budget, "landing": Landing, "model": Model, "clone": Clone,
-                 "analytics": Analytics, "routing": Routing, "telegram": Telegram, "accounts": Accounts}
+                 "analytics": Analytics, "routing": Routing, "telegram": Telegram, "accounts": Accounts,
+                 "feedback": Feedback, "learning": Learning}
         if set(raw) - set(types):
             raise ValueError("Unknown configuration section")
         routing_raw = dict(raw.get("routing", {}))
@@ -214,6 +235,8 @@ class Config:
             raise ValueError("Budget thresholds must be increasing fractions")
         if min(b.target_total_usd, b.model_budget_usd, b.external_tools_budget_usd) < 0 or b.target_total_usd == 0:
             raise ValueError("Invalid budget")
+        if b.target_total_usd > 20 or b.model_budget_usd > 5 or b.external_tools_budget_usd > 2:
+            raise ValueError("Budget exceeds the approved total or category ceiling")
         if b.infrastructure_hourly_usd < 0 or not 0 <= b.max_paid_model_jobs_per_day <= 2:
             raise ValueError("Invalid infrastructure/model budget")
         if not 1 <= b.reconciliation_max_age_hours <= 24:
@@ -255,6 +278,16 @@ class Config:
             raise ValueError("Telegram daily_hour must be 0..23 in the reporting timezone")
         if not self.accounts.registry_file or not self.accounts.x_account or not self.accounts.threads_account:
             raise ValueError("Account registry and explicit channel targets are required")
+        f = self.feedback
+        if not (1 <= f.max_posts_per_collection <= 10 and 1 <= f.max_comments_per_post <= 40
+                and 1 <= f.max_comment_pages <= 2 and 3 <= f.minimum_posts <= 10
+                and 100 <= f.minimum_exposures <= 1000000 and 5 <= f.minimum_comments <= 40):
+            raise ValueError("Feedback collection and evidence thresholds exceed experiment bounds")
+        if bool(self.learning.hermes_source_dir) != bool(self.learning.hermes_python):
+            raise ValueError("Native skill writer requires both reviewed runtime paths")
+        for value in (self.learning.hermes_source_dir, self.learning.hermes_python):
+            if value and not Path(value).is_absolute():
+                raise ValueError("Native Hermes runtime paths must be absolute")
 
     def fingerprint(self) -> str:
         return hashlib.sha256(json.dumps(asdict(self), sort_keys=True).encode()).hexdigest()

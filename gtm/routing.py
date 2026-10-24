@@ -266,6 +266,11 @@ class StageRouter:
         model_slots = [{key: slot[key] for key in ("id", "platform", "account_key")} for slot in upcoming]
         evidence = self.evidence()
         context = {"evidence": evidence, "slots": model_slots, "accounts": accounts, "policy_version": POLICY_VERSION}
+        learning = self.e.learning_context(now)
+        if learning:
+            context["learning"] = learning
+            evidence.append({"id": "learning-feedback", "source": "validated account-specific aggregate skill",
+                             "text": "Use the supplied learning aggregates as dated directional observations only. They do not establish causal winners or representative audience sentiment."})
         safe_context({"metrics": context})
         config_hash = digest({"routing": asdict(r), "accounts": account_config, "account_fingerprint": account_fingerprint})
         run_id = digest({"experiment": e["id"], "slots": [row["id"] for row in upcoming], "policy": POLICY_VERSION, "config": config_hash})
@@ -324,6 +329,8 @@ class StageRouter:
                 stage_context = context
             elif stage == "planning":
                 stage_context = {"research": outputs["research"], "evidence": [{"id": row["id"]} for row in evidence], "slots": model_slots, "accounts": accounts}
+                if learning:
+                    stage_context["learning"] = learning
             elif stage == "writing":
                 stage_context = {"plan": outputs["planning"], "slots": model_slots, "accounts": accounts,
                                  "previous_texts": [row["text"] for row in self.s.rows("SELECT text FROM post_drafts WHERE id NOT IN (" + ",".join("?" for _ in upcoming) + ")", tuple(row["id"] for row in upcoming))][-4:]}

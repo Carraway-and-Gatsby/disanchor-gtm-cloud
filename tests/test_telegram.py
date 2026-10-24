@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 from gtm.config import Config, iso, timestamp, slots
 from gtm.engine import Engine
+from gtm.feedback import sentiment_summary
 from gtm.store import Store
 from gtm.telegram import TelegramClient, TelegramError, TelegramMonitor, _NoRedirect
 
@@ -290,7 +291,7 @@ class TelegramMonitorTests(unittest.TestCase):
         self.assertIn("사고 발생", self.t.sent()[-1]["text"])
         self.s.db.execute("UPDATE experiments SET status='RUNNING',incident=NULL")
         self.m.notify(self.now + timedelta(minutes=2))
-        self.c.budget.infrastructure_hourly_usd = 9 / 168
+        self.c.budget.infrastructure_hourly_usd = 18 / 168
         self.m.notify(self.now + timedelta(minutes=3))
         self.assertEqual(len(self.t.sent()), 3)
         self.assertIn("선택 작업 중단", self.t.sent()[-1]["text"])
@@ -405,6 +406,79 @@ class TelegramMonitorTests(unittest.TestCase):
         self.assertIn("실제 상태(게시 OFF)", self.m.preview(self.now))
         self.assertEqual(self.t.calls, [])
         self.assertEqual(self.s.rows("SELECT * FROM telegram_outbox"), [])
+
+    def feedback_post(self, post_id, counts=None, platform="x"):
+        identity = {"post_id": post_id, "platform": platform,
+                    "account_key": self.e.account_key(platform), "account_fingerprint": self.e.account_fingerprint()}
+        self.s.record("post_metrics_snapshots", "metric:" + post_id, self.now, "fixture",
+                      {**identity, "hypothesis": "H1", "hook_type": "question",
+                       "metrics": {"impressions": 100, "likes": 10, "replies": 3, "reposts": 2}})
+        if counts is not None:
+            self.s.record("sentiment_snapshots", "sentiment:" + post_id, self.now, "fixture",
+                          {**identity, "status": "sampled", "partial": False,
+                           "sentiment": sentiment_summary(counts)})
+
+    def test_feedback_reports_post_labels_not_people_and_keeps_missing_unknown(self):
+        self.feedback_post("x_01", {"positive": 7, "negative": 0, "mixed": 0, "unknown": 1})
+        self.feedback_post("x_02", {"positive": 0, "negative": 5, "mixed": 0, "unknown": 0})
+        self.feedback_post("x_03", {"positive": 2, "negative": 2, "mixed": 1, "unknown": 0})
+        self.feedback_post("x_04", {"positive": 0, "negative": 0, "mixed": 0, "unknown": 5})
+        self.feedback_post("x_05")
+        text = self.m._command(update(1, "/feedback"), self.m._snapshot(self.now))
+        self.assertIn("관측 글 5", text)
+        self.assertIn("판정(글 수): 긍정 1 · 부정 1 · 혼합 1 · 미확인 2", text)
+        self.assertNotIn("긍정 7", text)
+        self.assertIn("전체 이용자 여론이 아닙니다", text)
+        self.assertIn("실행 기록 없음", text)
+
+    def test_feedback_command_reads_snapshots_without_network_model_or_learning(self):
+        self.feedback_post("x_01")
+        before = self.s.db.total_changes
+        with patch.object(self.e, "collect", side_effect=AssertionError("collection invoked")), \
+             patch.object(self.e, "learn", side_effect=AssertionError("learning invoked")), \
+             patch.object(self.e, "daily", side_effect=AssertionError("model execution invoked")), \
+             patch("gtm.routing.HermesStageRunner.run", side_effect=AssertionError("model invoked")), \
+             patch("gtm.publisher._http_transport", side_effect=AssertionError("publisher network invoked")), \
+             patch("gtm.telegram._http", side_effect=AssertionError("Telegram network invoked")):
+            text = self.m._command(update(1, "/feedback"), self.m._snapshot(self.now))
+            self.assertIn("관측 글 1", text)
+            self.assertIn("미확인 1", text)
+        self.assertEqual(self.s.db.total_changes, before)
+        self.assertEqual(self.t.calls, [])
+        self.assertFalse(self.s.records("learning_events"))
+        self.assertFalse(self.s.rows("SELECT * FROM telegram_outbox"))
+
+    def test_feedback_rejects_arguments_injection_and_unauthorized_senders(self):
+        snap = self.m._snapshot(self.now)
+        rejected = [update(1, text) for text in ("/feedback now", "/feedback\n/approve x_01", "/feedback; publish", "/feedback@otherbot", " /feedback", "/learn")]
+        rejected += [update(2, "/feedback", sender=99), update(3, "/feedback", chat=-1, chat_type="group"),
+                     update(4, "/feedback", bot=True)]
+        with patch.object(self.e, "learn", side_effect=AssertionError("skill command executed")):
+            for item in rejected:
+                with self.subTest(item=item):
+                    self.assertIsNone(self.m._command(item, snap))
+        self.assertFalse(self.t.calls)
+        self.assertFalse(self.s.rows("SELECT * FROM telegram_outbox"))
+
+    def test_feedback_and_full_status_fit_plain_text_limit_with_maximum_ranked_ids(self):
+        for platform in ("x", "threads"):
+            for index in range(5):
+                self.feedback_post(platform[:1] + str(index) + "p" * 78, platform=platform)
+        snap = self.m._snapshot(self.now)
+        self.assertEqual(snap["feedback"]["posts"], 10)
+        self.assertEqual(snap["feedback"]["directional_cohorts"], 2)
+        for text in (self.m._command(update(1, "/feedback"), snap), self.m._status_text(snap)):
+            self.assertTrue(1 <= len(text) <= 4096)
+            self.client.send_message(text)  # only the injected in-memory transport
+        self.assertEqual(len(self.t.sent()), 2)
+        self.assertTrue(all("parse_mode" not in payload for payload in self.t.sent()))
+
+    def test_feedback_unavailable_never_echoes_exception_or_claims_success(self):
+        with patch.object(self.e, "feedback", side_effect=ValueError("secret=" + TOKEN)):
+            text = self.m._command(update(1, "/feedback"), self.m._snapshot(self.now))
+        self.assertIn("unavailable", text)
+        self.assertNotIn(TOKEN, text)
+        self.assertNotIn("native skill_manage", text)
 
 
 if __name__ == "__main__":
