@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+state/
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+accounts.local.toml
+*.sqlite
+*.sqlite-*
+*.sqlite.lock
+reports/
+dist/
+.DS_Store

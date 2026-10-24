@@ -1,0 +1,1 @@
+Draft only: explain one professional workflow tradeoff. The selected Page identity needs review before first-person authorship. Disclose Disanchor's development naturally. No invented career claims, CTA or amplification. Global policy applies.

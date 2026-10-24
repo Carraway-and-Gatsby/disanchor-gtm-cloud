@@ -1,0 +1,1 @@
+Draft only: an everyday setup scene and caption, with no upload. Connect one visual idea to a useful observation. Weave in Disanchor's development naturally. No invented users, CTA, stock footer or cross-account amplification. Global policy applies.

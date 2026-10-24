@@ -1,0 +1,1 @@
+Offer one builder question or tradeoff, not a polished product pitch. Building Disanchor is known; personal incidents or results need evidence. No customer impersonation, CTA, stock footer or cross-account amplification. Global policy applies.

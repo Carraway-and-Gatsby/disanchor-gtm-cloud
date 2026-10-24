@@ -1,0 +1,1 @@
+Offer one useful check for diagnosing workflow friction. Explain why it helps in plain language; tie the question naturally to developing Disanchor. No invented authority, CTA, stock footer or coordinated amplification. Global policy applies.

@@ -1,0 +1,1 @@
+Start with a familiar workflow situation and one honest question. Use a brand voice without pretending to be a customer. Weave in Disanchor's development. No CTA, stock footer or cross-account amplification. Global policy applies.

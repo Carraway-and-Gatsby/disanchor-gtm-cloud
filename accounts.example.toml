@@ -1,0 +1,96 @@
+# Account strategies from read-only API observation, 2026-10-24.
+# Native IDs stay private in accounts.local.toml; reviewed=false is not publishing approval.
+# Instagram/LinkedIn are draft strategy only. Shared ten-post cap is unchanged.
+[[accounts]]
+id = "default_instagram"
+upload_post_profile = "default"
+platform = "instagram"
+native_account_id = ""
+handle = "disanchor_com"
+role = "brand"
+language = "en"
+approach = "Everyday setup friction as a visual story"
+voice = "Concrete, accessible, observant"
+prompt_file = "prompts/accounts/default_instagram.md"
+reviewed = false
+
+[[accounts]]
+id = "default_x"
+upload_post_profile = "default"
+platform = "x"
+native_account_id = ""
+handle = "guidances_org"
+role = "brand"
+language = "en"
+approach = "Practical checks that help readers diagnose workflow friction"
+voice = "Helpful, concrete, instructional"
+prompt_file = "prompts/accounts/default_x.md"
+reviewed = false
+
+[[accounts]]
+id = "default_threads"
+upload_post_profile = "default"
+platform = "threads"
+native_account_id = ""
+handle = "disanchor_com"
+role = "brand"
+language = "en"
+approach = "Familiar workflow situations and questions"
+voice = "Warm, specific, conversational"
+prompt_file = "prompts/accounts/default_threads.md"
+reviewed = false
+
+# Profile display label: personal_important_accounts. It is not its API username.
+# LinkedIn UI showed Sungyeob Lim and selected Page Carraway & Gatsby.
+# Neither display value establishes the final native posting identity.
+[[accounts]]
+id = "personal_linkedin"
+upload_post_profile = "disanchor_twitter"
+platform = "linkedin"
+native_account_id = ""
+handle = ""
+role = "builder"
+language = "en"
+approach = "Professional decisions and workflow tradeoffs"
+voice = "Reflective, precise, accountable"
+prompt_file = "prompts/accounts/personal_linkedin.md"
+reviewed = false
+
+[[accounts]]
+id = "personal_x"
+upload_post_profile = "disanchor_twitter"
+platform = "x"
+native_account_id = ""
+handle = "cgcorporation"
+role = "builder"
+language = "en"
+approach = "One builder question or design tradeoff"
+voice = "Candid, concise, curious"
+prompt_file = "prompts/accounts/personal_x.md"
+reviewed = false
+
+[[accounts]]
+id = "personal_threads"
+upload_post_profile = "disanchor_twitter"
+platform = "threads"
+native_account_id = ""
+handle = "technodemocracystudio"
+role = "builder"
+language = "en"
+approach = "Access to useful computing tools in ordinary work"
+voice = "Inclusive, curious, grounded"
+prompt_file = "prompts/accounts/personal_threads.md"
+reviewed = false
+
+[[accounts]]
+id = "disanchor_x"
+upload_post_profile = "disanchor_x"
+platform = "x"
+native_account_id = ""
+handle = "disanchor_com"
+role = "official"
+language = "en"
+approach = "Technical constraints and ways to test them"
+voice = "Precise, grounded, low hype"
+prompt_file = "prompts/accounts/disanchor_x.md"
+reviewed = false

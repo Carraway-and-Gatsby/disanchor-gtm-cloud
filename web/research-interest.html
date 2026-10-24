@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Research interest · Disanchor</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #122d27; background: #f2f3ec; }
+    * { box-sizing: border-box; } body { margin: 0; } main { max-width: 740px; margin: 0 auto; padding: 52px 24px 80px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 70px; font-weight: 650; }
+    .status { font-size: 12px; border: 1px solid #9daea2; border-radius: 30px; padding: 8px 12px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .1em; font-size: 12px; }
+    h1 { font-size: clamp(40px, 8vw, 64px); line-height: 1.06; letter-spacing: -.055em; font-weight: 550; margin: 20px 0; }
+    p { line-height: 1.7; } .intro { max-width: 590px; color: #465e54; font-size: 18px; }
+    a { color: #1d624a; } form { margin-top: 40px; padding: 30px; border: 1px solid #b9c7bc; border-radius: 20px; background: #fffef9; }
+    label { display: block; margin: 20px 0 8px; } input[type=email], select { width: 100%; padding: 13px; border: 1px solid #99aea0; border-radius: 8px; background: white; color: #122d27; font: inherit; }
+    input:focus, select:focus, button:focus-visible, a:focus-visible { outline: 3px solid #89bd9c; outline-offset: 3px; }
+    .consent { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; line-height: 1.6; } .consent input { margin-top: 5px; }
+    button { margin-top: 20px; padding: 14px 22px; border: 0; border-radius: 8px; background: #174d39; color: #fff; font: inherit; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; } .notice { font-size: 13px; color: #4b6056; border-top: 1px solid #d7ded5; margin-top: 28px; padding-top: 14px; }
+    .trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+    #form-status { min-height: 26px; margin-bottom: 0; } footer { margin-top: 32px; font-size: 13px; color: #4b6056; }
+    @media (max-width: 480px) { main { padding: 28px 18px; } header { margin-bottom: 48px; } form { padding: 20px; } }
+  </style>
+  <script defer src="/tracking.js"></script>
+</head>
+<body>
+  <main>
+    <header><span>Disanchor</span><span class="status">In development</span></header>
+    <p class="eyebrow">Help shape the research</p>
+    <h1>Your next PC.<br>What matters to you?</h1>
+    <p class="intro">We’re exploring a personal Windows PC in the cloud. Share your interest in research about how you work. This is not an early access application or a promise of product availability.</p>
+    <p><a href="#research-form" data-gtm-cta>Share research interest ↓</a></p>
+    <form id="research-form" data-notice-version="{{NOTICE_VERSION}}" data-content-ids="{{CONTENT_IDS}}" method="post" action="/api/research-interest">
+      <h2>Join the research interest list</h2>
+      <p>One email and a broad area of interest are enough. Please don’t send personal documents or sensitive information.</p>
+      <label for="email">Email address</label>
+      <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+      <label for="interest">What would you use a cloud PC for?</label>
+      <select id="interest" name="interest" required>
+        <option value="">Choose an area</option>
+        <option value="development">Software development</option>
+        <option value="creative-work">Creative work</option>
+        <option value="everyday-work">Everyday work</option>
+        <option value="research">Exploring the idea</option>
+      </select>
+      <div class="trap" aria-hidden="true"><label for="website">Leave this field blank</label><input id="website" name="website" autocomplete="off" tabindex="-1"></div>
+      <label class="consent"><input type="checkbox" name="consent" required><span>I agree that Disanchor may store my email and chosen interest for up to {{RETENTION_DAYS}} days to consider contacting me about this research. I can withdraw at the contact below. This does not subscribe me to marketing.</span></label>
+      <button type="submit">Share my interest</button>
+      <p id="form-status" role="status" aria-live="polite"></p>
+      <div class="notice" id="privacy-notice">
+        <p>Disanchor collects only your email, broad interest, consent version and submission time for this research. An optional campaign label is stored only if you separately consent to analytics. We do not send your email or answers to analytics and this form does not send automated messages.</p>
+        <p>Data is kept for up to {{RETENTION_DAYS}} days. For access, correction, deletion or withdrawal, contact <a href="mailto:{{PRIVACY_CONTACT}}">{{PRIVACY_CONTACT}}</a>. Short-lived keyed request identifiers help prevent abuse; raw IP addresses are not stored by this form application. The hosting provider’s request handling must be described in the production privacy notice.</p>
+        <p>Submitting is optional. No analytics runs in this standalone preview. A production integration requires a separate analytics choice and an approved privacy notice. Notice version: {{NOTICE_VERSION}}.</p>
+      </div>
+      <noscript><p>JavaScript is required to submit this optional research form. Your details have not been sent.</p></noscript>
+    </form>
+    <footer>Research only · Availability, specifications and pricing remain unconfirmed.</footer>
+  </main>
+</body>
+</html>

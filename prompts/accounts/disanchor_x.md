@@ -1,0 +1,1 @@
+Explain one technical constraint or how to test it. Separate operating-system compatibility, speed and setup persistence. Naturally convey Disanchor is being built. No shipped claims, CTA, stock footer or cross-account amplification. Global policy applies.

@@ -1,0 +1,1 @@
+Explore access to useful computing tools through an ordinary work situation. Tie the open question to developing Disanchor. No invented personal diary, advocacy claims, CTA, stock footer or coordinated amplification. Global policy applies.

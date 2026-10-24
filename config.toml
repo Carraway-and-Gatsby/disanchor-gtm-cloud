@@ -1,0 +1,118 @@
+[experiment]
+id = "disanchor_gtm_7d"
+duration_hours = 168
+reporting_timezone = "Asia/Seoul"
+audience_timezone = "America/New_York"
+# start_at and end_at are immutable UTC values stored by `start --at` in SQLite.
+
+[platforms]
+enabled = ["x", "threads"]
+max_posts_total = 10
+max_posts_x = 5
+max_posts_threads = 5
+max_posts_per_platform_per_day = 1
+x_time = "12:00"
+threads_time = "18:00"
+
+[publishing]
+provider = "upload_post"
+auto_publish = false
+dry_run = true
+allow_unsolicited_replies = false
+allow_direct_messages = false
+allow_email = false
+allow_paid_ads = false
+account_remaining_quota = 0
+account_user = ""
+x_profile_url = ""
+account_reviewed = false
+
+[budget]
+target_total_usd = 10.0
+model_budget_usd = 5.0
+external_tools_budget_usd = 2.0
+warning_threshold = 0.70
+stop_optional_work_threshold = 0.90
+max_paid_model_jobs_per_day = 2
+# Enter verified Hermes hourly billing and a UTC reconciliation timestamp before live use.
+infrastructure_hourly_usd = 0.0
+billing_verified = false
+reconciled_at = ""
+reconciliation_max_age_hours = 24
+
+[landing]
+base_url = "https://disanchor.com"
+campaign = "disanchor_gtm_7d"
+
+[model]
+# Legacy compatibility only. Use [routing] for Cloud model jobs.
+enabled = false
+model = ""
+max_input_tokens = 2500
+max_output_tokens = 700
+max_cost_per_job_usd = 0.05
+
+[clone]
+enabled = false
+mode = "sandbox"
+monthly_limit = 0
+
+[analytics]
+ga4_property_id = ""
+lead_db = ""
+minimum_collection_hours = 6
+key_event_registered = false
+lead_retention_days = 30
+
+[routing]
+enabled = false
+expected_hermes_version = ""
+runtime_contract_verified = false
+billing_cap_verified = false
+output_cap_verified = false
+max_pipelines_per_day = 2
+max_stage_calls_per_day = 8
+# Optional reviewed evidence JSON; runtime research otherwise uses campaign observations.
+evidence_file = ""
+
+[routing.research]
+provider = "openrouter"
+model = "google/gemini-2.5-pro"
+budget_share = 0.40
+max_input_tokens = 12000
+max_output_tokens = 1800
+max_cost_per_call_usd = 0.12
+
+[routing.planning]
+provider = "openrouter"
+model = "google/gemini-2.5-pro"
+budget_share = 0.40
+max_input_tokens = 10000
+max_output_tokens = 1400
+max_cost_per_call_usd = 0.12
+
+[routing.writing]
+provider = "openrouter"
+model = "google/gemini-2.5-flash-lite"
+budget_share = 0.15
+max_input_tokens = 5000
+max_output_tokens = 1000
+max_cost_per_call_usd = 0.045
+
+[routing.execution]
+provider = "openrouter"
+model = "google/gemini-2.5-flash-lite"
+budget_share = 0.05
+max_input_tokens = 5000
+max_output_tokens = 300
+max_cost_per_call_usd = 0.015
+
+[telegram]
+enabled = false
+daily_hour = 9
+
+[accounts]
+# Example approaches, unapproved and unbound. Keep actual IDs in ignored accounts.local.toml.
+registry_file = "accounts.example.toml"
+x_account = "disanchor_x"
+threads_account = "default_threads"

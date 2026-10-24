@@ -1,0 +1,29 @@
+name: Offline verification
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Validate safe source defaults
+        run: python scripts/cloud-preflight.py
+      - name: Validate shell syntax
+        run: bash -n scripts/hermes-install.sh
+      - name: Run standard library tests
+        run: python -m unittest discover -s tests -v
+      - name: Build source-only deployment bundle
+        run: python scripts/package-cloud.py --output reports/disanchor-cloud.zip

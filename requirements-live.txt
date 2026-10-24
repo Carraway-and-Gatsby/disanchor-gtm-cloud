@@ -1,0 +1,2 @@
+# Optional only for renewable GA4 service-account authentication.
+google-auth[requests]>=2,<3
