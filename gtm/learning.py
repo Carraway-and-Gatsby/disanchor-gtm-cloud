@@ -267,14 +267,22 @@ class NativeSkillWriter:
 
 class LearningLoop:
     """Single-writer, append-only skill revisions with checked active content."""
-    def __init__(self, root, native_writer=None):
-        self.root = _directory(root)
-        self.home = _directory(self.root / "hermes")
+    def __init__(self, root, native_writer=None, *, read_only=False):
+        self.read_only = read_only
+        self.root = _plain(root,directory=True) if read_only else _directory(root)
+        self.home = _plain(self.root / 'hermes',directory=True) if read_only else _directory(self.root / "hermes")
         self.skill_path = self.home / "skills" / SKILL_NAME / "SKILL.md"
         self.native_writer = native_writer
         database = _plain(self.root / "learning.sqlite3")
         for suffix in ("-wal", "-shm", "-journal"):
-            _plain(Path(str(database) + suffix))
+            auxiliary = _plain(Path(str(database) + suffix))
+            if read_only and auxiliary.exists() and auxiliary.stat().st_size:
+                raise ValueError('learning_read_requires_completed_checkpoint')
+        if read_only:
+            if not database.is_file(): raise ValueError('learning_record_missing')
+            self.db = sqlite3.connect(database.as_uri()+'?mode=ro&immutable=1',uri=True,isolation_level=None)
+            self.db.row_factory = sqlite3.Row
+            return
         self.db = sqlite3.connect(database, isolation_level=None)
         os.chmod(database, 0o600)
         self.db.row_factory = sqlite3.Row
@@ -301,6 +309,7 @@ class LearningLoop:
         return mechanism
 
     def update(self, feedback, *, now, policy_version, account_fingerprint):
+        if self.read_only: raise ValueError('learning_read_only')
         observed_at = iso(now)
         if not isinstance(feedback, dict) or "lessons" not in feedback:
             raise ValueError("learning_feedback_missing")
@@ -388,6 +397,7 @@ class LearningLoop:
             return {}
 
     def rollback(self, revision, *, now):
+        if self.read_only: raise ValueError('learning_read_only')
         observed_at = iso(now)
         row, payload = self._checked_revision(revision)
         mechanism = self._publish(row["content"])

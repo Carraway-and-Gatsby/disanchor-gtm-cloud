@@ -37,6 +37,9 @@ python -m gtm --config config.toml --state state/gtm.sqlite telegram
 | `/drafts default_threads` | 운영 후보 Threads `@disanchor_com`의 영어 검토 초안 2개 |
 | `/drafts personal_threads` | 운영·재연결 보류 Threads `@technodemocracystudio`의 한국어 검토 초안 2개 |
 | `/feedback` | 최근 관측 글·비교 가능 그룹 수, 글별 댓글 표본 판정, 참고 순위, 최근 skill 생성 방식과 상태 |
+| `/mcp` | 저장된 최근 MCP 반입 시각·상태, 반입·제외 글 수, 요청 횟수 |
+| `/excluded` | 최근 회차의 검증된 고정 제외 사유와 해당 글 수 |
+| `/sentiment` | 현재 근거·무결성·유효 기간 검증을 통과한 sentiment 교훈 수·방향과 생성 이력 |
 | `/help` | 지원하는 조회 명령 |
 
 허용한 사용자와 개인 대화 ID가 **둘 다** 일치해야 응답합니다. Bot 발신, 채널·그룹, 전달된 메시지, 알 수 없는 명령, 명령 뒤 추가 지시는 무시합니다. Telegram 메시지는 모델이나 shell에 전달하지 않습니다. 게시·승인·일시 중지·재개·설정 변경은 지원하지 않으며, 기존 승인과 정책 검증 절차를 Cloud 콘솔에서 진행합니다.
@@ -54,6 +57,10 @@ python -m gtm --config config.toml --state state/gtm.sqlite telegram
 토큰은 기존 `state/runtime.env`에서 비공개로 읽고, 다른 API 키를 환경에 넣거나 사회관계망 클라이언트를 만들지 않습니다. 기존 실험이 미시작·미승인 상태이고 $20·게시 OFF·할당량 0·유료 모델 OFF·Cloud용 Telegram OFF 설정일 때만 실행합니다. Cloud·cron·영구 설정을 생성하거나 활성화하지 않습니다. 처음에 로컬 상태와 브랜드 Threads 검토 초안을 보내며, 이후 본인 개인 대화의 명령만 처리합니다.
 
 휴대폰에서 `/status`, `/drafts default_threads`, `/drafts personal_threads`를 각각 보냅니다. 세 명령의 응답 전송이 확인되거나, 최대 5분(옵션으로 최대 10분)·8회 전송 시도·오류에 도달하면 종료합니다. 같은 상태 DB와 단일 writer lock을 사용하고, Telegram 외 네트워크 목적지와 webhook 변경·유료 broadcast를 차단합니다. 이전 미전송 Telegram 대기열이 있으면 새 테스트를 시작하지 않습니다. 결과 메타데이터는 Git에서 제외된 `state/telegram-test-result.json`에 저장합니다. Bot API 성공은 휴대폰 화면 확인과 구분합니다. 실험·게시 초안·게시 작업·비용 원장은 변경하지 않으며 Telegram 수신 offset·응답 대기열만 저장합니다. 종료 후에는 명령에 계속 응답하지 않습니다.
+
+반입·학습 조회 테스트는 같은 명령에 `--monitoring`을 추가하고 `/mcp`, `/excluded`, `/sentiment`를 보냅니다. `--no-notice`는 복구 시 추가 시작 알림을 생략합니다. 로컬 테스트만 short polling(`timeout=0`)을 사용하며 일반 Cloud 작업의 기본 5초 polling은 유지합니다. [세 명령의 실제 휴대폰 확인 결과와 읽기 전용 경로](telegram-mcp-monitoring.ko.md)를 참고하세요.
+
+`/mcp`와 `/excluded`는 현재 계정 바인딩에 맞는 비공개 감사 기록을 읽고 미완료 반입·과거 기록·손상된 기록을 구분합니다. `/sentiment`는 skill DB를 읽기 전용으로 열어 최신 근거·정책·계정·hash·유효 기간이 모두 맞는 교훈만 표시합니다. 반입 집계는 글 수이고 sentiment 방향은 교훈 수입니다. 세 명령은 새 수집·학습·모델 호출·게시를 실행하지 않습니다.
 
 ## `/feedback` 읽는 방법
 
@@ -95,11 +102,11 @@ SQLite의 `telegram_state`, `telegram_outbox`가 마지막 업데이트 offset, 
 
 ## 검증 범위
 
-주입한 가짜 transport로 승인되지 않은 발신자, 명령 주입, 중복 업데이트, 재시작, 전송 직전 중단, 모호한 전송, 명확한 429 cooldown, webhook 충돌, KST 일일 요약, 실험 종료를 테스트했습니다. 테스트는 실제 Bot API 요청이나 메시지 전송을 하지 않습니다. 실제 토큰·개인 대화 연결과 Cloud 배포 후 수신 검증은 별도 단계입니다.
+주입한 가짜 transport로 승인되지 않은 발신자, 명령 주입, 중복 업데이트, 재시작, 전송 직전 중단, 모호한 전송, 명확한 429 cooldown, webhook 충돌, KST 일일 요약, 실험 종료를 테스트했습니다. 자동 테스트는 실제 Bot API 요청이나 메시지 전송을 하지 않습니다. 별도 로컬 실증에서 [상태·초안 조회](telegram-local-test.ko.md)와 [반입·제외·학습 세 명령](telegram-mcp-monitoring.ko.md)의 확인 범위를 기록했습니다. Cloud 배포 후 상시 수신 검증은 아직 남아 있습니다.
 
 ## English operator summary
 
-The owner-only bot supports `/status`, `/budget`, `/posts`, `/drafts`, `/drafts <allowlisted account key>`, `/feedback` and `/help`. Draft review reads only a pinned public review document, never the generated publishing queue. Korean Technodemocracy Threads remains on hold; LinkedIn stays blocked. `/feedback` reads existing local SQLite aggregates and the latest recorded skill event. It makes no new Upload-Post request, model call or skill update; only normal Telegram polling and delivery use the network. Cloud's `collect` job refreshes observations separately.
+The owner-only bot supports `/status`, `/budget`, `/posts`, `/drafts`, `/drafts <allowlisted account key>`, `/feedback`, `/mcp`, `/excluded`, `/sentiment` and `/help`. Draft review reads only a pinned public review document, never the generated publishing queue. Korean Technodemocracy Threads remains on hold; LinkedIn stays blocked. `/feedback` reads existing local SQLite aggregates and the latest recorded skill event. `/mcp` and `/excluded` read persisted import audits; `/sentiment` revalidates currently usable lessons through a read-only skill database. These queries make no new Upload-Post request, model call or skill update; only Telegram polling and delivery use the network. Cloud's `collect` job refreshes observations separately.
 
 Rankings are directional comparisons within the same account identity, platform and exposure denominator, with minimum evidence thresholds. The bot shows up to two groups and three local post IDs per group. Sentiment totals count **posts whose available comment samples received each label**, not people, comments or the whole audience. Missing or ambiguous evidence remains unknown.
 

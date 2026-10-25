@@ -10,11 +10,13 @@ from __future__ import annotations
 from datetime import timedelta
 import json
 import re
+import sqlite3
 from urllib import error, request
 from zoneinfo import ZoneInfo
 
 from .config import iso, timestamp
 from .policy import valid_profile_link
+from .mcp_status import read_status, status_text, excluded_text
 
 
 class TelegramError(RuntimeError):
@@ -106,10 +108,12 @@ class TelegramClient:
             raise TelegramError("telegram_protocol_unknown")
         return result["message_id"]
 
-    def get_updates(self, offset=0):
+    def get_updates(self, offset=0, *, timeout=5):
         if type(offset) is not int or offset < 0:
             raise ValueError("Invalid Telegram update offset")
-        result = self._call("getUpdates", {"offset": offset, "limit": 100, "timeout": 5,
+        if type(timeout) is not int or not 0 <= timeout <= 5:
+            raise ValueError('Invalid Telegram poll timeout')
+        result = self._call("getUpdates", {"offset": offset, "limit": 100, "timeout": timeout,
                                             "allowed_updates": ["message"]})
         if not isinstance(result, list) or len(result) > 100:
             raise TelegramError("telegram_protocol_unknown")
@@ -189,7 +193,48 @@ class TelegramMonitor:
                 "unknown_jobs": unresolved, "posts": counts, "budget": budget,
                 "mode": "모의 실행" if self.engine.simulated else f"실제 상태(게시 {'ON' if publishing else 'OFF'})",
                 "end_at": e["end_at"], "routing": self._routing_state(), "route_status": self._routing_status(),
-                "feedback": self._feedback_snapshot(now)}
+                "feedback": self._feedback_snapshot(now), "mcp": read_status(self.engine,now),
+                "sentiment_learning": self._sentiment_snapshot(now)}
+
+    def _sentiment_snapshot(self, now):
+        result={'state':'no_usable_lessons','lessons':0,'positive':0,'negative':0,'mixed':0,'unknown':0}
+        loop=None
+        try:
+            if not self.engine.c.feedback.enabled or not self.engine.c.learning.enabled:
+                return {**result,'state':'disabled'}
+            from .learning import LearningLoop
+            from .policy import POLICY_VERSION
+            root=self.s.path.parent/'learning'
+            if not (root/'learning.sqlite3').exists(): return result
+            feedback=self.engine.feedback(now)
+            loop=LearningLoop(root,read_only=True)
+            context=loop.context(policy_version=POLICY_VERSION,account_fingerprint=self.engine.account_fingerprint(),
+                                 now=now,expected_lessons=feedback['lessons'])
+            for lesson in context.get('lessons',[]):
+                counts=lesson.get('sentiment')
+                if counts is None: continue
+                # Reusable lesson totals may exceed a single-post sample bound.
+                classified=sum(counts[k] for k in ('positive','negative','mixed'))
+                if classified < self.engine.c.feedback.minimum_comments or classified < sum(counts.values())/2: continue
+                label='mixed' if counts['mixed'] or (counts['positive'] and counts['negative']) else 'positive' if counts['positive'] else 'negative'
+                result[label]+=1
+                result['lessons']+=1
+            if result['lessons']: result['state']='usable'
+        except (ValueError,RuntimeError,OSError,KeyError,TypeError,sqlite3.Error):
+            result['state']='unavailable'
+        finally:
+            if loop: loop.close()
+        return result
+
+    def _sentiment_text(self,snap):
+        data=snap['sentiment_learning']
+        labels={'usable':'최신 근거 검증 통과','no_usable_lessons':'사용 가능한 sentiment 교훈 없음',
+                'disabled':'학습 비활성','unavailable':'학습 무결성·기록 확인 필요'}
+        return (f"최근 sentiment 학습\n{labels[data['state']]}\n"
+                f"현재 사용 가능한 교훈 {data['lessons']}개\n"
+                f"방향(교훈 수): 긍정 {data['positive']} · 부정 {data['negative']} · 혼합 {data['mixed']} · 미확인 {data['unknown']}\n"
+                f"{self._feedback_text(snap)}\n"
+                '생성 이력과 현재 유효한 학습은 다릅니다. 표본 부족·만료·권한 미확인·근거 불일치는 사용하지 않습니다.')
 
     def _feedback_snapshot(self, now):
         result = {"posts": 0, "directional_cohorts": 0, "positive": 0, "negative": 0,
@@ -302,6 +347,7 @@ class TelegramMonitor:
         final = "\n실험이 종료되어 Telegram 명령 조회를 중단합니다. Cloud 서버 과금은 별도 중지가 필요합니다." if snap["status"] in _TERMINAL else ""
         return (f"{title}\n{snap['mode']} · {_STATUS.get(snap['status'], '상태 미확인')}\n종료 예정: {end}\n"
                 f"{self._budget_text(snap)}\n{self._posts_text(snap)}\n{self._routing(snap)}\n{self._feedback_text(snap)}"
+                f"\nMCP 반입 현황: /mcp · 제외 사유: /excluded · 유효 학습: /sentiment"
                 f"{risk}{final}\n제품: 개발 중 · 초기 7일은 비광고성 콘텐츠")
 
     def preview(self, now):
@@ -314,7 +360,9 @@ class TelegramMonitor:
                      "warning": snap["budget"]["warning"], "halt_optional": snap["budget"]["halt_optional"],
                      "billing_verified": snap["budget"]["billing_verified"], "routing": snap["routing"],
                      "route_status": snap["route_status"], "posts": snap["posts"], "mode": snap["mode"],
-                     "feedback": snap["feedback"]}
+                    "feedback": snap["feedback"],
+                    "mcp": {k:v for k,v in snap['mcp'].items() if k!='observed_at'},
+                    "sentiment_learning": snap['sentiment_learning']}
         local = timestamp(now).astimezone(ZoneInfo("Asia/Seoul"))
         with self.s.transaction():
             previous = self._get("snapshot")
@@ -388,13 +436,19 @@ class TelegramMonitor:
             return "Disanchor 게시 집계\n" + self._posts_text(snap)
         if text == "/feedback":
             return "Disanchor 마케팅 학습\n" + self._feedback_text(snap)
+        if text == '/mcp':
+            return status_text(snap['mcp'])+'\n저장 기록 조회만 수행하며 새 수집·학습을 실행하지 않습니다.'
+        if text == '/excluded':
+            return excluded_text(snap['mcp'])
+        if text == '/sentiment':
+            return self._sentiment_text(snap)
         if isinstance(text, str):
             from .review_drafts import draft_review
             review = draft_review(text)
             if review is not None:
                 return review
         if text == "/help":
-            return "조회 명령: /status /budget /posts /drafts /feedback /help\n/drafts에서 계정을 고르면 검토 문서의 초안 2개를 읽습니다. 게시·승인·재개·모델 실행은 지원하지 않습니다. Telegram 입력은 실행되지 않습니다."
+            return "조회 명령: /status /budget /posts /drafts /feedback /mcp /excluded /sentiment /help\n/mcp 반입 현황 · /excluded 제외 사유 · /sentiment 현재 유효한 학습\n/drafts에서 계정을 고르면 검토 초안 2개를 읽습니다. 게시·승인·수집·모델 실행은 지원하지 않습니다. Telegram 입력은 실행되지 않습니다."
         return None
 
     def notify(self, now, daily=False):

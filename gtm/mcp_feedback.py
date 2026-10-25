@@ -141,6 +141,19 @@ def own_posts(engine, now):
 
 
 def collect_mcp(engine, now, *, mcp_factory=None, identity_factory=None, refresh_learning=True):
+    from .mcp_status import record_result
+    try:
+        result = _collect_mcp(engine,now,mcp_factory=mcp_factory,identity_factory=identity_factory,refresh_learning=refresh_learning)
+    except BaseException as exc:
+        # A SIGKILL cannot record this event; CLAIMED remains visible to readers.
+        record_result(engine,now,{'status':'interrupted' if isinstance(exc,(KeyboardInterrupt,SystemExit)) else 'unavailable',
+                                  'reason':'cycle_interrupted' if isinstance(exc,(KeyboardInterrupt,SystemExit)) else 'cycle_validation_failed'})
+        raise
+    record_result(engine,now,result)
+    return result
+
+
+def _collect_mcp(engine, now, *, mcp_factory=None, identity_factory=None, refresh_learning=True):
     """One bounded cycle. Factories are host code, never MCP/model input."""
     e, c, s = engine.experiment(), engine.c, engine.s
     result = {'status': 'skipped', 'accepted_posts': 0, 'rejected_posts': 0, 'reasons': {},
@@ -215,6 +228,10 @@ def collect_mcp(engine, now, *, mcp_factory=None, identity_factory=None, refresh
         reasons = Counter({'provider_or_identity_unverified': len(posts)})
     # A concurrent registry change invalidates the entire cycle before commit.
     engine.account_fingerprint()
+    result.update(status='collected', accepted_posts=sum(not row[3] for row in observations),
+                  rejected_posts=sum(bool(row[3]) for row in observations), reasons=dict(reasons),
+                  mcp_calls=getattr(client, 'calls', 0), identity_reads=getattr(identity, 'network_calls', 0),
+                  owner_review_required=provider_failed)
     with s.transaction():
         if provider_failed:
             # Stop future cycles/authorization without invoking cancellation or
@@ -233,10 +250,8 @@ def collect_mcp(engine, now, *, mcp_factory=None, identity_factory=None, refresh
             s.record('post_metrics_snapshots', key + ':' + post['id'], now, 'Upload-Post MCP', payload)
             s.record('sentiment_snapshots', key + ':' + post['id'], now, 'Upload-Post MCP', sentiment)
         s.db.execute("UPDATE mcp_import_runs SET state='COMMITTED' WHERE event_key=?", (key,))
-    result.update(status='collected', accepted_posts=sum(not row[3] for row in observations),
-                  rejected_posts=sum(bool(row[3]) for row in observations), reasons=dict(reasons),
-                  mcp_calls=getattr(client, 'calls', 0), identity_reads=getattr(identity, 'network_calls', 0))
-    result['owner_review_required'] = provider_failed
+        from .mcp_status import record_result
+        record_result(engine,now,result)
     if refresh_learning:
         result['learning'] = engine.learn(now)
     return result

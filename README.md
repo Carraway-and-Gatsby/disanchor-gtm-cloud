@@ -14,6 +14,8 @@
 
 **MCP ingestion implemented:** [Verified ownership, permission/sample gates and automatic Hermes skill ingestion (한국어 + English)](docs/mcp-feedback-ingestion.ko.md). The collect job now supports MCP; invalid or interrupted observations revoke old learning evidence. The current unstarted experiment skips without external calls. Cloud, publishing and background execution remain disabled.
 
+**Telegram import/learning queries:** [`/mcp`, `/excluded` and `/sentiment` usage and live verification (한국어 + English)](docs/telegram-mcp-monitoring.ko.md). Read persisted import status, exclusion reasons and currently valid lessons. All three owner-command replies were confirmed on the phone; the temporary listener has stopped. Real audience learning remains empty; USD 20, publishing OFF and LinkedIn blocked stay enforced.
+
 **Live MCP read-only check, Oct 25:** [Comment/reaction access and Hermes learning scope (한국어 + English summary)](docs/upload-post-mcp-feedback.ko.md). Two X comment calls succeeded with empty mentions samples; profile analytics worked on three X accounts and brand Threads. Selected-account comment permissions remain unverified, and Korean personal Threads is disconnected/on hold. Subsequent ingestion code does not turn these samples into learning evidence; USD 20, publishing OFF and the LinkedIn block stay unchanged.
 
 [한국어 안내](README.ko.md) · [Repository](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)
@@ -30,7 +32,7 @@ A Python 3.12 / SQLite worker for a **seven-day, organic-first Disanchor experim
 | Publishing | Official Upload-Post adapter, identity checks, exact-text approval, quotas and recovery | Disabled by default; no live posts were sent during preparation |
 | Model routing | Research → planning → writing → execution review; 80% of the model allowance goes to the first two stages | Paid inference disabled until the Cloud runtime and provider caps are verified |
 | Feedback and skill learning | Own-post feedback, account-specific aggregates and automatic versioned skill compilation; optional isolated Hermes native writer | No real audience sentiment or learned-skill effectiveness is claimed |
-| Operations | Persistent SQLite, six bounded Hermes cron jobs, owner-only Telegram status | Cloud deployment, restart recovery and Telegram delivery still need verification |
+| Operations | Persistent SQLite, six bounded Hermes cron jobs, owner-only Telegram status | Local query delivery verified; Cloud deployment, restart recovery and unattended delivery still need verification |
 | Tests and delivery | Offline test suite, preflight, reproducible source ZIP and GitHub workflow | Check [Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions) for the result on the exact commit being deployed |
 
 ## How it works

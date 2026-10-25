@@ -47,10 +47,10 @@ CREATE TABLE IF NOT EXISTS cost_reconciliations (
 
 JSON_TABLES = ("audience_hypotheses", "content_ideas", "post_metrics_snapshots", "website_metrics_snapshots",
                "lead_aggregate_snapshots", "clone_predictions", "experiment_decisions",
-               "sentiment_snapshots", "marketing_feedback", "learning_events")
+               "sentiment_snapshots", "marketing_feedback", "learning_events", "mcp_import_events")
 IMMUTABLE = ("cost_ledger", "cost_reconciliations", "post_metrics_snapshots", "website_metrics_snapshots", "lead_aggregate_snapshots",
              "experiment_decisions", "clone_predictions", "execution_logs", "sentiment_snapshots",
-             "marketing_feedback", "learning_events")
+             "marketing_feedback", "learning_events", "mcp_import_events")
 
 
 @contextmanager

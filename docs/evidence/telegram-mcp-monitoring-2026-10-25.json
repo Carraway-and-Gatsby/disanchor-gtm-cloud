@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-25",
+  "scope": "Local owner-only Telegram monitoring; no Cloud deployment",
+  "commands": ["/mcp", "/excluded", "/sentiment"],
+  "verification": {
+    "status": "owner_command_delivery_verified",
+    "owner_commands_received": 3,
+    "owner_command_replies_confirmed_by_api": 3,
+    "owner_phone_confirmation": true,
+    "final_successful_run_telegram_api_calls": 8,
+    "initial_polling_failure_recovered": true,
+    "recovery_preserved_offset_and_outbox": true,
+    "recovery_used_local_short_poll_without_start_notice": true,
+    "normal_cloud_poll_timeout_seconds": 5,
+    "listener_running": false,
+    "persistent_telegram_enabled": false,
+    "experiment_unchanged": true,
+    "publishing_drafts_jobs_and_cost_ledger_counts_unchanged": true
+  },
+  "real_import_observation": {
+    "status": "skipped",
+    "reason": "no_started_experiment",
+    "accepted_posts": 0,
+    "rejected_posts": 0,
+    "mcp_calls": 0,
+    "identity_reads": 0,
+    "currently_usable_sentiment_lessons": 0,
+    "private_skip_audit_record_saved": true
+  },
+  "tests": {
+    "command": "/opt/homebrew/bin/python3.12 -m unittest discover -s tests -q",
+    "passed": 466,
+    "positive_learning_and_rejection_cases": "isolated fixtures only",
+    "source_security_preflight": "passed",
+    "credential_free_staging_smoke": "passed"
+  },
+  "guards": {
+    "cloud_created": false,
+    "budget_usd": 20,
+    "api_publishing": "OFF",
+    "linkedin_publication": "BLOCKED",
+    "social_posts_sent": 0,
+    "model_calls": 0
+  },
+  "security_check": {
+    "current_public_candidate_files_scanned": 110,
+    "reachable_historical_blobs_scanned": 233,
+    "current_private_value_matches": 0,
+    "historical_private_value_matches": 0,
+    "runtime_env_mode": "0600",
+    "runtime_state_bindings_and_reports_git_ignored": true,
+    "scope": "Exact comparison against currently stored nonempty private environment values; source preflight also checks credential literals and signatures"
+  },
+  "privacy": "No credentials, owner IDs, account fingerprints, native post IDs, raw comments or skill content included"
+}

@@ -16,6 +16,8 @@
 
 **MCP 자동 반입 구현:** [계정·권한·표본 검증 → Hermes skill 연결과 테스트](docs/mcp-feedback-ingestion.ko.md). 기존 collect 작업에 연결했으며 미확인·부족한 근거와 과거의 무효화된 학습은 제외합니다. 현재 미시작 환경의 수집은 외부 호출 0회로 차단됩니다. Cloud·게시·상시 실행은 켜지 않았습니다.
 
+**Telegram 반입·학습 조회:** [`/mcp` · `/excluded` · `/sentiment` 사용법과 실제 왕복 검증](docs/telegram-mcp-monitoring.ko.md). 저장된 반입 현황·제외 사유·현재 유효한 교훈을 읽습니다. 세 명령의 휴대폰 응답을 확인했고 임시 수신기는 종료했습니다. 실제 학습 근거는 아직 없으며 $20·API 게시 OFF·LinkedIn 차단을 유지합니다.
+
 **10월 25일 실제 MCP 읽기 점검:** [댓글·반응 조회와 Hermes 학습 범위](docs/upload-post-mcp-feedback.ko.md). X 2개 멘션 조회는 성공했지만 반환 0개이며, X 3개·브랜드 Threads의 계정 분석을 확인했습니다. 공식 X·브랜드 Threads 답글 권한은 미확인, 한국어 개인 Threads는 연결 없음·보류입니다. 후속 자동 반입 구현도 이 자료를 학습 근거로 바꾸지 않으며 $20·API 게시 OFF·LinkedIn 차단을 유지합니다.
 
 Disanchor의 초기 반응을 살펴보는 **7일간의 유용한 콘텐츠 중심 실험**입니다. 계정별로 다른 글을 준비하고, 확인 가능한 성과와 반응을 모아 다음 리서치와 기획에 반영합니다. 제품은 개발 중이며, 이 사실을 글의 맥락 안에서 자연스럽게 밝힙니다.
@@ -30,7 +32,7 @@ Disanchor의 초기 반응을 살펴보는 **7일간의 유용한 콘텐츠 중�
 | Upload-Post | 공식 API, 대상 계정 대조, 할당량, 예약·복구 | 읽기 전용 연결 확인; 준비 과정 실제 게시 0건 |
 | 모델 라우팅 | 리서치 → 기획 → 작성 → 실행 검토 | 유료 호출 비활성; Cloud 런타임과 제공자 측 비용·출력 상한 확인 필요 |
 | 성과·반응 학습 | 계정별 집계, 자동 버전 관리 skill 작성, 선택형 Hermes native writer | 실제 사용자 감정·성과 개선을 확인했다는 뜻이 아님 |
-| 운영 | SQLite 상태, 제한된 Hermes cron, Telegram 개인 현황 | 실제 Cloud 배포·재시작 복구·Telegram 수신 검증 필요 |
+| 운영 | SQLite 상태, 제한된 Hermes cron, Telegram 개인 현황 | 로컬 조회 수신 검증 완료; 실제 Cloud 배포·재시작 복구·상시 수신 검증 필요 |
 | 검증·전달 | 오프라인 테스트, preflight, 재현 가능한 ZIP, GitHub workflow | 배포할 정확한 커밋의 결과를 [Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)에서 확인 |
 
 게시·모델·Telegram은 기본 비활성입니다. 로컬 테스트나 모의 보고서가 통과해도 실제 캠페인이 켜지지 않습니다.

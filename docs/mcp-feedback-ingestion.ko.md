@@ -31,6 +31,8 @@ ChatGPT의 OAuth 세션을 복사하지 않습니다. 워커는 기존 비공개
 
 현재 실제 결과는 `skipped / no_started_experiment`, MCP·identity 조회·모델·게시 모두 0회입니다. 이 결과를 바꾸려고 `start`, 게시 승인, 청구 검증 플래그를 켜지 않습니다.
 
+현재 반입 상태는 [Telegram `/mcp`·`/excluded`·`/sentiment`](telegram-mcp-monitoring.ko.md)로 조회할 수 있습니다. 수집기는 고정된 결과·제외 사유·집계를 비공개 `mcp_import_events` 감사 기록에 저장합니다. 조회는 새 수집이나 skill 갱신을 실행하지 않으며, 최근 반입 이력과 현재 유효한 학습을 구분합니다.
+
 향후 별도로 승인한 운영 환경의 한 수집 주기는 다음 명령으로 실행합니다. 비밀 파일을 shell로 source하거나 토큰을 인자로 넣지 않습니다.
 
 ```sh
