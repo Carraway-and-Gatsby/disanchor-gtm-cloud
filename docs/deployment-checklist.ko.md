@@ -24,8 +24,8 @@ set -euo pipefail
 umask 077
 git clone https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud.git disanchor-gtm-staging
 cd disanchor-gtm-staging
-# 실행 코드는 검증한 게시 잠금 커밋에 고정한다.
-git checkout --detach 57fb6bb4424c09983b7e51285f388329ca7c2e58
+# 실행 코드는 계정별 상세 프롬프트와 게시 잠금을 검증한 커밋에 고정한다.
+git checkout --detach b06577c8c34e0a965b15aa7635c290421cccbb09
 python3.12 -m venv .venv
 mkdir -p state reports
 chmod 700 . state reports
