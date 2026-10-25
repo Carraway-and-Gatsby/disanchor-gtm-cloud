@@ -1,5 +1,8 @@
 # Disanchor · Cloud marketing worker
 
+**Cloud staging Telegram:** [Owner-only status, MCP, exclusion and sentiment queries (Korean)](docs/telegram-cloud-staging.ko.md). Restricted read-only receiver; $20 budget, social publishing OFF and LinkedIn blocked.
+
+
 **Deploy later:** [한국어 배포 체크리스트 — commands, USD 20 budget, publishing OFF and account protection](docs/deployment-checklist.ko.md).
 
 **Prepare Telegram:** [Private bot setup without creating Cloud (한국어)](docs/telegram-setup.ko.md) — hidden token entry, owner-message pairing and private storage; bot activation, paid models, API publishing and LinkedIn publishing stay disabled within USD 20.

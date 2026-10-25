@@ -1,5 +1,8 @@
 # Disanchor · Cloud 마케팅 워커
 
+**Cloud staging Telegram:** [상태·MCP 반입·제외 사유·sentiment 조회와 안전 조건](docs/telegram-cloud-staging.ko.md). 소유자 전용 조회 수신기이며 $20·API 게시 OFF·LinkedIn 차단을 유지합니다.
+
+
 [English](README.md) · [공개 GitHub 저장소](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)
 
 **나중에 배포할 때:** [한국어 배포 체크리스트 — 실행 명령어 · $20 예산 · API 게시 OFF · 계정 보호](docs/deployment-checklist.ko.md)
