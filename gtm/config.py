@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 import hashlib
 import json
 import math
+import re
 import tomllib
 from urllib.parse import urlsplit
 
@@ -41,6 +42,17 @@ class Platforms:
     max_posts_per_platform_per_day: int = 1
     x_time: str = "12:00"
     threads_time: str = "18:00"
+
+
+@dataclass
+class Schedule:
+    # Legacy is retained for previously reviewed experiments and old configs.
+    # New deployments explicitly select the weekly mode in config.toml.
+    mode: str = "legacy"
+    x_weekdays: list[int] = field(default_factory=lambda: [1, 2, 3])
+    x_times: list[str] = field(default_factory=lambda: ["12:30", "15:30", "12:30"])
+    threads_weekdays: list[int] = field(default_factory=lambda: [1, 2, 3])
+    threads_times: list[str] = field(default_factory=lambda: ["15:00", "12:00", "12:00"])
 
 
 @dataclass
@@ -165,6 +177,7 @@ class Learning:
 class Config:
     experiment: Experiment = field(default_factory=Experiment)
     platforms: Platforms = field(default_factory=Platforms)
+    schedule: Schedule = field(default_factory=Schedule)
     publishing: Publishing = field(default_factory=Publishing)
     budget: Budget = field(default_factory=Budget)
     landing: Landing = field(default_factory=Landing)
@@ -181,7 +194,7 @@ class Config:
     def load(cls, path: str | Path) -> Config:
         with open(path, "rb") as handle:
             raw = tomllib.load(handle)
-        types = {"experiment": Experiment, "platforms": Platforms, "publishing": Publishing,
+        types = {"experiment": Experiment, "platforms": Platforms, "schedule": Schedule, "publishing": Publishing,
                  "budget": Budget, "landing": Landing, "model": Model, "clone": Clone,
                  "analytics": Analytics, "routing": Routing, "telegram": Telegram, "accounts": Accounts,
                  "feedback": Feedback, "learning": Learning}
@@ -228,6 +241,19 @@ class Config:
         for clock in (p.x_time, p.threads_time):
             if time.fromisoformat(clock).tzinfo:
                 raise ValueError("Posting times must be local wall times")
+        if self.schedule.mode not in {"legacy", "north_america_weekly"}:
+            raise ValueError("Unknown schedule mode")
+        if self.schedule.mode == "north_america_weekly" and e.audience_timezone != "America/New_York":
+            raise ValueError("North America weekly schedule requires America/New_York")
+        for platform in ("x", "threads"):
+            days = getattr(self.schedule, platform + "_weekdays")
+            clocks = getattr(self.schedule, platform + "_times")
+            if (not 1 <= len(days) <= 3 or len(days) != len(clocks)
+                    or any(type(day) is not int or not 0 <= day <= 4 for day in days)
+                    or days != sorted(set(days))):
+                raise ValueError("Weekly schedule requires one to three distinct sorted weekdays per platform")
+            if any(type(clock) is not str or not re.fullmatch(r"(?:[01][0-9]|2[0-3]):[0-5][0-9]", clock) for clock in clocks):
+                raise ValueError("Weekly schedule requires explicit HH:MM wall times")
         pub = self.publishing
         if pub.provider != "upload_post" or any((pub.allow_unsolicited_replies, pub.allow_direct_messages,
                                                 pub.allow_email, pub.allow_paid_ads)):
@@ -300,6 +326,9 @@ DAY_PLATFORMS = [("x", "threads"), ("x",), ("threads",), ("x", "threads"), ("x",
 
 
 def slots(config: Config, start: datetime) -> list[dict]:
+    config.validate()
+    if config.schedule.mode == "north_america_weekly":
+        return weekly_slots(config, start)
     start = timestamp(start)
     end = start + timedelta(hours=168)
     zone = ZoneInfo(config.experiment.audience_timezone)
@@ -321,4 +350,37 @@ def slots(config: Config, start: datetime) -> list[dict]:
                 raise ValueError("Configured slot is outside the 168-hour window; start earlier or adjust times")
             result.append({"id": f"{platform}_{counts[platform]:02d}", "platform": platform,
                            "day": day + 1, "scheduled_at": iso(utc), "local_date": utc.astimezone(zone).date().isoformat()})
+    return result
+
+
+def weekly_slots(config: Config, start: datetime) -> list[dict]:
+    """Explicit per-weekday instants; never move a missed slot to startup time."""
+    start = timestamp(start)
+    end = start + timedelta(hours=config.experiment.duration_hours)
+    zone = ZoneInfo(config.experiment.audience_timezone)
+    first_day, final_day = start.astimezone(zone).date(), end.astimezone(zone).date()
+    candidates = []
+    for day in range((final_day - first_day).days + 1):
+        date = first_day + timedelta(days=day)
+        for platform in config.platforms.enabled:
+            mapping = dict(zip(getattr(config.schedule, platform + "_weekdays"),
+                               getattr(config.schedule, platform + "_times")))
+            if date.weekday() not in mapping:
+                continue
+            wall = datetime.combine(date, time.fromisoformat(mapping[date.weekday()]))
+            local = wall.replace(tzinfo=zone, fold=0)
+            utc = local.astimezone(UTC)
+            if utc.astimezone(zone).replace(tzinfo=None) != wall:
+                raise ValueError("Posting time falls in a daylight-saving gap; select another time")
+            if start <= utc < end:
+                candidates.append({"platform": platform, "day": day + 1,
+                                   "scheduled_at": iso(utc), "local_date": date.isoformat()})
+    counts, result = {"x": 0, "threads": 0}, []
+    for slot in sorted(candidates, key=lambda row: (row["scheduled_at"], row["platform"])):
+        platform = slot["platform"]
+        if (counts[platform] >= min(3, getattr(config.platforms, "max_posts_" + platform))
+                or len(result) >= config.platforms.max_posts_total):
+            continue
+        counts[platform] += 1
+        result.append({**slot, "id": f"{platform}_{counts[platform]:02d}"})
     return result

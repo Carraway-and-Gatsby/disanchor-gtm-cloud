@@ -195,6 +195,15 @@ class Engine:
                          language=self.accounts.get(row["account_key"])["language"])
         self.s.db.execute("UPDATE post_drafts SET state='APPROVED',approved_hash=? WHERE id=?", (hashlib.sha256(row["text"].encode()).hexdigest(), post_id))
 
+    def check_schedule_slot(self, post, experiment):
+        if self.c.schedule.mode != "north_america_weekly":
+            return
+        expected = next((slot for slot in slots(self.c, timestamp(experiment['start_at']))
+                         if slot['id'] == post['id']), None)
+        if expected is None or any(post[key] != expected[key]
+                                   for key in ('platform', 'scheduled_at', 'local_date')):
+            raise GuardError('Draft differs from the approved weekly calendar')
+
     def schedule(self, post_id, now):
         require_action("schedule_own_text")
         self.publishing_guard(now)
@@ -204,6 +213,7 @@ class Engine:
         if self.s.one("SELECT id FROM publishing_jobs WHERE post_id=?", (post_id,)):
             return "existing_job_no_resubmission"
         self.check_draft_account(post)
+        self.check_schedule_slot(post, self.experiment())
         if post["state"] != "APPROVED" or post["approved_hash"] != hashlib.sha256(post["text"].encode()).hexdigest():
             raise GuardError("Draft needs exact-content approval")
         destination = None
@@ -234,6 +244,7 @@ class Engine:
             if not post:
                 raise GuardError("Unknown post")
             self.check_draft_account(post)
+            self.check_schedule_slot(post, e)
             if self.s.one("SELECT id FROM publishing_jobs WHERE post_id=?", (post_id,)):
                 return "existing_job_no_resubmission"
             if post["state"] != "APPROVED" or post["approved_hash"] != hashlib.sha256(post["text"].encode()).hexdigest():
@@ -405,7 +416,8 @@ class Engine:
             # A bounded suggestion can inform the next slot; unreviewed generated copy is never published.
             suggestion = prediction.get("suggestion")
             accepted, changed = False, None
-            if prediction.get("status") == "suggested" and isinstance(suggestion, dict) and set(suggestion) == {"time"} and upcoming:
+            if (self.c.schedule.mode == "legacy" and prediction.get("status") == "suggested"
+                    and isinstance(suggestion, dict) and set(suggestion) == {"time"} and upcoming):
                 # Reschedule only within the approved day + window; local timezone is preserved.
                 from zoneinfo import ZoneInfo
                 from datetime import time as wall_time

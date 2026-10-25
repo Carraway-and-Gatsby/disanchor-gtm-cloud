@@ -1,5 +1,8 @@
 # Disanchor · Cloud marketing worker
 
+**Current North America schedule:** [Exact weekday times and provider queue settings — 한국어 / English](docs/north-america-publishing-schedule.ko.md). Six new candidates maximum, three per account; no new schedules submitted. Two earlier manual tests are separate. Auto-publishing OFF, USD 20 budget, LinkedIn blocked.
+
+
 **Cloud staging Telegram:** [Owner-only status, MCP, exclusion and sentiment queries (Korean)](docs/telegram-cloud-staging.ko.md). Restricted read-only receiver; $20 budget, social publishing OFF and LinkedIn blocked.
 
 
@@ -34,10 +37,10 @@ A Python 3.12 / SQLite worker for a **seven-day, organic-first Disanchor experim
 | Area | Implemented / configured | Live verification |
 | --- | --- | --- |
 | Account-specific writing | Seven separate strategies; one selected X account and one Threads account | Latest MCP lists four X/Threads connections; Korean personal Threads is disconnected/on hold, with posting approval separate |
-| Publishing | Official Upload-Post adapter, identity checks, exact-text approval, quotas and recovery | Disabled by default; no live posts were sent during preparation |
+| Publishing | Official Upload-Post adapter, identity checks, exact-text approval, quotas and recovery | Two separately authorized manual test posts verified; automatic publishing remains OFF |
 | Model routing | Research → planning → writing → execution review; 80% of the model allowance goes to the first two stages | Paid inference disabled until the Cloud runtime and provider caps are verified |
 | Feedback and skill learning | Own-post feedback, account-specific aggregates and automatic versioned skill compilation; optional isolated Hermes native writer | No real audience sentiment or learned-skill effectiveness is claimed |
-| Operations | Persistent SQLite, six bounded Hermes cron jobs, owner-only Telegram status | Local query delivery verified; Cloud deployment, restart recovery and unattended delivery still need verification |
+| Operations | Persistent SQLite, bounded Hermes jobs, owner-only Telegram status | Cloud staging deployed; four read-only Telegram commands verified on the owner's phone; campaign jobs remain inactive |
 | Tests and delivery | Offline test suite, preflight, reproducible source ZIP and GitHub workflow | Check [Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions) for the result on the exact commit being deployed |
 
 ## How it works
@@ -74,7 +77,7 @@ The research stage uses bounded supplied evidence. The minimal inference runner 
 The approved **total operating budget is USD 20**, including Cloud infrastructure, models and other charged services. The $5 model and $2 external-tool ceilings are inside that total. They are ceilings, not spending targets or extra allowances. Fresh billing reconciliation is required; unknown charges stay unknown.
 
 - At **$14 (70%)**, warn. At **$18 (90%)**, block new optional paid work and new publishing through the existing budget gate.
-- Keep the 168-hour experiment boundary, ten-post total, five posts per platform and at most one post per platform per audience-local day.
+- Current deployment: keep the 168-hour boundary, six new posts total, three per platform and at most one per platform per audience-local day. The original ten-post library remains available in legacy mode.
 - In the initial campaign, use useful observations and genuine questions. No promotional links, signup/profile prompts, engagement bait, unsolicited replies, DMs, email or paid ads.
 - New model copy requires exact-text owner approval. A changed account, policy, prompt or binding invalidates the affected authorization.
 - Preserve unknown submission outcomes and quota reservations. Reconcile them; never blindly retry or reset state to recover quota.

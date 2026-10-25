@@ -7,12 +7,22 @@ audience_timezone = "America/New_York"
 
 [platforms]
 enabled = ["x", "threads"]
-max_posts_total = 10
-max_posts_x = 5
-max_posts_threads = 5
+max_posts_total = 6
+max_posts_x = 3
+max_posts_threads = 3
 max_posts_per_platform_per_day = 1
-x_time = "12:00"
-threads_time = "18:00"
+# Legacy wall times are unused by the explicit weekday schedule below.
+x_time = "12:30"
+threads_time = "12:00"
+
+[schedule]
+mode = "north_america_weekly"
+# Monday=0. Each platform has exactly three candidate slots per seven-day run.
+x_weekdays = [1, 2, 3]
+x_times = ["12:30", "15:30", "12:30"]
+threads_weekdays = [1, 2, 3]
+threads_times = ["15:00", "12:00", "12:00"]
+# The worker submits explicit UTC scheduled_date values, never the shared queue.
 
 [publishing]
 provider = "upload_post"

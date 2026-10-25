@@ -26,6 +26,11 @@ class CoreTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.path = Path(self.temp.name)
         self.c = Config.load("config.toml")
+        # Exercise the original reviewed ten-slot library independently of the
+        # deployment's new six-slot weekly calendar (covered in test_schedule).
+        self.c.schedule.mode = "legacy"
+        self.c.platforms.max_posts_total = 10
+        self.c.platforms.max_posts_x = self.c.platforms.max_posts_threads = 5
         self.c.publishing.account_remaining_quota = 10
         self.now = timestamp("2026-10-24T12:00:00Z")
         self.s = Store(self.path / "state.sqlite")
@@ -36,6 +41,8 @@ class CoreTests(unittest.TestCase):
 
     def test_defaults_fail_closed_and_fractional_costs_supported(self):
         c = Config.load("config.toml")
+        self.assertEqual(c.schedule.mode, "north_america_weekly")
+        self.assertEqual(c.platforms.max_posts_total, 6)
         self.assertFalse(c.publishing.auto_publish)
         self.assertTrue(c.publishing.dry_run)
         self.assertEqual(c.publishing.account_remaining_quota, 0)

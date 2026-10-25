@@ -1,5 +1,8 @@
 # Disanchor · Cloud 마케팅 워커
 
+**현재 북미 시간표:** [화·수·목 계정별 게시 시간과 실제 큐 설정](docs/north-america-publishing-schedule.ko.md). 새 후보는 X·Threads 각각 3건·총 6건 이하이며 예약·자동 게시는 OFF입니다. 기존 수동 테스트 2건과 구분하고 $20·LinkedIn 차단을 유지합니다.
+
+
 **Cloud staging Telegram:** [상태·MCP 반입·제외 사유·sentiment 조회와 안전 조건](docs/telegram-cloud-staging.ko.md). 소유자 전용 조회 수신기이며 $20·API 게시 OFF·LinkedIn 차단을 유지합니다.
 
 
@@ -34,10 +37,10 @@ Disanchor의 초기 반응을 살펴보는 **7일간의 유용한 콘텐츠 중�
 | 항목 | 구현·설정 | 실제 확인 범위 |
 | --- | --- | --- |
 | 계정별 접근 | 7개 채널 전략과 별도 프롬프트 | 최신 MCP의 X·Threads 연결은 4개; 한국어 개인 Threads는 연결 없음·보류, 게시 승인은 별도 |
-| Upload-Post | 공식 API, 대상 계정 대조, 할당량, 예약·복구 | 읽기 전용 연결 확인; 준비 과정 실제 게시 0건 |
+| Upload-Post | 공식 API, 대상 계정 대조, 할당량, 예약·복구 | 별도 승인한 수동 테스트 2건 게시·본문 재조회 확인; 자동 게시는 OFF |
 | 모델 라우팅 | 리서치 → 기획 → 작성 → 실행 검토 | 유료 호출 비활성; Cloud 런타임과 제공자 측 비용·출력 상한 확인 필요 |
 | 성과·반응 학습 | 계정별 집계, 자동 버전 관리 skill 작성, 선택형 Hermes native writer | 실제 사용자 감정·성과 개선을 확인했다는 뜻이 아님 |
-| 운영 | SQLite 상태, 제한된 Hermes cron, Telegram 개인 현황 | 로컬 조회 수신 검증 완료; 실제 Cloud 배포·재시작 복구·상시 수신 검증 필요 |
+| 운영 | SQLite 상태, 제한된 Hermes cron, Telegram 개인 현황 | Cloud staging 배포와 조회 명령 4개의 휴대폰 수신 확인; 캠페인 작업은 비활성 |
 | 검증·전달 | 오프라인 테스트, preflight, 재현 가능한 ZIP, GitHub workflow | 배포할 정확한 커밋의 결과를 [Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)에서 확인 |
 
 게시·모델·Telegram은 기본 비활성입니다. 로컬 테스트나 모의 보고서가 통과해도 실제 캠페인이 켜지지 않습니다.

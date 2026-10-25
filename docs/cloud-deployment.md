@@ -32,7 +32,7 @@ python3.12 scripts/package-cloud.py --output reports/disanchor-cloud.zip
 
 `--runtime-check`를 붙이면 해당 호스트에서 `hermes --version`과 `hermes cron create --help`만 실행한다. 모델 호출·스케줄 생성은 하지 않으며, 로컬 Mac에서 통과해도 Cloud의 런타임은 별도로 검사해야 한다. 새 모델 라우팅의 실제 지원과 provider 측 출력·비용 상한은 이 검사로 확인되지 않는다.
 
-`build-review.py`는 현재 seed 10개를 정책 검사한 뒤 게시 후보와 7개 계정 전략을 HTML로 만들고, 허용 목록의 모든 소스·문서·테스트에 직접 링크한 검토 인덱스를 생성한다. 체크인된 `accounts.example.toml`만 사용하며 비밀 파일·로컬 바인딩·운영 DB는 읽지 않는다. ZIP을 다시 만들지는 않고, 기존 ZIP의 manifest가 현재 소스와 다른 경우 갱신 필요 상태를 표시한다. 최종 ZIP 생성 후 한 번 더 실행하면 인덱스의 일치 상태도 갱신된다.
+`build-review.py`는 현재 시간표에 해당하는 seed를 정책 검사한 뒤 게시 후보와 7개 계정 전략을 HTML로 만들고, 허용 목록의 모든 소스·문서·테스트에 직접 링크한 검토 인덱스를 생성한다. 북미 주간 설정은 6개 슬롯, 이전 legacy 설정은 10개 슬롯이다. 체크인된 `accounts.example.toml`만 사용하며 비밀 파일·로컬 바인딩·운영 DB는 읽지 않는다. ZIP을 다시 만들지는 않고, 기존 ZIP의 manifest가 현재 소스와 다른 경우 갱신 필요 상태를 표시한다. 최종 ZIP 생성 후 한 번 더 실행하면 인덱스의 일치 상태도 갱신된다.
 
 패키지는 명시적으로 허용한 소스·설정·문서·테스트·빈 `.env.example`만 포함한다. `state/`, `reports/`, 실제 `.env`, 계정용 로컬 `accounts.toml`·`accounts.local.toml`, 캐시, 저장소 메타데이터, 비밀 파일은 제외한다. `accounts.example.toml`과 계정별 프롬프트는 포함하며 실제 native 계정 연결과 권한 검증은 Cloud에서 별도로 한다. symlink, 빈 값이 아닌 환경 예제, 식별 가능한 자격 증명 패턴이 있으면 생성을 중단한다. 이 검사는 임의의 비밀값을 완벽하게 탐지하는 보장은 아니므로 소스 검토도 필요하다. 동일한 소스는 시간·파일 수정 시각에 관계없이 같은 ZIP과 SHA-256을 만든다. `bundle-manifest.json`에는 모든 소스의 크기와 SHA-256이 들어 있다.
 
