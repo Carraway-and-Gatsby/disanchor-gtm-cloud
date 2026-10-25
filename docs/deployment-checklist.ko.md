@@ -4,6 +4,8 @@
 
 **현재는 준비만 완료한 상태이며 인스턴스는 생성하지 않았다.** 아래 순서는 나중에 사용자가 Cloud 생성을 결정한 뒤 적용한다. 이 문서의 완료 범위는 자격 증명 없는 staging 배포다. 실제 마케팅 실행이나 게시 승인을 포함하지 않는다.
 
+[합성 반응 전체 흐름 검증과 시작 조건](synthetic-feedback-flow.ko.md): 먼저 게시 없는 24시간 staging 점검을 권장한다. 7일 학습 운영은 실제 호스트 점검·읽기 권한·적격 표본이 확보된 뒤 별도로 결정한다. 어떤 단계에서도 API 게시 OFF·LinkedIn 차단은 해제하지 않는다.
+
 ## 1. 생성 전: 비용과 접근 확인
 
 - [ ] [Nous Portal](https://portal.nousresearch.com/cloud)에 로그인하고 Standard의 현재 가격을 다시 확인한다.
@@ -24,8 +26,8 @@ set -euo pipefail
 umask 077
 git clone https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud.git disanchor-gtm-staging
 cd disanchor-gtm-staging
-# 실행 코드는 계정별 상세 프롬프트와 게시 잠금을 검증한 커밋에 고정한다.
-git checkout --detach b06577c8c34e0a965b15aa7635c290421cccbb09
+# 실행 코드는 MCP 반입·skill·Telegram 전체 흐름을 검증한 커밋에 고정한다.
+git checkout --detach 2ee12881845d3d2f056f4cf7a7f522c04d6d3566
 python3.12 -m venv .venv
 mkdir -p state reports
 chmod 700 . state reports
@@ -42,6 +44,7 @@ chmod 600 state/runtime.env
 ```bash
 .venv/bin/python scripts/cloud-preflight.py --runtime-check
 .venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python scripts/test-feedback-flow.py
 .venv/bin/python scripts/staging-smoke.py
 bash scripts/hermes-install.sh --check
 ```
