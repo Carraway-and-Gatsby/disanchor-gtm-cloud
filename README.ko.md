@@ -4,6 +4,8 @@
 
 **나중에 배포할 때:** [한국어 배포 체크리스트 — 실행 명령어 · $20 예산 · API 게시 OFF · 계정 보호](docs/deployment-checklist.ko.md)
 
+**Telegram 먼저 준비:** [BotFather → 숨김 토큰 입력 → 본인 개인 대화 확인 → 비공개 저장](docs/telegram-setup.ko.md). Cloud 생성·봇 활성화 없이 준비하며 $20·API 게시 OFF·LinkedIn 게시 차단을 유지합니다.
+
 **콘텐츠 검토:** [계정별 초안 14개 — 영문 원문 + 한국어 번역](docs/account-drafts.en-ko.md) · [7일 게시 계획과 댓글 조회 범위](docs/seven-day-schedule-and-feedback.ko.md). 검토 자료이며 실제 게시는 하지 않습니다. 전체 $20·API 게시 OFF를 유지합니다.
 
 **10월 25일 실제 읽기 점검:** [X·Threads 댓글 권한과 필요한 설정](docs/comment-permissions.ko.md). X 2개는 멘션 조회 성공, 개인 Threads는 부분 조회, 현재 선택된 공식 X·브랜드 Threads는 기존 글 미확인으로 권한 확인 보류입니다. 게시·재연결 없이 $20·API 게시 OFF를 유지했습니다.

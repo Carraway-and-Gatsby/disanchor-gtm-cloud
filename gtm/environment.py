@@ -9,7 +9,7 @@ ALLOWED = frozenset({"UPLOAD_POST_API_KEY", "GA4_ACCESS_TOKEN", "GOOGLE_APPLICAT
                      "CLONE_APP_KEY", "CLONE_USER_ID", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID", "TELEGRAM_USER_ID"})
 
 
-def load_private_environment(path):
+def read_private_environment(path):
     path = Path(path)
     try:
         fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0))
@@ -30,7 +30,11 @@ def load_private_environment(path):
                     or any(ord(c) < 32 or ord(c) == 127 for c in value)):
                 raise ValueError("Private environment file has invalid fields")
             values[key] = value
-        # Apply atomically after validating the complete file; values are never returned.
-        os.environ.update(values)
+        return values
     except (OSError, UnicodeError):
         raise ValueError("Private environment file unavailable") from None
+
+
+def load_private_environment(path):
+    # Apply atomically after validating the complete file; never log values.
+    os.environ.update(read_private_environment(path))

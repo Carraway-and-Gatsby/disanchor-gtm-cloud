@@ -2,6 +2,8 @@
 
 **Deploy later:** [한국어 배포 체크리스트 — commands, USD 20 budget, publishing OFF and account protection](docs/deployment-checklist.ko.md).
 
+**Prepare Telegram:** [Private bot setup without creating Cloud (한국어)](docs/telegram-setup.ko.md) — hidden token entry, owner-message pairing and private storage; bot activation, paid models, API publishing and LinkedIn publishing stay disabled within USD 20.
+
 **Review content:** [14 drafts by account — English originals + Korean translations](docs/account-drafts.en-ko.md) · [Seven-day slot plan and comment-reading limits (한국어)](docs/seven-day-schedule-and-feedback.ko.md). Review only; API publishing remains OFF within the total USD 20 budget.
 
 **Live read-only check, Oct 25:** [X/Threads comment permissions and required owner settings (한국어)](docs/comment-permissions.ko.md). Two X mention reads succeeded; personal Threads is partial; the selected official X and brand Threads remain unverified because their recent-post lists were empty. No posts or connection changes; publishing OFF and USD 20 unchanged.
