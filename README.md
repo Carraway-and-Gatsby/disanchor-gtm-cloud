@@ -12,7 +12,7 @@
 
 **Account distinction:** the selected targets are official X and **Threads `@disanchor_com`**. The separate Instagram connection with that handle is excluded from this campaign. Threads `@technodemocracystudio` writes **Korean and remains on hold**; LinkedIn publication stays blocked.
 
-**Live read-only check, Oct 25:** [X/Threads comment permissions and required owner settings (한국어)](docs/comment-permissions.ko.md). Two X mention reads succeeded; personal Threads is partial; the selected official X and brand Threads remain unverified because their recent-post lists were empty. No posts or connection changes; publishing OFF and USD 20 unchanged.
+**Latest MCP read-only check, Oct 25:** [Comment/reaction access and Hermes learning scope (한국어 + English summary)](docs/upload-post-mcp-feedback.ko.md). Two X comment calls succeeded with empty mentions samples; profile analytics worked on three X accounts and brand Threads. Selected-account comment permissions remain unverified, and Korean personal Threads is disconnected/on hold. No automatic MCP-to-Hermes import exists yet; USD 20, publishing OFF and the LinkedIn block stay unchanged.
 
 [한국어 안내](README.ko.md) · [Repository](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)
 
@@ -24,7 +24,7 @@ A Python 3.12 / SQLite worker for a **seven-day, organic-first Disanchor experim
 
 | Area | Implemented / configured | Live verification |
 | --- | --- | --- |
-| Account-specific writing | Seven separate strategies; one selected X account and one Threads account | Authenticated read-only checks found seven connected channels; posting approval remains separate |
+| Account-specific writing | Seven separate strategies; one selected X account and one Threads account | Latest MCP lists four X/Threads connections; Korean personal Threads is disconnected/on hold, with posting approval separate |
 | Publishing | Official Upload-Post adapter, identity checks, exact-text approval, quotas and recovery | Disabled by default; no live posts were sent during preparation |
 | Model routing | Research → planning → writing → execution review; 80% of the model allowance goes to the first two stages | Paid inference disabled until the Cloud runtime and provider caps are verified |
 | Feedback and skill learning | Own-post feedback, account-specific aggregates and automatic versioned skill compilation; optional isolated Hermes native writer | No real audience sentiment or learned-skill effectiveness is claimed |

@@ -4,6 +4,8 @@
 
 **최신 사용자 지정:** `@technodemocracystudio`는 한국어(ko) 작성으로 수정했으며 운영·재연결은 보류합니다. `@disanchor_com`의 이번 운영 대상은 **Threads**입니다. API 목록에는 같은 핸들의 Instagram 연결도 별도로 있지만 이번 운영에서 제외하고 초안만 참고 보관합니다. LinkedIn은 게시 차단을 유지합니다. 연결 이력 표는 현재 운영 대기열이 아닙니다.
 
+**최신 연결 점검:** [2026-10-25 MCP 댓글·반응 조회](upload-post-mcp-feedback.ko.md)에서는 X 3개와 브랜드 Threads 1개가 연결 목록에 있습니다. 개인 Threads는 현재 연결 없음·보류입니다. 아래 7개 전략의 최초 연결 기록은 현재 연결 권한이나 학습 가능성을 보증하지 않습니다.
+
 Upload-Post의 실제 읽기 전용 API 조회로 프로필 3개와 연결 채널 7개를 확인하고 **7개 콘텐츠 접근을 따로 준비**했습니다. 개별 프로필 조회에서 고유 ID와 `reauth_required=false`를 확인했습니다. 기본 X·Threads 후보는 추가 GET 비교 검증도 통과했습니다. 실제 ID는 Git에서 제외한 비공개 `accounts.local.toml`에만 저장했고, 공유용 [계정 레지스트리](../accounts.example.toml)는 ID를 비워 두었습니다. 모든 기록은 `reviewed=false`이며 이번 조회는 게시 승인이 아닙니다.
 
 ## 실제 연결 조회에서 확인된 범위

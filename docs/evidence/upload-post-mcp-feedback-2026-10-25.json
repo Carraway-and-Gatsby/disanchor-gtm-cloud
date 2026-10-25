@@ -1,0 +1,272 @@
+{
+  "checked_at_utc": "2026-10-25T08:33:33Z",
+  "checked_at_kst": "2026-10-25T17:33:33+09:00",
+  "transport": "ChatGPT Upload-Post MCP",
+  "authentication": "success",
+  "plan": "Basic",
+  "profile_count": 3,
+  "mcp_read_tool_calls": {
+    "get_account_info": 1,
+    "list_users": 1,
+    "get_media": 4,
+    "get_analytics": 3,
+    "get_post_comments": 2,
+    "get_cached_post_analytics": 2,
+    "total": 13
+  },
+  "provider_http_status_exposed": false,
+  "provider_internal_http_call_count": "not_exposed_by_mcp",
+  "observations": [
+    {
+      "account_key": "default_x",
+      "profile": "default",
+      "platform": "x",
+      "handle": "guidances_org",
+      "selected": false,
+      "language": "en",
+      "connection": {
+        "listed": true,
+        "reauth_required": false,
+        "native_identity_revalidated": false
+      },
+      "media": {
+        "mcp_success": true,
+        "requested_limit": 1,
+        "returned_count": 5,
+        "posts_used_for_comments": 1,
+        "pagination_followed": false
+      },
+      "comments": {
+        "mcp_success": true,
+        "status": "mentions_sample_read",
+        "requested_limit": 5,
+        "returned_count": 0,
+        "source": "mentions",
+        "partial": null,
+        "has_next": true,
+        "pages": 1,
+        "sentiment": "unknown"
+      },
+      "analytics": {
+        "mcp_success": true,
+        "scope": "profile_aggregate",
+        "available_numeric_metrics": [
+          "followers",
+          "impressions"
+        ],
+        "reported_values": {
+          "followers": 34,
+          "impressions": 9
+        },
+        "metric_type": "impressions",
+        "primary_impressions_field": "impressions",
+        "reported_impressions_label": "Impressions",
+        "timeseries_records": 30,
+        "window_start": "2026-09-26",
+        "window_end": "2026-10-25",
+        "unsupported_values_retained": false,
+        "denominator": "impressions",
+        "per_post_learning_eligible": false
+      }
+    },
+    {
+      "account_key": "personal_x",
+      "profile": "disanchor_twitter",
+      "platform": "x",
+      "handle": "cgcorporation",
+      "selected": false,
+      "language": "en",
+      "connection": {
+        "listed": true,
+        "reauth_required": false,
+        "native_identity_revalidated": false
+      },
+      "media": {
+        "mcp_success": true,
+        "requested_limit": 1,
+        "returned_count": 5,
+        "posts_used_for_comments": 1,
+        "pagination_followed": false
+      },
+      "comments": {
+        "mcp_success": true,
+        "status": "mentions_sample_read",
+        "requested_limit": 5,
+        "returned_count": 0,
+        "source": "mentions",
+        "partial": null,
+        "has_next": true,
+        "pages": 1,
+        "sentiment": "unknown"
+      },
+      "analytics": {
+        "mcp_success": true,
+        "scope": "profile_aggregate",
+        "available_numeric_metrics": [
+          "followers",
+          "impressions"
+        ],
+        "reported_values": {
+          "followers": 508,
+          "impressions": 182
+        },
+        "metric_type": "impressions",
+        "primary_impressions_field": "impressions",
+        "reported_impressions_label": "Impressions",
+        "timeseries_records": 30,
+        "window_start": "2026-09-26",
+        "window_end": "2026-10-25",
+        "unsupported_values_retained": false,
+        "denominator": "impressions",
+        "per_post_learning_eligible": false
+      }
+    },
+    {
+      "account_key": "disanchor_x",
+      "profile": "disanchor_x",
+      "platform": "x",
+      "handle": "disanchor_com",
+      "selected": true,
+      "language": "en",
+      "connection": {
+        "listed": true,
+        "reauth_required": false,
+        "native_identity_revalidated": false
+      },
+      "media": {
+        "mcp_success": true,
+        "requested_limit": 1,
+        "returned_count": 0,
+        "posts_used_for_comments": 0,
+        "pagination_followed": false
+      },
+      "comments": {
+        "status": "unverified_no_existing_post_in_returned_list",
+        "pages": 0,
+        "returned_count": null,
+        "sentiment": "unknown"
+      },
+      "analytics": {
+        "mcp_success": true,
+        "scope": "profile_aggregate",
+        "available_numeric_metrics": [
+          "followers",
+          "impressions"
+        ],
+        "reported_values": {
+          "followers": 1,
+          "impressions": 0
+        },
+        "metric_type": "impressions",
+        "primary_impressions_field": "impressions",
+        "reported_impressions_label": "Impressions",
+        "timeseries_records": 30,
+        "window_start": "2026-09-26",
+        "window_end": "2026-10-25",
+        "unsupported_values_retained": false,
+        "denominator": "impressions",
+        "per_post_learning_eligible": false
+      }
+    },
+    {
+      "account_key": "default_threads",
+      "profile": "default",
+      "platform": "threads",
+      "handle": "disanchor_com",
+      "selected": true,
+      "language": "en",
+      "connection": {
+        "listed": true,
+        "reauth_required": false,
+        "native_identity_revalidated": false
+      },
+      "media": {
+        "mcp_success": true,
+        "requested_limit": 1,
+        "returned_count": 0,
+        "posts_used_for_comments": 0,
+        "pagination_followed": false
+      },
+      "comments": {
+        "status": "unverified_no_existing_post_in_returned_list",
+        "pages": 0,
+        "returned_count": null,
+        "sentiment": "unknown"
+      },
+      "analytics": {
+        "mcp_success": true,
+        "scope": "profile_aggregate",
+        "available_numeric_metrics": [
+          "followers",
+          "impressions",
+          "likes",
+          "comments",
+          "shares",
+          "quotes",
+          "clicks"
+        ],
+        "reported_values": {
+          "followers": 0,
+          "impressions": 0,
+          "likes": 0,
+          "comments": 0,
+          "shares": 0,
+          "quotes": 0,
+          "clicks": 0
+        },
+        "metric_type": "views",
+        "primary_impressions_field": "impressions",
+        "reported_impressions_label": "Total Impressions",
+        "timeseries_records": 31,
+        "window_start": "2026-09-25",
+        "window_end": "2026-10-25",
+        "unsupported_values_retained": false,
+        "denominator": "unverified_views_vs_impressions_metadata_conflict",
+        "per_post_learning_eligible": false
+      }
+    }
+  ],
+  "held_account": {
+    "account_key": "personal_threads",
+    "handle": "technodemocracystudio",
+    "language": "ko",
+    "listed_connected": false,
+    "read_attempted": false,
+    "reconnection_attempted": false,
+    "owner_hold_preserved": true
+  },
+  "cached_selected_accounts": [
+    {
+      "account_key": "default_threads",
+      "source": "snapshot_cache",
+      "since": "2026-09-27",
+      "until": "2026-10-25",
+      "returned_posts": 0,
+      "has_more": false
+    },
+    {
+      "account_key": "disanchor_x",
+      "source": "snapshot_cache",
+      "since": "2026-09-27",
+      "until": "2026-10-25",
+      "returned_posts": 0,
+      "has_more": false
+    }
+  ],
+  "live_post_analytics_attempted": false,
+  "live_post_analytics_reason": "no_verified_provider_request_id_in_selected_account_cache",
+  "experiments_or_skills_updated": false,
+  "raw_comment_or_author_data_written_to_repo": false,
+  "post_ids_or_native_ids_written_to_repo": false,
+  "guards": {
+    "cloud_created": false,
+    "total_budget_usd": 20,
+    "api_publishing": "OFF",
+    "linkedin_publication": "BLOCKED",
+    "paid_models": "OFF",
+    "social_posts_sent": 0,
+    "scheduled_posts_created": 0,
+    "comment_mutations": 0,
+    "subscription_purchases": 0
+  }
+}
