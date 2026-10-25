@@ -6,6 +6,8 @@
 
 **Review content:** [14 drafts by account — English originals + Korean translations](docs/account-drafts.en-ko.md) · [Seven-day slot plan and comment-reading limits (한국어)](docs/seven-day-schedule-and-feedback.ko.md). Review only; API publishing remains OFF within the total USD 20 budget.
 
+**Account distinction:** the selected targets are official X and **Threads `@disanchor_com`**. The separate Instagram connection with that handle is excluded from this campaign. Threads `@technodemocracystudio` writes **Korean and remains on hold**; LinkedIn publication stays blocked.
+
 **Live read-only check, Oct 25:** [X/Threads comment permissions and required owner settings (한국어)](docs/comment-permissions.ko.md). Two X mention reads succeeded; personal Threads is partial; the selected official X and brand Threads remain unverified because their recent-post lists were empty. No posts or connection changes; publishing OFF and USD 20 unchanged.
 
 [한국어 안내](README.ko.md) · [Repository](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)

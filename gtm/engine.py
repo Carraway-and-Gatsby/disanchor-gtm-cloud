@@ -175,7 +175,8 @@ class Engine:
             return existing
         seed = seed_text(slot, self.c)
         prior = [r["text"] for r in self.s.rows("SELECT text FROM post_drafts")]
-        validate_content(seed["platform"], seed["text"], prior)
+        validate_content(seed["platform"], seed["text"], prior,
+                         language=self.accounts.get(self.account_key(seed["platform"]))["language"])
         self.s.record("content_ideas", seed["id"], now, "reviewable seed library", seed)
         approved = self.simulated or self.experiment()["authorization_hash"] == self.authorization_hash()
         digest = content_hash(seed["text"])
@@ -190,7 +191,8 @@ class Engine:
         if not row or row["state"] != "DRAFT":
             raise GuardError("Only existing DRAFT posts can be approved")
         self.check_draft_account(row)
-        validate_content(row["platform"], row["text"], [r["text"] for r in self.s.rows("SELECT text FROM post_drafts WHERE id<>?", (post_id,))])
+        validate_content(row["platform"], row["text"], [r["text"] for r in self.s.rows("SELECT text FROM post_drafts WHERE id<>?", (post_id,))],
+                         language=self.accounts.get(row["account_key"])["language"])
         self.s.db.execute("UPDATE post_drafts SET state='APPROVED',approved_hash=? WHERE id=?", (hashlib.sha256(row["text"].encode()).hexdigest(), post_id))
 
     def schedule(self, post_id, now):
@@ -244,7 +246,8 @@ class Engine:
                 raise GuardError("Missed or out-of-window slot; no catch-up burst")
             if due - timestamp(now) > timedelta(hours=24):
                 raise GuardError("Rolling queue is limited to 24 hours")
-            validate_content(post["platform"], post["text"], [r["text"] for r in self.s.rows("SELECT text FROM post_drafts WHERE id<>?", (post_id,))])
+            validate_content(post["platform"], post["text"], [r["text"] for r in self.s.rows("SELECT text FROM post_drafts WHERE id<>?", (post_id,))],
+                             language=self.accounts.get(post["account_key"])["language"])
             jobs = self.s.rows("SELECT j.*, d.platform FROM publishing_jobs j JOIN post_drafts d ON d.id=j.post_id")
             reserved = sum(j["reserved_quota"] for j in jobs)
             cap = min(self.c.platforms.max_posts_total, p.account_remaining_quota)

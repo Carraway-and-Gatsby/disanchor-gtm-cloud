@@ -12,7 +12,7 @@ class OrganicPolicyTests(unittest.TestCase):
     def test_all_ten_candidates_weave_in_development_without_footer_or_sales_cta(self):
         c = Config()
         previous = []
-        self.assertEqual(POLICY_VERSION, "2026-10-25.1")
+        self.assertEqual(POLICY_VERSION, "2026-10-25.2")
         for slot in slots(c, timestamp("2026-10-24T12:00:00Z")):
             with self.subTest(slot=slot["id"]):
                 post = seed_text(slot, c)

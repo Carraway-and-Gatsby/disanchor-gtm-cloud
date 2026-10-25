@@ -1,8 +1,10 @@
 # 계정별 초안 14개 · English / 한국어
 
-검토용 문서 · 2026-10-25. 앞서 제시한 영문 14개를 그대로 보존하고 한국어 번역을 붙였습니다. [계정별 프롬프트](account-strategies.md)와 함께 검토하세요.
+검토용 문서 · 2026-10-25. 앞서 제시한 14개 초안을 계정별로 정리했습니다. `personal_threads`는 사용자 지시에 따라 한국어 게시 후보로 수정했고 기존 영문은 참고용으로 남겼습니다. [계정별 프롬프트](account-strategies.md)와 함께 검토하세요.
 
-**실제 게시 없음 · API 게시 OFF · 전체 예산 USD 20 유지.** 이 문서 저장, 번역 검토, 체크 표시 또는 GitHub 업로드는 게시 승인이 아닙니다. 게시 대기열·DB·예약에는 넣지 않았습니다. 계정의 설정 언어는 영어이며 한국어는 검토용 번역입니다.
+**실제 게시 없음 · API 게시 OFF · 전체 예산 USD 20 유지.** 이 문서 저장, 번역 검토, 체크 표시 또는 GitHub 업로드는 게시 승인이 아닙니다. 게시 대기열·DB·예약에는 넣지 않았습니다. `@technodemocracystudio`만 한국어 작성이며 보류 상태입니다. 나머지는 영어 설정이고 한국어는 검토용 번역입니다. LinkedIn은 게시 차단입니다.
+
+**운영 대상 구분:** 현재 선택은 Threads `@disanchor_com`과 공식 X `@disanchor_com`입니다. 연결 목록의 Instagram `@disanchor_com`은 같은 핸들의 별도 플랫폼 계정이며 이번 운영 대상이 아닙니다. Instagram 초안은 참고 보관용입니다.
 
 개발 중이라는 점을 각 글의 맥락에 넣었습니다. 제품이 이미 제공하는 기능이나 실제 고객 성과를 주장하지 않습니다. 링크·판매 유도·해시태그·계정 간 복제 없이 서로 다른 소재를 사용합니다. 같은 개발 배경을 여러 계정에서 계속 반복하면 광고처럼 느껴질 수 있으므로, 14개를 일괄 배포하는 계획으로 해석하지 않습니다.
 
@@ -10,7 +12,7 @@
 
 ## 계정별 바로 가기
 
-- [Instagram · @disanchor_com](#account-default_instagram) · IG-01 / IG-02
+- [Instagram · @disanchor_com — 운영 제외·참고용](#account-default_instagram) · IG-01 / IG-02
 - [X · @guidances_org](#account-default_x) · DX-01 / DX-02
 - [Threads · @disanchor_com](#account-default_threads) · DT-01 / DT-02
 - [LinkedIn · 게시 대상 확인 필요](#account-personal_linkedin) · LI-01 / LI-02
@@ -20,7 +22,7 @@
 
 <a id="account-default_instagram"></a>
 
-## Instagram · @disanchor_com
+## Instagram · @disanchor_com — 운영 제외·참고용
 
 전략 키: `default_instagram` · 접근: 장면으로 보여 주는 일상적인 작업 환경 · [적용 프롬프트](../prompts/accounts/default_instagram.md).
 
@@ -162,15 +164,17 @@
 
 전략 키: `personal_threads` · 접근: 도구 접근과 일상적인 업무 · [적용 프롬프트](../prompts/accounts/personal_threads.md).
 
+**작성 언어: 한국어(ko). 운영 보류이며 재연결·게시를 진행하지 않습니다.** 아래 한국어가 게시 후보이고, 영문은 예전 참고 문구입니다.
+
 ### PT-01
 
 **English**
 
 > A tool may be used for ten minutes and still take an evening to learn. As we build Disanchor, access is worth considering beyond the moment an app opens: is there a safe place to make mistakes before the real task?
 
-**한국어 번역**
+**한국어 게시 후보 — 보류**
 
-> 도구를 쓰는 시간은 10분이어도 배우는 데는 저녁 한때가 걸릴 수 있습니다. Disanchor를 만들면서 접근성을 앱이 열리는 순간 너머까지 생각해 볼 필요를 느낍니다. 실제 작업에 들어가기 전에 안심하고 실수해 볼 공간이 있을까요?
+> 도구를 쓰는 데는 10분인데 배우는 데는 저녁 한때가 걸리기도 합니다. Disanchor를 개발하면서, 접근성은 앱이 열리는 순간만의 문제가 아니라는 생각을 합니다. 실제 일을 시작하기 전에 안심하고 실수해 볼 공간도 필요하니까요.
 
 ### PT-02
 
@@ -178,9 +182,9 @@
 
 > A shared computer can be available and still be awkward to use for a private task. While we're building Disanchor, control over a session feels as important to discuss as access to the machine.
 
-**한국어 번역**
+**한국어 게시 후보 — 보류**
 
-> 공용 컴퓨터를 쓸 수 있다고 해도 개인적인 일을 하기에는 불편할 수 있습니다. Disanchor를 만들면서 컴퓨터에 접근할 수 있는지만큼, 그 세션을 스스로 통제할 수 있는지도 이야기해 볼 만하다고 느낍니다.
+> 공용 컴퓨터를 쓸 수 있어도 개인적인 일을 하기는 불편할 수 있습니다. 개발 중인 Disanchor를 생각하며, 기기에 접근할 수 있는지만큼 내 작업 세션을 스스로 통제할 수 있는지도 살펴보고 있습니다.
 
 <a id="account-disanchor_x"></a>
 

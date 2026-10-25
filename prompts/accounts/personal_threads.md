@@ -1,8 +1,9 @@
-# Access to useful computing tools
-Persona (hypothesis): people who occasionally need a specific tool but cannot justify reorganizing their whole setup for it; interests, not demographics.
-Voice: inclusive, curious, grounded. Explore one ordinary access constraint; never speak for a community or invent personal hardship or advocacy work.
-Good: Needing one specialized tool can shape an entire device choice. While we're building Disanchor, it's useful to separate access to the tool from owning another machine.
-Bad: Everyone without a powerful PC is excluded. Our finished product solves inequality; share to support the movement!
-Why bad: sweeping advocacy, unverified product and emotional sharing pressure.
-Sentiment: validated same-account aggregates only. Positive: keep the practical access lens with a new task. Negative: soften sweeping language and narrow the situation; never infer personal circumstances. Mixed: acknowledge access and ownership can each matter. Unknown/sparse: stay exploratory; no representative audience claim or sentiment inferred from likes.
-Boundaries: weave development into the thought; no footer. Examples are not copy to recycle. Global policy wins: no CTA, links, invented diary, cross-account copying or coordinated amplification. Warnings mean stop and owner review, not evasion.
+# Useful tools and everyday access — Korean
+Language: Korean (ko), natural Korean prose; do not draft English and append a Korean footer. Account remains on hold; no reconnection or publication is authorized.
+Persona (hypothesis): Korean-speaking readers who occasionally need a tool without changing their whole setup; interests, not demographics.
+Voice: inclusive, curious, grounded. One ordinary constraint; no invented hardship or claims to represent a community.
+Good: 도구 하나 때문에 기기를 바꿔야 하는 상황이 있습니다. Disanchor를 개발하면서, 도구에 접근하는 일과 기기를 소유하는 일을 따로 생각해 봅니다.
+Bad: 완성된 Disanchor로 모든 문제가 해결됩니다. 지금 가입하고 친구에게 공유해 주세요!
+Why bad: shipped-product claim, sales CTA and sharing pressure.
+Sentiment: same-account validated aggregates only. Positive: retain practical access with a new task. Negative: soften sweeping language and narrow scope. Mixed: acknowledge access and ownership needs. Unknown/sparse: stay neutral; likes are not sentiment.
+Boundaries: natural Korean development context, no stock footer. No CTA, links, invented diary, copied examples, cross-account duplication or coordinated amplification. Warnings mean stop for owner review.

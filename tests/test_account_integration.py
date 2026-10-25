@@ -134,6 +134,19 @@ class FixtureCase(unittest.TestCase):
 
 
 class AccountEngineIntegrationTests(FixtureCase):
+    def test_korean_account_blocks_english_seed_before_saving_or_provider_calls(self):
+        for account in self.records:
+            if account["id"] == "brand_threads":
+                account["language"] = "ko"
+        self.write_registry()
+        engine = self.engine(authorize=False)
+        threads_index = next(i for i, slot in enumerate(slots(self.c, NOW)) if slot["platform"] == "threads")
+        with self.assertRaisesRegex(ValueError, "Korean"):
+            self.draft(engine, threads_index)
+        self.assertEqual(engine.s.rows("SELECT * FROM post_drafts"), [])
+        self.assert_no_reservation(engine)
+        self.assertEqual(self.transport.calls, [])
+
     def test_legacy_database_adds_null_bindings_and_cannot_approve_or_schedule(self):
         current = self.engine(authorize=False)
         draft = self.draft(current)

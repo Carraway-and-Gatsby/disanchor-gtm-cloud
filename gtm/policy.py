@@ -5,7 +5,7 @@ import re
 from difflib import SequenceMatcher
 from urllib.parse import urlencode, urlsplit, parse_qs
 
-POLICY_VERSION = "2026-10-25.1"
+POLICY_VERSION = "2026-10-25.2"
 ALLOWED_ACTIONS = {"draft", "schedule_own_text", "read_own_metrics", "cancel_own_schedule", "report"}
 # Recognize current development in ordinary prose. This is a bounded language
 # check, not a requirement to attach a fixed sentence or a claim-verification AI.
@@ -27,12 +27,19 @@ DEVELOPMENT_DISCLOSURE = re.compile(r"""
             (?:\s+(?:before\s+(?:its\s+first\s+)?release|ahead\s+of\s+release))?
             (?!['’]s\b)(?=\s*[,.;:!?—-]|\s+(?:and|but|because|so|while)\b|$)
     )\b
+    |(?:개발\s*중인\s+Disanchor(?=[^A-Za-z0-9_]|$)
+       |Disanchor(?:는|가)?\s*(?:아직\s+)?개발\s*중(?:입니다|이에요|이며|이고|이라서|이므로|인)(?=[\s,.;:!?]|$)
+       |Disanchor를\s+(?:개발하면서|만들면서|(?:개발하는|만드는)\s+중(?:입니다|이며)))
 """, re.I | re.X)
 LINK_PATTERN = re.compile(r"(?:[a-z][a-z0-9+.-]*://|www\.|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,63}\b)", re.I)
 PROMOTIONAL_CTA = re.compile(r"\b(?:sign\s?up|join\s+(?:(?:our|the)\s+)?waitlist|subscribe|buy\s+now|book\s+(?:a\s+)?demo|"
                              r"link\s+in\s+(?:our\s+|my\s+)?bio|check\s+(?:our|the|my)\s+(?:profile|bio)|"
                              r"visit\s+(?:our|the|my)\s+(?:site|website|profile)|try\s+(?:disanchor|our\s+product)|"
                              r"get\s+(?:early\s+)?access|comment\s+.+?\s+(?:for|to\s+get)\s+access)\b", re.I)
+KOREAN_PROMOTION = re.compile(r"(?:지금\s*가입|가입(?:하세요|하기|해\s*주세요)|회원\s*가입|대기\s*명단|사전\s*신청|"
+                              r"구매(?:하세요|하기)|무료\s*체험|데모\s*신청|팔로우(?:하세요|해|하기)|"
+                              r"좋아요(?:를)?\s*눌러|공유(?:해|해\s*주세요|하기)|프로필.{0,15}링크|링크.{0,15}프로필|"
+                              r"출시\s*완료|이미\s*출시|정식\s*출시됐|성능\s*보장|100%\s*보장)")
 
 
 def content_hash(text):
@@ -50,7 +57,7 @@ def require_action(action):
         raise ValueError("Outgoing action denied by experiment policy")
 
 
-def validate_content(platform, text, previous=()):
+def validate_content(platform, text, previous=(), *, language=None):
     if platform not in {"x", "threads"} or not isinstance(text, str) or not text.strip():
         raise ValueError("Invalid platform or empty text")
     # Conservative weighted length avoids relying on Python character counts for X CJK/emoji.
@@ -65,10 +72,17 @@ def validate_content(platform, text, previous=()):
         raise ValueError("Hashtag stuffing is forbidden")
     if re.search(r"(?i)\b(follow me|like and|retweet|repost to|tag your|giveaway|guaranteed|zero latency|available now|sign up now|buy now|unlimited gpu)\b", text):
         raise ValueError("Engagement bait or unverified promise")
-    if LINK_PATTERN.search(text) or PROMOTIONAL_CTA.search(text):
+    if LINK_PATTERN.search(text) or PROMOTIONAL_CTA.search(text) or KOREAN_PROMOTION.search(text):
         raise ValueError("Initial seven-day conversation-only campaign forbids links and promotional CTAs")
     if not DEVELOPMENT_DISCLOSURE.search(text):
         raise ValueError("Every post must explicitly state that Disanchor is still in development")
+    if language == "ko":
+        body = re.sub(r"Disanchor", "", text, flags=re.I)
+        hangul = len(re.findall(r"[가-힣]", body))
+        # Conservative script check, not a semantic language detector. A short
+        # Korean disclosure must not disguise a mainly English post.
+        if hangul < 20 or hangul < len(re.findall(r"[A-Za-z]", body)):
+            raise ValueError("Korean account requires a Korean body")
     # Development can be mentioned anywhere in a sentence. Moving or rephrasing
     # that context must not disguise copied content or inflate similarity.
     normalized = comparison_body(text)

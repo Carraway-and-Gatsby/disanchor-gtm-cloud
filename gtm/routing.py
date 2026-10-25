@@ -89,7 +89,10 @@ def validate_stage(stage, value, context):
                 raise ValueError("post_policy_rejected")
             if draft["hypothesis"] != context["plan"]["hypothesis"] or draft["hook"] != context["plan"]["hook"]:
                 raise ValueError("writing_changed_plan")
-            validate_content(draft["platform"], draft["text"], texts)
+            account_key = upcoming[key].get("account_key")
+            account = next((a for a in context.get("accounts", [])
+                            if a.get("account_key") == account_key), {})
+            validate_content(draft["platform"], draft["text"], texts, language=account.get("language"))
             seen.add(key)
             texts.append(draft["text"])
     elif stage == "execution":
