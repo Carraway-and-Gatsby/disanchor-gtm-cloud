@@ -1,0 +1,88 @@
+{
+  "status": "passed",
+  "data": "synthetic_only_temporary_directory",
+  "mcp_and_identity": "injected_fixtures",
+  "telegram": "injected_transport_no_real_delivery",
+  "skill_writer": "compiled_native_compatible_format_not_cloud_native_runtime",
+  "phases": [
+    {
+      "phase": "positive",
+      "accepted_posts": 3,
+      "excluded_posts": 0,
+      "reasons": {},
+      "skill_status": "created",
+      "usable_sentiment_lessons": 1,
+      "direction": "positive",
+      "telegram_command_states": {
+        "/mcp": "SENT",
+        "/excluded": "SENT",
+        "/sentiment": "SENT"
+      },
+      "telegram_mcp_text": "MCP 반입: 반입 완료\n최근 기록: 10-27 23:00 KST\n최근 회차 반입 3개 · 제외 0개\nMCP 요청 6회 · 신원 조회 1회\n과거 반입 건수는 현재 학습 사용 가능 건수가 아닙니다. /sentiment에서 확인하세요.\n저장 기록 조회만 수행하며 새 수집·학습을 실행하지 않습니다.",
+      "telegram_sentiment_text": "최근 sentiment 학습\n최신 근거 검증 통과\n현재 사용 가능한 교훈 1개\n방향(교훈 수): 긍정 1 · 부정 0 · 혼합 0 · 미확인 0\n반응 집계: 최근 관측 글 3 · 비교 가능 그룹 1\n댓글 표본 판정(글 수): 긍정 3 · 부정 0 · 혼합 0 · 미확인 0\n학습 스킬: created · native 형식 생성\ndisanchor_x/x 참고 순위: x_01, x_02, x_03\n표본·관측 기반이며 인과적 우승이나 전체 이용자 여론이 아닙니다.\n생성 이력과 현재 유효한 학습은 다릅니다. 표본 부족·만료·권한 미확인·근거 불일치는 사용하지 않습니다.",
+      "telegram_excluded_text": "MCP 학습 제외 사유\n대상: 최근 기록 10-27 23:00 KST\n최근 회차의 글별 제외 기록 없음.\n표본 수치는 댓글 수나 사람 수가 아니라 제외된 글 수입니다."
+    },
+    {
+      "phase": "sparse",
+      "accepted_posts": 0,
+      "excluded_posts": 3,
+      "reasons": {
+        "insufficient_classified_comments": 3
+      },
+      "skill_status": "updated",
+      "usable_sentiment_lessons": 0,
+      "direction": null,
+      "telegram_command_states": {
+        "/mcp": "SENT",
+        "/excluded": "SENT",
+        "/sentiment": "SENT"
+      },
+      "telegram_mcp_text": "MCP 반입: 반입 완료\n최근 기록: 10-28 05:00 KST\n최근 회차 반입 0개 · 제외 3개\nMCP 요청 12회 · 신원 조회 2회\n과거 반입 건수는 현재 학습 사용 가능 건수가 아닙니다. /sentiment에서 확인하세요.\n저장 기록 조회만 수행하며 새 수집·학습을 실행하지 않습니다.",
+      "telegram_sentiment_text": "최근 sentiment 학습\n사용 가능한 sentiment 교훈 없음\n현재 사용 가능한 교훈 0개\n방향(교훈 수): 긍정 0 · 부정 0 · 혼합 0 · 미확인 0\n반응 집계: 최근 관측 글 0 · 비교 가능 그룹 0\n댓글 표본 판정(글 수): 긍정 0 · 부정 0 · 혼합 0 · 미확인 0\n학습 스킬: updated · native 형식 생성\n표본·관측 기반이며 인과적 우승이나 전체 이용자 여론이 아닙니다.\n생성 이력과 현재 유효한 학습은 다릅니다. 표본 부족·만료·권한 미확인·근거 불일치는 사용하지 않습니다.",
+      "telegram_excluded_text": "MCP 학습 제외 사유\n대상: 최근 기록 10-28 05:00 KST\n- 분류 가능한 댓글 수 또는 분류율 부족: 3개 글\n표본 수치는 댓글 수나 사람 수가 아니라 제외된 글 수입니다."
+    },
+    {
+      "phase": "permission_unverified",
+      "accepted_posts": 0,
+      "excluded_posts": 3,
+      "reasons": {
+        "mentions_source_unverified": 3
+      },
+      "skill_status": "unchanged",
+      "usable_sentiment_lessons": 0,
+      "direction": null,
+      "telegram_command_states": {
+        "/mcp": "SENT",
+        "/excluded": "SENT",
+        "/sentiment": "SENT"
+      },
+      "telegram_mcp_text": "MCP 반입: 반입 완료\n최근 기록: 10-28 11:00 KST\n최근 회차 반입 0개 · 제외 3개\nMCP 요청 18회 · 신원 조회 3회\n과거 반입 건수는 현재 학습 사용 가능 건수가 아닙니다. /sentiment에서 확인하세요.\n저장 기록 조회만 수행하며 새 수집·학습을 실행하지 않습니다.",
+      "telegram_sentiment_text": "최근 sentiment 학습\n사용 가능한 sentiment 교훈 없음\n현재 사용 가능한 교훈 0개\n방향(교훈 수): 긍정 0 · 부정 0 · 혼합 0 · 미확인 0\n반응 집계: 최근 관측 글 0 · 비교 가능 그룹 0\n댓글 표본 판정(글 수): 긍정 0 · 부정 0 · 혼합 0 · 미확인 0\n학습 스킬: unchanged · native 형식 생성\n표본·관측 기반이며 인과적 우승이나 전체 이용자 여론이 아닙니다.\n생성 이력과 현재 유효한 학습은 다릅니다. 표본 부족·만료·권한 미확인·근거 불일치는 사용하지 않습니다.",
+      "telegram_excluded_text": "MCP 학습 제외 사유\n대상: 최근 기록 10-28 11:00 KST\n- X 멘션 표본 범위 미확인: 3개 글\n표본 수치는 댓글 수나 사람 수가 아니라 제외된 글 수입니다."
+    },
+    {
+      "phase": "negative",
+      "accepted_posts": 3,
+      "excluded_posts": 0,
+      "reasons": {},
+      "skill_status": "updated",
+      "usable_sentiment_lessons": 1,
+      "direction": "negative",
+      "telegram_command_states": {
+        "/mcp": "SENT",
+        "/excluded": "SENT",
+        "/sentiment": "SENT"
+      },
+      "telegram_mcp_text": "MCP 반입: 반입 완료\n최근 기록: 10-28 17:00 KST\n최근 회차 반입 3개 · 제외 0개\nMCP 요청 24회 · 신원 조회 4회\n과거 반입 건수는 현재 학습 사용 가능 건수가 아닙니다. /sentiment에서 확인하세요.\n저장 기록 조회만 수행하며 새 수집·학습을 실행하지 않습니다.",
+      "telegram_sentiment_text": "최근 sentiment 학습\n최신 근거 검증 통과\n현재 사용 가능한 교훈 1개\n방향(교훈 수): 긍정 0 · 부정 1 · 혼합 0 · 미확인 0\n반응 집계: 최근 관측 글 3 · 비교 가능 그룹 1\n댓글 표본 판정(글 수): 긍정 0 · 부정 3 · 혼합 0 · 미확인 0\n학습 스킬: updated · native 형식 생성\ndisanchor_x/x 참고 순위: x_01, x_02, x_03\n표본·관측 기반이며 인과적 우승이나 전체 이용자 여론이 아닙니다.\n생성 이력과 현재 유효한 학습은 다릅니다. 표본 부족·만료·권한 미확인·근거 불일치는 사용하지 않습니다.",
+      "telegram_excluded_text": "MCP 학습 제외 사유\n대상: 최근 기록 10-28 17:00 KST\n최근 회차의 글별 제외 기록 없음.\n표본 수치는 댓글 수나 사람 수가 아니라 제외된 글 수입니다."
+    }
+  ],
+  "social_posts_sent": 0,
+  "model_calls": 0,
+  "cloud_created": false,
+  "budget_usd": 20,
+  "api_publishing": "OFF",
+  "linkedin_publication": "BLOCKED",
+  "production_state_accessed": false
+}

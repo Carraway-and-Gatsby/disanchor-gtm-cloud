@@ -16,6 +16,8 @@
 
 **Telegram import/learning queries:** [`/mcp`, `/excluded` and `/sentiment` usage and live verification (한국어 + English)](docs/telegram-mcp-monitoring.ko.md). Read persisted import status, exclusion reasons and currently valid lessons. All three owner-command replies were confirmed on the phone; the temporary listener has stopped. Real audience learning remains empty; USD 20, publishing OFF and LinkedIn blocked stay enforced.
 
+**Synthetic full flow:** [Four import/exclusion/skill/query cycles and Cloud start criteria (한국어 + English)](docs/synthetic-feedback-flow.ko.md). Twelve command replies use isolated temporary state and fake transports. Recommend a 24-hour staging check before seven-day learning with eligible real evidence; no Cloud was created.
+
 **Live MCP read-only check, Oct 25:** [Comment/reaction access and Hermes learning scope (한국어 + English summary)](docs/upload-post-mcp-feedback.ko.md). Two X comment calls succeeded with empty mentions samples; profile analytics worked on three X accounts and brand Threads. Selected-account comment permissions remain unverified, and Korean personal Threads is disconnected/on hold. Subsequent ingestion code does not turn these samples into learning evidence; USD 20, publishing OFF and the LinkedIn block stay unchanged.
 
 [한국어 안내](README.ko.md) · [Repository](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)
