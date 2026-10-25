@@ -2,6 +2,8 @@
 
 **Deploy later:** [한국어 배포 체크리스트 — commands, USD 20 budget, publishing OFF and account protection](docs/deployment-checklist.ko.md).
 
+**Review content:** [14 drafts by account — English originals + Korean translations](docs/account-drafts.en-ko.md) · [Seven-day slot plan and comment-reading limits (한국어)](docs/seven-day-schedule-and-feedback.ko.md). Review only; API publishing remains OFF within the total USD 20 budget.
+
 [한국어 안내](README.ko.md) · [Repository](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)
 
 A Python 3.12 / SQLite worker for a **seven-day, organic-first Disanchor experiment** on X and Threads. It prepares useful, account-specific content, records performance, and turns evidence into the next research and planning cycle. Disanchor is still being developed; drafts explain that naturally within the writing.

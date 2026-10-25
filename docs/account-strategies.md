@@ -1,5 +1,7 @@
 # 계정별 콘텐츠 접근과 대상 확인
 
+검토 자료: [계정별 영문 초안 14개와 한국어 번역](account-drafts.en-ko.md) · [7일 슬롯 계획·댓글 조회의 실제 범위](seven-day-schedule-and-feedback.ko.md). 실제 게시 없음, API 게시 OFF, 전체 예산 $20 유지.
+
 Upload-Post의 실제 읽기 전용 API 조회로 프로필 3개와 연결 채널 7개를 확인하고 **7개 콘텐츠 접근을 따로 준비**했습니다. 개별 프로필 조회에서 고유 ID와 `reauth_required=false`를 확인했습니다. 기본 X·Threads 후보는 추가 GET 비교 검증도 통과했습니다. 실제 ID는 Git에서 제외한 비공개 `accounts.local.toml`에만 저장했고, 공유용 [계정 레지스트리](../accounts.example.toml)는 ID를 비워 두었습니다. 모든 기록은 `reviewed=false`이며 이번 조회는 게시 승인이 아닙니다.
 
 ## 실제 연결 조회에서 확인된 범위
