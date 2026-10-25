@@ -5,7 +5,7 @@ import re
 from difflib import SequenceMatcher
 from urllib.parse import urlencode, urlsplit, parse_qs
 
-POLICY_VERSION = "2026-10-24.3"
+POLICY_VERSION = "2026-10-25.1"
 ALLOWED_ACTIONS = {"draft", "schedule_own_text", "read_own_metrics", "cancel_own_schedule", "report"}
 # Recognize current development in ordinary prose. This is a bounded language
 # check, not a requirement to attach a fixed sentence or a claim-verification AI.

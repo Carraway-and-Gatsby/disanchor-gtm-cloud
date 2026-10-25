@@ -125,8 +125,8 @@ class Routing:
     evidence_file: str = ""
     research: StageRoute = field(default_factory=StageRoute)
     planning: StageRoute = field(default_factory=lambda: StageRoute(max_input_tokens=10000, max_output_tokens=1400))
-    writing: StageRoute = field(default_factory=lambda: StageRoute(model="google/gemini-2.5-flash-lite", budget_share=.15, max_input_tokens=5000, max_output_tokens=1000, max_cost_per_call_usd=.045))
-    execution: StageRoute = field(default_factory=lambda: StageRoute(model="google/gemini-2.5-flash-lite", budget_share=.05, max_input_tokens=5000, max_output_tokens=300, max_cost_per_call_usd=.015))
+    writing: StageRoute = field(default_factory=lambda: StageRoute(model="google/gemini-2.5-flash-lite", budget_share=.15, max_input_tokens=9000, max_output_tokens=1000, max_cost_per_call_usd=.045))
+    execution: StageRoute = field(default_factory=lambda: StageRoute(model="google/gemini-2.5-flash-lite", budget_share=.05, max_input_tokens=9000, max_output_tokens=300, max_cost_per_call_usd=.015))
 
 
 @dataclass

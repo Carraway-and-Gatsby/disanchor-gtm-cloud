@@ -1,11 +1,12 @@
 """Account strategy inventory and identity gates, entirely local and offline."""
 import json
 import os
+import re
 from pathlib import Path
 import tempfile
 import unittest
 
-from gtm.accounts import AccountRegistry, MAX_CONTEXT_BYTES
+from gtm.accounts import AccountRegistry, MAX_CONTEXT_BYTES, MAX_PROMPT_BYTES
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,7 +63,7 @@ class AccountRegistryTests(unittest.TestCase):
             self.assertNotIn("native_account_id", context)
             self.assertNotIn("reviewed", context)
         pair = [registry.context("disanchor_x"), registry.context("default_threads")]
-        self.assertLessEqual(len(json.dumps(pair, ensure_ascii=False).encode()), 1100)
+        self.assertLessEqual(len(json.dumps(pair, ensure_ascii=False).encode()), 2 * MAX_CONTEXT_BYTES + 4)
 
     def test_binding_requires_explicit_review_and_nonempty_native_id(self):
         registry = AccountRegistry(self.write())
@@ -76,6 +77,34 @@ class AccountRegistryTests(unittest.TestCase):
         registry = AccountRegistry(self.write())
         self.assertEqual(registry.binding("sample_x"), {"id": "sample_x", "upload_post_profile": "fixture_profile",
                          "platform": "x", "native_account_id": "native-account-123"})
+
+    def test_editorial_examples_pass_or_fail_real_policy_and_are_distinct(self):
+        from gtm.policy import validate_content
+        registry = AccountRegistry(ROOT / "accounts.example.toml")
+        previous = []
+        for row in registry.all():
+            prompt = registry.context(row["id"])["prompt"]
+            good = re.search(r"^Good: (.+)$", prompt, re.M).group(1)
+            bad = re.search(r"^Bad: (.+)$", prompt, re.M).group(1)
+            # Instagram/LinkedIn are editorial examples only, checked against
+            # the conservative Threads text policy; no extra transport is enabled.
+            platform = row["platform"] if row["platform"] in {"x", "threads"} else "threads"
+            with self.subTest(account=row["id"]):
+                self.assertTrue(validate_content(platform, good, previous))
+                with self.assertRaises(ValueError):
+                    validate_content(platform, bad)
+            previous.append(good)
+
+    def test_model_cannot_copy_or_lightly_rewrite_a_style_example(self):
+        from gtm.routing import validate_stage
+        style = AccountRegistry(ROOT / "accounts.example.toml").context("disanchor_x")
+        good = re.search(r"^Good: (.+)$", style["prompt"], re.M).group(1)
+        context = {"slots": [{"id": "fixture", "platform": "x"}], "accounts": [style],
+                   "plan": {"hypothesis": "H2", "hook": "question"}}
+        for text in (good, good.replace("compatibility check", "compatibility review")):
+            with self.subTest(text=text[:30]), self.assertRaisesRegex(ValueError, "similar"):
+                validate_stage("writing", {"drafts": [{"slot_id": "fixture", "platform": "x", "text": text,
+                               "hypothesis": "H2", "hook": "question", "cta": "none"}]}, context)
 
     def test_instagram_and_linkedin_have_context_but_no_publishing_binding(self):
         for platform in ("instagram", "linkedin"):
@@ -196,9 +225,9 @@ class AccountRegistryTests(unittest.TestCase):
 
     def test_prompt_size_empty_secret_and_context_overflow_fail_closed(self):
         self.write()
-        cases = (("x" * 701, "too_large"), (" \n", "prompt_invalid"),
+        cases = (("x" * (MAX_PROMPT_BYTES + 1), "too_large"), (" \n", "prompt_invalid"),
                  ("Send to person@example.com", "prompt_invalid"),
-                 ("A" * 600, "context_too_large"))
+                 ("A" * MAX_PROMPT_BYTES, "context_too_large"))
         for text, error in cases:
             self.prompt.write_text(text)
             with self.subTest(error=error), self.assertRaisesRegex(ValueError, error):
