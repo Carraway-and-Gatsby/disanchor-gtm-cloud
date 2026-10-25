@@ -120,6 +120,8 @@ threads_account = "default_threads"
 
 [feedback]
 enabled = true
+# Reads only verified own-post receipts; does not enable Cloud or publishing.
+collection_transport = "mcp"
 max_posts_per_collection = 10
 max_comments_per_post = 40
 max_comment_pages = 2

@@ -145,6 +145,7 @@ class Accounts:
 @dataclass
 class Feedback:
     enabled: bool = True
+    collection_transport: str = 'rest'
     max_posts_per_collection: int = 10
     max_comments_per_post: int = 40
     max_comment_pages: int = 2
@@ -197,6 +198,8 @@ class Config:
         return result
 
     def validate(self):
+        if not isinstance(self.feedback.collection_transport, str) or self.feedback.collection_transport not in {'rest', 'mcp'}:
+            raise ValueError('Invalid feedback collection transport')
         # TOML booleans and integers must not be interchangeable.
         def validate_types(item):
             default = type(item)()

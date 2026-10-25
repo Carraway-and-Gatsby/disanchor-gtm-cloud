@@ -1,0 +1,25 @@
+{
+  "date_kst": "2026-10-25",
+  "implementation": "MCP own-post collection, verified aggregate ingestion, Hermes skill update",
+  "unit_and_integration_tests": {"total": 454, "mcp_specific": 27, "result": "passed", "positive_samples": "fixtures_only"},
+  "real_official_mcp": {"status": "handshake_verified", "protocol_version": "2025-03-26", "http_requests": 2, "tool_calls": 0},
+  "real_local_collection": {"status": "skipped", "reason": "no_started_experiment", "mcp_calls": 0, "identity_reads": 0, "model_calls": 0, "posts_sent": 0},
+  "offline_preflight": "passed",
+  "credential_free_staging_smoke": "passed",
+  "credentials_and_native_bindings_changed": false,
+  "local_experiment_posting_cost_and_learning_changed": false,
+  "actual_audience_skill_created": false,
+  "cloud_created": false,
+  "total_budget_usd": 20,
+  "api_publishing": "OFF",
+  "linkedin_publication": "BLOCKED",
+  "paid_models": "OFF",
+  "new_cron_or_background_worker": false,
+  "limitations": [
+    "Current real audience samples remain empty or unverified and were not imported.",
+    "Own-post normal collection and native skill integration on Cloud remain unverified.",
+    "Missing per-post support metadata, denominator or receipt ID causes exclusion.",
+    "ChatGPT OAuth is not exported; worker uses the existing private API key.",
+    "No platform suspension guarantee or provider billing cap is claimed."
+  ]
+}

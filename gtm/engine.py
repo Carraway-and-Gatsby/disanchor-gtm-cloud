@@ -498,7 +498,8 @@ class Engine:
         try:
             loop = self.learning_loop()
             return loop.context(policy_version=POLICY_VERSION,
-                                account_fingerprint=self.account_fingerprint(), now=now)
+                                account_fingerprint=self.account_fingerprint(), now=now,
+                                expected_lessons=self.feedback(now)['lessons'])
         except (ValueError, OSError, RuntimeError):
             return {}
         finally:
@@ -526,7 +527,13 @@ class Engine:
                 website["status"] = "unavailable"
         website["attribution_limitations"] = ["GA4 report dates use the property's reporting timezone and may include partial boundary days.", "Consent, blocking, processing delays, and GA4 retention can undercount visits; X profile visits are channel-level only."]
         self.s.record("website_metrics_snapshots", key, now, self.source + "/ga4", website)
+        mcp_import = None
+        if self.c.feedback.collection_transport == 'mcp' and not self.simulated:
+            from .mcp_feedback import collect_mcp
+            mcp_import = collect_mcp(self, now, refresh_learning=False)
         posts = self.s.rows("SELECT d.*,p.provider_request_id,p.platform_post_id FROM post_drafts d LEFT JOIN platform_posts p ON p.post_id=d.id")
+        if mcp_import is not None:
+            posts = []  # Do not mix a second REST observation into the MCP cycle.
         allowed_feedback = []
         for post in posts:
             metric_names = ("views", "impressions", "reach", "likes", "replies", "comments", "reposts", "shares", "quotes", "link_clicks", "followers")
@@ -586,7 +593,8 @@ class Engine:
         if final:
             self.s.db.execute("UPDATE experiments SET final_collected=1 WHERE id=?", (e["id"],))
         learning = self.learn(now)
-        return {"status": "collected", "mode": self.source, "learning": learning}
+        return {"status": "collected", "mode": self.source, "learning": learning,
+                **({'mcp_import': mcp_import} if mcp_import is not None else {})}
 
     def watchdog(self, now):
         e = self.experiment()

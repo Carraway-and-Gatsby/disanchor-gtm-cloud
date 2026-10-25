@@ -360,13 +360,15 @@ class LearningLoop:
             raise ValueError("learning_revision_integrity_failed")
         return row, payload
 
-    def context(self, *, policy_version, account_fingerprint, now=None, max_age_hours=168):
+    def context(self, *, policy_version, account_fingerprint, now=None, max_age_hours=168, expected_lessons=None):
         """Only the small structured data is routed; arbitrary SKILL text is not."""
         try:
             current = self.db.execute("SELECT * FROM current WHERE id=1").fetchone()
             if not current:
                 return {}
             row, payload = self._checked_revision(current["revision"])
+            if expected_lessons is not None and payload['lessons'] != validate_lessons(expected_lessons, account_fingerprint):
+                return {}
             if (payload["policy_version"] != policy_version or payload["account_fingerprint"] != account_fingerprint
                 or _plain(self.skill_path).read_text() != row["content"]):
                 return {}

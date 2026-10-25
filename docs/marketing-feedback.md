@@ -1,6 +1,6 @@
 # Marketing feedback / 마케팅 반응 학습
 
-Latest live MCP evidence / 최신 실제 MCP 근거: [2026-10-25 댓글·반응 조회와 학습 가능 범위](upload-post-mcp-feedback.ko.md). Two X reads returned empty mentions samples; selected-account reply access remains unverified. Profile analytics are not post-level training observations. No automatic MCP import exists; metadata normalization and completeness checks are required before adding one. / X 2개는 멘션 0개, 운영 후보의 답글 권한은 미확인입니다. MCP 계정 지표를 실험 글별 수치로 가져오지 않으며 현재 sentiment 교훈을 추가하지 않았습니다.
+Latest live MCP evidence / 최신 실제 MCP 근거: [2026-10-25 댓글·반응 조회와 학습 가능 범위](upload-post-mcp-feedback.ko.md). Two X reads returned empty mentions samples; selected-account reply access remains unverified. Profile analytics are not post-level training observations. [Automatic MCP ingestion](mcp-feedback-ingestion.ko.md) now normalizes own-post evidence with permission, sample and interruption guards. / 자동 반입은 구현했지만 실제 X 표본은 멘션 0개, 운영 후보의 답글 권한은 미확인입니다. 이 자료에서 실제 sentiment 교훈을 추가하지 않았습니다.
 
 The worker observes performance and public responses to its own confirmed posts, then feeds bounded aggregates back into research, planning and reusable learning. It never replies to a commenter, sends a DM, likes a comment, or changes publishing approval. / 실행기는 자신이 게시한 것으로 확인된 글의 성과와 공개 반응을 집계하여 리서치·기획·재사용 학습에 반영합니다. 댓글 답변, DM, 좋아요, 게시 승인 변경은 하지 않습니다.
 

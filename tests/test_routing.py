@@ -578,15 +578,22 @@ class RoutingTests(unittest.TestCase):
         # and recent metrics. No paid model or native subprocess is involved.
         from gtm.policy import POLICY_VERSION
         store.path = store.path.resolve()  # macOS /var aliases must not weaken learning path guards.
-        lessons = [{"account_key": engine.account_key(platform), "account_fingerprint": engine.account_fingerprint(),
-                    "platform": platform, "hypothesis": "H2", "hook": "question", "sample_posts": 3,
-                    "impressions": 300, "engagements": 15, "denominator": "impressions",
-                    "sentiment": {"positive": 5, "negative": 0, "mixed": 0, "unknown": 0},
-                    "source_ids": ["a" * 64], "confidence": "directional"}
-                   for platform in ("x", "threads")]
+        # Skills must match current SQLite evidence; a standalone fabricated
+        # lesson is now correctly excluded from routing.
+        from gtm.feedback import sentiment_summary
+        for platform in ('x', 'threads'):
+            for index in range(3):
+                identity = {'account_key': engine.account_key(platform), 'account_fingerprint': engine.account_fingerprint(),
+                            'platform': platform, 'post_id': f'learning_{platform}_{index}'}
+                store.record('post_metrics_snapshots', f'learning-metric-{platform}-{index}', self.now, 'fixture',
+                             {**identity, 'hypothesis': 'H2', 'hook_type': 'question',
+                              'metrics': {'impressions':100,'likes':3,'replies':1,'reposts':1}})
+                store.record('sentiment_snapshots', f'learning-sentiment-{platform}-{index}', self.now, 'fixture',
+                             {**identity, 'status':'sampled','partial':False,
+                              'sentiment':sentiment_summary({'positive':5,'negative':0,'mixed':0,'unknown':0})})
         loop = engine.learning_loop()
         try:
-            loop.update({"lessons": lessons}, now=self.now, policy_version=POLICY_VERSION,
+            loop.update(engine.feedback(self.now), now=self.now, policy_version=POLICY_VERSION,
                         account_fingerprint=engine.account_fingerprint())
         finally:
             loop.close()

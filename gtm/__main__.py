@@ -22,7 +22,7 @@ def parser():
     p.add_argument("--env-file", help="Explicit owner-only KEY=value file; never executed as shell")
     p.add_argument("--no-publish", action="store_true", help="Staging lock: reject all Upload-Post writes, even if config enables publishing")
     commands = p.add_subparsers(dest="command", required=True)
-    for name in ("init", "pause", "stop", "inspect", "daily", "collect", "reconcile", "watchdog", "report", "dry-run", "preflight", "preview-library", "route", "telegram", "status", "connection-check", "account-prompts", "feedback", "learn"):
+    for name in ("init", "pause", "stop", "inspect", "daily", "collect", "collect-mcp", "reconcile", "watchdog", "report", "dry-run", "preflight", "preview-library", "route", "telegram", "status", "connection-check", "account-prompts", "feedback", "learn"):
         commands.add_parser(name)
     commands.add_parser("start").add_argument("--at", required=True, help="Explicit timestamp with UTC offset; immutable")
     resume = commands.add_parser("resume")
@@ -232,7 +232,7 @@ def run(args):
         else:
             with process_lock(args.state):
                 s = Store(args.state)
-                engine = live_engine(c, s, monitoring_only=args.command in {"status", "telegram", "feedback", "learn"})
+                engine = live_engine(c, s, monitoring_only=args.command in {"status", "telegram", "feedback", "learn", "collect-mcp"})
                 command = args.command
                 if command == "init":
                     engine.init(now)
@@ -257,6 +257,9 @@ def run(args):
                               "network_calls": 0}
                 elif command == "feedback":
                     result = engine.feedback(now)
+                elif command == "collect-mcp":
+                    from .mcp_feedback import collect_mcp
+                    result = collect_mcp(engine, now)
                 elif command == "learn":
                     result = engine.learn(now)
                 elif command == "telegram":

@@ -1,5 +1,7 @@
 # Upload-Post MCP 댓글·반응 조회와 Hermes 학습 범위
 
+후속 구현: [MCP 자동 반입 경로·안전 조건·테스트](mcp-feedback-ingestion.ko.md)를 추가했습니다. 아래는 17:33 KST 실제 조회 당시의 결과와 구현 전 경계 기록입니다. 현재는 자동 반입 코드가 있지만, 아래의 빈 댓글·계정 지표를 학습 근거로 가져오지 않았고 실제 환경에서는 미시작 검사로 차단됩니다.
+
 2026-10-25 17:33 KST 기준 실제 ChatGPT Upload-Post MCP 점검 결과입니다. **X 2개 계정의 멘션 조회와 연결된 X 3개·Threads 1개의 계정 분석 조회는 성공했습니다. 읽은 댓글은 0개이며, 현재 데이터로 감성 변화나 잘된 글을 학습했다고 주장할 수 없습니다.** 공식 X와 브랜드 Threads의 댓글 권한은 기존 글이 없어 미확인입니다.
 
 Cloud 미생성 · 전체 예산 **$20** · **API 게시 OFF** · **LinkedIn 게시 차단** · 유료 모델 OFF를 유지했습니다. 게시·예약·댓글 작성·DM·좋아요·재연결·구독 구매 도구는 호출하지 않았습니다. 이 점검은 ChatGPT의 MCP 연결을 사용했으며 로컬 API 키를 MCP로 복사하지 않았습니다.
@@ -46,9 +48,9 @@ Cloud 미생성 · 전체 예산 **$20** · **API 게시 OFF** · **LinkedIn 게
 | 글별 노출·반응 | **이번 실제 조회 미검증** | 게시 영수증·native 계정 바인딩·제공자 requestId·지표 단위·관측 시각 검증 |
 | 한국어 개인 Threads | **현재 사용 불가·보류** | 사용자 보류 해제와 별도 연결·권한 검증 전까지 조회·학습하지 않음 |
 
-기존 워커는 비공개 API 키와 공식 REST 수집기를 사용하며, 로컬 게시 영수증으로 확인된 실험 글만 자동 수집합니다. **ChatGPT에 MCP를 연결했다고 Hermes Cloud가 그 연결을 상속하거나, 이번 MCP 관측값을 SQLite·skill에 자동 반입하는 것은 아닙니다.** 이번에 데이터 import, `collect`, `learn`, skill 작성·수정 또는 유료 모델 실행을 하지 않았습니다.
+점검 당시 기존 워커는 비공개 API 키와 공식 REST 수집기를 사용했으며, 로컬 게시 영수증으로 확인된 실험 글만 자동 수집했습니다. **ChatGPT에 MCP를 연결했다고 Hermes Cloud가 그 OAuth 연결을 상속하는 것은 아닙니다.** 이 수동 점검에서는 데이터 import, `collect`, `learn`, skill 작성·수정 또는 유료 모델 실행을 하지 않았습니다. 이후 별도 워커 MCP 클라이언트와 자동 반입을 구현했으며 [현재 구현 안내](mcp-feedback-ingestion.ko.md)를 따릅니다.
 
-MCP 관측을 나중에 연결하려면 다음 반입 계약을 별도로 구현·검증해야 합니다.
+이 점검에서 확인한 반입 계약은 다음과 같습니다. 후속 MCP 경로는 이 검사를 구현했으며, 과거 REST 수집기와 구분합니다.
 
 1. 정확한 프로필·플랫폼·native 계정 ID·계정 지문과 본인 게시 영수증을 대조합니다. 과거 글을 실험 글로 자동 편입하지 않습니다.
 2. MCP 응답을 닫힌 구조로 정규화하고 계정 지표와 글별 지표를 구분합니다. `available_metrics` 밖의 값은 `null`; `metric_type`·분모 충돌은 차단합니다. 기존 숫자 정규화 함수는 이 MCP 메타데이터까지 자동 해석하지 않습니다.
@@ -67,6 +69,6 @@ MCP 관측을 나중에 연결하려면 다음 반입 계약을 별도로 구현
 
 ## English summary
 
-Read-only ChatGPT MCP checks succeeded for profile analytics on three X connections and one Threads connection. Two X comment calls returned empty mentions samples. The selected official X and brand Threads had no listed posts, so their comment permissions remain unverified. Korean Technodemocracy Threads is disconnected and stays on hold. Account analytics are not post-level learning evidence; X availability metadata and conflicting Threads denominator metadata require normalization. No MCP-to-Hermes import, skill update, Cloud instance, social post or paid model run was started. USD 20, publishing OFF and the LinkedIn block remain unchanged.
+Read-only ChatGPT MCP checks succeeded for profile analytics on three X connections and one Threads connection. Two X comment calls returned empty mentions samples. The selected official X and brand Threads had no listed posts, so their comment permissions remain unverified. Korean Technodemocracy Threads is disconnected and stays on hold. Account analytics are not post-level learning evidence; X availability metadata and conflicting Threads denominator metadata require normalization. This manual check imported nothing. A subsequent bounded worker MCP ingestion path is now implemented; see the linked implementation guide. No Cloud instance, social post or paid model run was started. USD 20, publishing OFF and the LinkedIn block remain unchanged.
 
 [README](../README.ko.md) · [과거 REST 권한 점검](comment-permissions.ko.md) · [배포 체크리스트](deployment-checklist.ko.md)

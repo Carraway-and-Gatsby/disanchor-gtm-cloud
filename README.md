@@ -12,7 +12,9 @@
 
 **Account distinction:** the selected targets are official X and **Threads `@disanchor_com`**. The separate Instagram connection with that handle is excluded from this campaign. Threads `@technodemocracystudio` writes **Korean and remains on hold**; LinkedIn publication stays blocked.
 
-**Latest MCP read-only check, Oct 25:** [Comment/reaction access and Hermes learning scope (한국어 + English summary)](docs/upload-post-mcp-feedback.ko.md). Two X comment calls succeeded with empty mentions samples; profile analytics worked on three X accounts and brand Threads. Selected-account comment permissions remain unverified, and Korean personal Threads is disconnected/on hold. No automatic MCP-to-Hermes import exists yet; USD 20, publishing OFF and the LinkedIn block stay unchanged.
+**MCP ingestion implemented:** [Verified ownership, permission/sample gates and automatic Hermes skill ingestion (한국어 + English)](docs/mcp-feedback-ingestion.ko.md). The collect job now supports MCP; invalid or interrupted observations revoke old learning evidence. The current unstarted experiment skips without external calls. Cloud, publishing and background execution remain disabled.
+
+**Live MCP read-only check, Oct 25:** [Comment/reaction access and Hermes learning scope (한국어 + English summary)](docs/upload-post-mcp-feedback.ko.md). Two X comment calls succeeded with empty mentions samples; profile analytics worked on three X accounts and brand Threads. Selected-account comment permissions remain unverified, and Korean personal Threads is disconnected/on hold. Subsequent ingestion code does not turn these samples into learning evidence; USD 20, publishing OFF and the LinkedIn block stay unchanged.
 
 [한국어 안내](README.ko.md) · [Repository](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud) · [GitHub Actions](https://github.com/Carraway-and-Gatsby/disanchor-gtm-cloud/actions)
 
