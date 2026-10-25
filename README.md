@@ -6,6 +6,10 @@
 
 **Review content:** [14 drafts by account — English originals + Korean translations](docs/account-drafts.en-ko.md) · [Seven-day slot plan and comment-reading limits (한국어)](docs/seven-day-schedule-and-feedback.ko.md). Review only; API publishing remains OFF within the total USD 20 budget.
 
+**Local Telegram test:** [Bounded status and account-draft review without creating Cloud (한국어)](docs/telegram.md#cloud-생성-전-로컬-연결-테스트). `/status` and `/drafts` are read-only; the temporary listener stops after testing. No social publishing or paid model calls.
+
+[Live local test result (한국어)](docs/telegram-local-test.ko.md): owner status/Korean-draft command round trips and English-draft delivery verified. The brand Threads draft query itself was not received. The bounded test has stopped.
+
 **Account distinction:** the selected targets are official X and **Threads `@disanchor_com`**. The separate Instagram connection with that handle is excluded from this campaign. Threads `@technodemocracystudio` writes **Korean and remains on hold**; LinkedIn publication stays blocked.
 
 **Live read-only check, Oct 25:** [X/Threads comment permissions and required owner settings (한국어)](docs/comment-permissions.ko.md). Two X mention reads succeeded; personal Threads is partial; the selected official X and brand Threads remain unverified because their recent-post lists were empty. No posts or connection changes; publishing OFF and USD 20 unchanged.

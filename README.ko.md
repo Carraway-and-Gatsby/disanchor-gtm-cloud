@@ -6,6 +6,10 @@
 
 **Telegram 먼저 준비:** [BotFather → 숨김 토큰 입력 → 본인 개인 대화 확인 → 비공개 저장](docs/telegram-setup.ko.md). Cloud 생성·봇 활성화 없이 준비하며 $20·API 게시 OFF·LinkedIn 게시 차단을 유지합니다.
 
+**Telegram 로컬 테스트:** [5분간 상태·계정별 검토 초안 조회](docs/telegram.md#cloud-생성-전-로컬-연결-테스트). `/status`와 `/drafts`를 지원하며, 테스트 종료 후에는 상시 응답하지 않습니다. Cloud 생성·SNS 게시·모델 호출 없이 실행합니다.
+
+[실제 연결 테스트 결과](docs/telegram-local-test.ko.md): 상태 조회·한국어 초안 조회 왕복 및 영어 초안 전달을 확인했습니다. 브랜드 Threads 초안 조회 명령의 수신은 미확인이며, 5분 테스트는 종료됐습니다.
+
 **콘텐츠 검토:** [계정별 초안 14개 — 영문 원문 + 한국어 번역](docs/account-drafts.en-ko.md) · [7일 게시 계획과 댓글 조회 범위](docs/seven-day-schedule-and-feedback.ko.md). 검토 자료이며 실제 게시는 하지 않습니다. 전체 $20·API 게시 OFF를 유지합니다.
 
 **계정 구분:** 운영 후보는 공식 X와 **Threads `@disanchor_com`**입니다. 같은 핸들의 Instagram 연결은 운영에서 제외합니다. Threads `@technodemocracystudio`는 **한국어 작성·운영 보류**, LinkedIn은 게시 차단입니다.
@@ -164,7 +168,7 @@ bash scripts/hermes-install.sh --check
 .venv/bin/python -m gtm report
 ```
 
-`status`는 전송 없는 로컬 Telegram 형식 미리보기입니다. 실제 봇을 설정한 뒤에는 `/status`, `/budget`, `/posts`, `/help`로 개인 현황을 확인합니다. 피드백 요약은 구현된 명령과 범위를 [Telegram 안내](docs/telegram.md)에서 확인합니다. Telegram으로 게시 승인·shell 실행·예산 변경을 할 수 없습니다.
+`status`는 전송 없는 로컬 Telegram 형식 미리보기입니다. 실제 봇을 설정한 뒤에는 `/status`, `/budget`, `/posts`, `/drafts`, `/help`로 현황과 검토 초안을 확인합니다. 피드백 요약은 구현된 명령과 범위를 [Telegram 안내](docs/telegram.md)에서 확인합니다. Telegram으로 게시 승인·shell 실행·예산 변경을 할 수 없습니다.
 
 지표는 관측 시각과 출처를 보존합니다. 날짜별 누적 스냅샷을 더하지 않으며 조회 수 합계를 고유 도달로 표현하지 않습니다. 표본이 적거나 댓글을 가져올 수 없으면 감정·효과를 추측하지 않습니다. 성과 상위 글도 인과관계나 다음 글의 성공을 보장하지 않습니다.
 

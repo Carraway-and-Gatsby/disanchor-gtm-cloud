@@ -388,8 +388,13 @@ class TelegramMonitor:
             return "Disanchor 게시 집계\n" + self._posts_text(snap)
         if text == "/feedback":
             return "Disanchor 마케팅 학습\n" + self._feedback_text(snap)
+        if isinstance(text, str):
+            from .review_drafts import draft_review
+            review = draft_review(text)
+            if review is not None:
+                return review
         if text == "/help":
-            return "조회 명령: /status /budget /posts /feedback /help\n게시·승인·재개·모델 실행은 Cloud 콘솔에서 처리합니다. Telegram 입력은 실행되지 않습니다."
+            return "조회 명령: /status /budget /posts /drafts /feedback /help\n/drafts에서 계정을 고르면 검토 문서의 초안 2개를 읽습니다. 게시·승인·재개·모델 실행은 지원하지 않습니다. Telegram 입력은 실행되지 않습니다."
         return None
 
     def notify(self, now, daily=False):
