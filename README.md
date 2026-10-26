@@ -1,6 +1,9 @@
 # Disanchor · Cloud marketing worker
 
-**Current North America schedule:** [Exact weekday times and provider queue settings — 한국어 / English](docs/north-america-publishing-schedule.ko.md). Six new candidates maximum, three per account; no new schedules submitted. Two earlier manual tests are separate. Auto-publishing OFF, USD 20 budget, LinkedIn blocked.
+**Automatic publishing active — 2026-10-26:** [35 approved and provider-verified posts, English/Korean copy and ET/PT/KST calendar](docs/gtm-automatic-publishing-2026-10-27-35.en-ko.md). Upload-Post will publish 21 X posts (three daily) and 14 Threads posts (two daily) for the two brand accounts only, from Oct 27 22:30 to Nov 3 05:30 KST. The Cloud publisher, paid models and other accounts remain OFF. USD 20 and the existing staging stop are unchanged. The older six-slot Cloud-worker calendar below is a separate guard.
+
+
+**Existing Cloud-worker limits:** [Weekday times and queue settings — 한국어 / English](docs/north-america-publishing-schedule.ko.md). The worker retains its six-slot limit and direct publishing OFF. These are separate from the approved 35 native provider schedules above. OFF statements in older preparation and review records below describe that worker or their historical task scope.
 
 
 **Cloud staging Telegram:** [Owner-only status, MCP, exclusion and sentiment queries (Korean)](docs/telegram-cloud-staging.ko.md). Restricted read-only receiver; $20 budget, social publishing OFF and LinkedIn blocked.

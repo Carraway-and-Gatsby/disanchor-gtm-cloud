@@ -1,0 +1,416 @@
+{
+  "version": 1,
+  "batch_id": "north-america-20261027-35",
+  "status": "ACTIVE_BOUNDED_BATCH",
+  "platforms": {
+    "x": {
+      "user": "disanchor_x",
+      "handle": "disanchor_com",
+      "per_day": 3,
+      "copy": [
+        {
+          "topic": "작업 이전 전 의존성 점검",
+          "text": "Before moving a task to another machine, list what it needs: the app, a license, a device plugged in, or a local file. We're developing Disanchor, and making those dependencies visible is a practical starting point.",
+          "ko": "작업을 다른 컴퓨터로 옮기기 전에 앱·라이선스·연결 기기·로컬 파일 등 필요한 조건을 적어 보세요. Disanchor를 개발하면서도 이런 의존 관계를 드러내는 것이 출발점이라고 생각합니다.",
+          "id": "na27-x-01",
+          "scheduled_date": "2026-10-27T13:30:00Z",
+          "ET": "2026-10-27T09:30:00-04:00",
+          "PT": "2026-10-27T06:30:00-07:00",
+          "KST": "2026-10-27T22:30:00+09:00",
+          "text_sha256": "3c57f3da717b25d1a685ff0c8c7712dddcce082b0f44412b8dad67d5945d05e5"
+        },
+        {
+          "topic": "설치 안내의 검증 단계",
+          "text": "A setup guide gets more useful when it includes a way to check the result. As we build Disanchor, 'open this sample file and verify the output' is a clearer test than counting completed installation steps.",
+          "ko": "설치 안내에는 결과를 확인하는 방법도 필요합니다. Disanchor를 만들면서도 예제 파일을 열어 출력을 확인하는 절차를 구체적인 검증 방법으로 생각합니다.",
+          "id": "na27-x-02",
+          "scheduled_date": "2026-10-27T16:30:00Z",
+          "ET": "2026-10-27T12:30:00-04:00",
+          "PT": "2026-10-27T09:30:00-07:00",
+          "KST": "2026-10-28T01:30:00+09:00",
+          "text_sha256": "63cd7c2b649f3a4bb491ed7bc0f2f94f2f03d1c83601e0649f7f80343f1af8e5"
+        },
+        {
+          "topic": "경로도 작업의 조건",
+          "text": "An absolute file path can quietly become a project dependency. For Disanchor, still in development, a useful portability check is whether a task still makes sense when its working folder has a different name.",
+          "ko": "파일의 절대 경로도 프로젝트의 의존 조건이 될 수 있습니다. 개발 중인 Disanchor에서도 작업 폴더 이름이 달라졌을 때 무엇이 영향을 받는지 살펴볼 필요가 있습니다.",
+          "id": "na27-x-03",
+          "scheduled_date": "2026-10-27T19:30:00Z",
+          "ET": "2026-10-27T15:30:00-04:00",
+          "PT": "2026-10-27T12:30:00-07:00",
+          "KST": "2026-10-28T04:30:00+09:00",
+          "text_sha256": "ba4b341d36d3fce78da29b39536f5791bcb16d97e498be3e582f73ebfc0d725f"
+        },
+        {
+          "topic": "평균 지연의 한계",
+          "text": "A latency average can hide a few very slow moments. For Disanchor's ongoing development, a useful test would report the spread and worst delays alongside the typical result.",
+          "ko": "평균 지연에는 유난히 느렸던 순간이 가려질 수 있습니다. 개발 중인 Disanchor의 검증에서도 분포와 가장 느렸던 구간을 함께 살펴볼 필요가 있습니다.",
+          "id": "na27-x-04",
+          "scheduled_date": "2026-10-28T13:30:00Z",
+          "ET": "2026-10-28T09:30:00-04:00",
+          "PT": "2026-10-28T06:30:00-07:00",
+          "KST": "2026-10-28T22:30:00+09:00",
+          "text_sha256": "0ba28e620c6d248a2f1e9800fc65694850ce92632888961279cd4c2e6a223b4f"
+        },
+        {
+          "topic": "비교 가능한 실험",
+          "text": "Same input file, same app version, same output check. As we build Disanchor, that is a useful baseline for comparing environments before treating a faster run as a better workflow.",
+          "ko": "같은 입력 파일·앱 버전·결과 확인 방법을 맞춰야 환경을 비교할 기준이 생깁니다. Disanchor를 개발하면서도 실행 시간만 보고 작업 흐름을 평가하지 않으려 합니다.",
+          "id": "na27-x-05",
+          "scheduled_date": "2026-10-28T16:30:00Z",
+          "ET": "2026-10-28T12:30:00-04:00",
+          "PT": "2026-10-28T09:30:00-07:00",
+          "KST": "2026-10-29T01:30:00+09:00",
+          "text_sha256": "3caf49d4591b32de04513624456ebc57138139d0c63d7bac4b4acce653dc5e1d"
+        },
+        {
+          "topic": "클릭이 완료되는 순간",
+          "text": "A responsive pointer and a completed click are separate observations. Disanchor is still in development, and a useful interaction test would check when the intended change actually appears.",
+          "ko": "포인터가 움직이는 것과 클릭 결과가 나타나는 것은 별개의 관찰입니다. 개발 중인 Disanchor에서도 의도한 변화가 언제 보이는지 확인하는 테스트가 필요합니다.",
+          "id": "na27-x-06",
+          "scheduled_date": "2026-10-28T19:30:00Z",
+          "ET": "2026-10-28T15:30:00-04:00",
+          "PT": "2026-10-28T12:30:00-07:00",
+          "KST": "2026-10-29T04:30:00+09:00",
+          "text_sha256": "3ca1ad12aac65b26e4133933055e866662c6219866645d417ccde0e2dccb3417"
+        },
+        {
+          "topic": "결과물 내보내기",
+          "text": "A workspace can be easy to enter and hard to leave. For Disanchor, still in development, export deserves a concrete test: can someone take a useful result into their next tool without rebuilding the task?",
+          "ko": "작업 환경에 들어가기 쉬워도 결과물을 가져오기는 어려울 수 있습니다. 개발 중인 Disanchor에서도 다음 도구로 결과를 옮기는 과정을 구체적으로 살펴봐야 합니다.",
+          "id": "na27-x-07",
+          "scheduled_date": "2026-10-29T13:30:00Z",
+          "ET": "2026-10-29T09:30:00-04:00",
+          "PT": "2026-10-29T06:30:00-07:00",
+          "KST": "2026-10-29T22:30:00+09:00",
+          "text_sha256": "942c9f9f430cba6b99f9b5dd22b4a80c317c4bbd092323d43497be2411adfabe"
+        },
+        {
+          "topic": "원본을 지키는 첫 단계",
+          "text": "Before editing an unfamiliar project, identify which file is the original and which copy is safe to change. We're developing Disanchor, and a clear starting boundary is a useful design problem in its own right.",
+          "ko": "익숙하지 않은 프로젝트를 수정하기 전에는 원본과 수정해도 되는 사본을 구분해야 합니다. Disanchor를 개발하면서도 이 시작 경계를 명확히 보여 주는 문제를 생각합니다.",
+          "id": "na27-x-08",
+          "scheduled_date": "2026-10-29T16:30:00Z",
+          "ET": "2026-10-29T12:30:00-04:00",
+          "PT": "2026-10-29T09:30:00-07:00",
+          "KST": "2026-10-30T01:30:00+09:00",
+          "text_sha256": "8ba1032b950b17e7d1d226325ad150acfb37a7b31a337a7ec5a837be9db560a8"
+        },
+        {
+          "topic": "파일을 만든 앱 버전",
+          "text": "A file extension doesn't tell you which version of an app produced it. As we build Disanchor, recording the creating version is a useful way to make a handoff easier to investigate.",
+          "ko": "파일 확장자만으로는 어떤 앱 버전으로 만들었는지 알기 어렵습니다. Disanchor를 만들면서도 생성 버전을 남기는 일이 인수인계를 살펴보는 데 유용하다고 생각합니다.",
+          "id": "na27-x-09",
+          "scheduled_date": "2026-10-29T19:30:00Z",
+          "ET": "2026-10-29T15:30:00-04:00",
+          "PT": "2026-10-29T12:30:00-07:00",
+          "KST": "2026-10-30T04:30:00+09:00",
+          "text_sha256": "c1aa7d69ac816fc8b5050d2bcbfd62765e024c0da32fbc12b691b609466a25ce"
+        },
+        {
+          "topic": "마이크 권한과 오디오 경로",
+          "text": "A microphone permission and an audio route are two settings to verify separately. While we're developing Disanchor, a useful test is whether someone can identify both before starting a call.",
+          "ko": "마이크 권한과 소리가 전달되는 경로는 따로 확인할 설정입니다. Disanchor를 개발하면서도 통화 전에 두 조건을 구분해 볼 수 있는지를 생각합니다.",
+          "id": "na27-x-10",
+          "scheduled_date": "2026-10-30T13:30:00Z",
+          "ET": "2026-10-30T09:30:00-04:00",
+          "PT": "2026-10-30T06:30:00-07:00",
+          "KST": "2026-10-30T22:30:00+09:00",
+          "text_sha256": "672981650ef3861c6d1f50fa87921f6074ae20b6287ed1521954367aaab12c18"
+        },
+        {
+          "topic": "입력 포커스의 경계",
+          "text": "A shortcut that is harmless in a document can do something very different in a terminal. As we build Disanchor, showing which window has focus is a small detail with a role in avoiding mistakes.",
+          "ko": "같은 단축키도 문서와 터미널에서는 다른 동작을 할 수 있습니다. Disanchor를 만들면서도 지금 입력을 받는 창이 어디인지 보여 주는 세부 사항을 생각합니다.",
+          "id": "na27-x-11",
+          "scheduled_date": "2026-10-30T16:30:00Z",
+          "ET": "2026-10-30T12:30:00-04:00",
+          "PT": "2026-10-30T09:30:00-07:00",
+          "KST": "2026-10-31T01:30:00+09:00",
+          "text_sha256": "8c96e744800512a1c27758c7e150f2b4a7e85110752ea3417709b682855ee5cf"
+        },
+        {
+          "topic": "권한 동의의 의미",
+          "text": "Opening a shared file and enabling its macros are different decisions. Disanchor is still being developed, and permission prompts need to make the action being authorized clear.",
+          "ko": "공유 파일을 여는 것과 매크로 실행을 허용하는 것은 서로 다른 결정입니다. 개발 중인 Disanchor에서도 권한 안내가 실제로 허용하는 동작을 분명히 설명해야 한다고 생각합니다.",
+          "id": "na27-x-12",
+          "scheduled_date": "2026-10-30T19:30:00Z",
+          "ET": "2026-10-30T15:30:00-04:00",
+          "PT": "2026-10-30T12:30:00-07:00",
+          "KST": "2026-10-31T04:30:00+09:00",
+          "text_sha256": "391026b8e675cc55fd753c731292729ec67805a6170a04bd1671915a2408d529"
+        },
+        {
+          "topic": "기기와 작업의 제약",
+          "text": "An old laptop with a healthy screen and keyboard still has useful parts. While we're developing Disanchor, the open design question is which constraints come from the device and which belong to the task.",
+          "ko": "오래된 노트북에도 정상적인 화면과 키보드가 남아 있을 수 있습니다. Disanchor를 개발하면서 기기의 제약과 작업 자체의 요구를 구분해 생각합니다.",
+          "id": "na27-x-13",
+          "scheduled_date": "2026-10-31T15:00:00Z",
+          "ET": "2026-10-31T11:00:00-04:00",
+          "PT": "2026-10-31T08:00:00-07:00",
+          "KST": "2026-11-01T00:00:00+09:00",
+          "text_sha256": "0e002d3323b47df782c6bc39f5506b06540f8bc7410a68885c852e50a6af39d5"
+        },
+        {
+          "topic": "연결 조건의 차이",
+          "text": "A remote task still depends on the local connection. As we build Disanchor, testing over a stable wired link and a variable Wi-Fi connection would answer different questions about the working experience.",
+          "ko": "원격 작업도 사용자의 연결 상태에 영향을 받습니다. Disanchor를 만들면서 유선 연결과 변화가 있는 Wi-Fi에서 어떤 차이를 살펴볼지 생각합니다.",
+          "id": "na27-x-14",
+          "scheduled_date": "2026-10-31T18:00:00Z",
+          "ET": "2026-10-31T14:00:00-04:00",
+          "PT": "2026-10-31T11:00:00-07:00",
+          "KST": "2026-11-01T03:00:00+09:00",
+          "text_sha256": "91c17f06bcc184c21fed73d576172791dd34419e7cbb6dc39fff3675da240ea5"
+        },
+        {
+          "topic": "기기 점검표의 항목",
+          "text": "Battery life, screen space, and computing capacity are different constraints. Disanchor is still being developed, and a practical device checklist can give each its own line.",
+          "ko": "배터리·화면 공간·연산 용량은 서로 다른 조건입니다. 개발 중인 Disanchor에서도 기기 점검표에 각각을 따로 드러낼 필요가 있다고 생각합니다.",
+          "id": "na27-x-15",
+          "scheduled_date": "2026-10-31T21:00:00Z",
+          "ET": "2026-10-31T17:00:00-04:00",
+          "PT": "2026-10-31T14:00:00-07:00",
+          "KST": "2026-11-01T06:00:00+09:00",
+          "text_sha256": "84285d8648ad8eed3060e0c328e73fdb81c40c74c9a4c8813d115da8025de254"
+        },
+        {
+          "topic": "한도를 알아볼 수 있는 표시",
+          "text": "A resource limit is more useful when the person doing the work can recognise it. While we're developing Disanchor, the design question is how to show a constraint early enough for someone to choose their next step.",
+          "ko": "사용자가 알아볼 수 있어야 자원 한도 표시도 유용해집니다. Disanchor를 개발하면서 다음 행동을 고를 수 있을 만큼 일찍 제약을 보여 주는 방법을 생각합니다.",
+          "id": "na27-x-16",
+          "scheduled_date": "2026-11-01T16:00:00Z",
+          "ET": "2026-11-01T11:00:00-05:00",
+          "PT": "2026-11-01T08:00:00-08:00",
+          "KST": "2026-11-02T01:00:00+09:00",
+          "text_sha256": "ee3c1f75d02751522f114489db4af1425fcd695407c4af6e36b71549ce688112"
+        },
+        {
+          "topic": "실행 시간 추정의 전제",
+          "text": "A runtime estimate should name its assumptions: input size, software version, and what counts as finished. As we build Disanchor, those details are a useful starting point for discussing resource needs.",
+          "ko": "실행 시간 추정에는 입력 크기·앱 버전·완료 기준 같은 전제가 필요합니다. Disanchor를 만들면서 자원 요구를 설명하는 출발점으로 이 정보를 생각합니다.",
+          "id": "na27-x-17",
+          "scheduled_date": "2026-11-01T19:00:00Z",
+          "ET": "2026-11-01T14:00:00-05:00",
+          "PT": "2026-11-01T11:00:00-08:00",
+          "KST": "2026-11-02T04:00:00+09:00",
+          "text_sha256": "cbc0f9b5c7ae7da2c64efdce2a221729e5a70c6f5caaf1cc803dfaf45050df0b"
+        },
+        {
+          "topic": "작업을 시작하기 전 입력 확인",
+          "text": "Starting a large task is easier to plan when its inputs are stable. Disanchor is still being developed, and a useful preflight check would confirm which file versions the job is about to use.",
+          "ko": "입력 파일 버전이 정해져 있어야 큰 작업도 계획하기 쉽습니다. 개발 중인 Disanchor에서도 실행 전에 어떤 버전을 사용할지 확인하는 절차를 생각합니다.",
+          "id": "na27-x-18",
+          "scheduled_date": "2026-11-01T22:00:00Z",
+          "ET": "2026-11-01T17:00:00-05:00",
+          "PT": "2026-11-01T14:00:00-08:00",
+          "KST": "2026-11-02T07:00:00+09:00",
+          "text_sha256": "dd1ee5f2f7053d8f7d402f8d900b40cd659524a16cb83412b68c632fbcd5bc46"
+        },
+        {
+          "topic": "재현 가능한 문제 제보",
+          "text": "A bug report becomes easier to act on when it includes the input, the steps, and the visible result. For Disanchor, still in development, a reproducible example is a useful bridge between a user and the person investigating.",
+          "ko": "입력·작업 순서·눈에 보이는 결과가 있으면 문제 제보를 살펴보기 쉬워집니다. 개발 중인 Disanchor에서도 재현 가능한 예제를 유용한 연결점으로 생각합니다.",
+          "id": "na27-x-19",
+          "scheduled_date": "2026-11-02T14:30:00Z",
+          "ET": "2026-11-02T09:30:00-05:00",
+          "PT": "2026-11-02T06:30:00-08:00",
+          "KST": "2026-11-02T23:30:00+09:00",
+          "text_sha256": "1f1d9dd8076517d9f7b75e8feddeea99dda87a6bbc8102b4e971abe21b628c31"
+        },
+        {
+          "topic": "협업에서 실험과 결과 구분",
+          "text": "A shared project benefits from a clear place for outputs and a separate place for experiments. As we build Disanchor, that boundary is a practical question for keeping collaborative work understandable.",
+          "ko": "공유 프로젝트에서는 결과물과 실험 파일의 위치를 구분하는 것이 도움이 됩니다. Disanchor를 만들면서 협업 내용을 이해하기 쉽게 남기는 경계를 생각합니다.",
+          "id": "na27-x-20",
+          "scheduled_date": "2026-11-02T17:30:00Z",
+          "ET": "2026-11-02T12:30:00-05:00",
+          "PT": "2026-11-02T09:30:00-08:00",
+          "KST": "2026-11-03T02:30:00+09:00",
+          "text_sha256": "1882127d616ef8a8d90d059442188b15ff6d7d70fb9f93686b7dba6d73b3ce52"
+        },
+        {
+          "topic": "지역을 넘는 마감 시각",
+          "text": "A deadline written as 'Friday at five' leaves a timezone question open. As we build Disanchor, explicit timezones are a useful detail whenever a workspace or a team crosses regions.",
+          "ko": "‘금요일 다섯 시’라는 마감에는 시간대가 빠져 있습니다. Disanchor를 만들면서도 여러 지역에 걸친 작업에는 시간대를 명시하는 세부 사항이 필요하다고 생각합니다.",
+          "id": "na27-x-21",
+          "scheduled_date": "2026-11-02T20:30:00Z",
+          "ET": "2026-11-02T15:30:00-05:00",
+          "PT": "2026-11-02T12:30:00-08:00",
+          "KST": "2026-11-03T05:30:00+09:00",
+          "text_sha256": "0a107fbbaa6dbae2f38995bd5248a64b2634124baf7746d9aef30c4fc0c57f0c"
+        }
+      ]
+    },
+    "threads": {
+      "user": "default",
+      "handle": "disanchor_com",
+      "per_day": 2,
+      "copy": [
+        {
+          "topic": "다운로드 파일의 위치",
+          "text": "Disanchor is still being built, and one label keeps the design question concrete: 'Downloads.' On this computer, or inside the remote session? A familiar folder name can leave the destination unclear.",
+          "ko": "개발 중인 Disanchor에서 ‘다운로드’라는 이름만으로도 저장 위치 문제가 드러납니다. 지금 쓰는 컴퓨터인지 원격 세션 안인지, 익숙한 이름이어도 목적지는 모호할 수 있습니다.",
+          "id": "na27-threads-01",
+          "scheduled_date": "2026-10-27T16:00:00Z",
+          "ET": "2026-10-27T12:00:00-04:00",
+          "PT": "2026-10-27T09:00:00-07:00",
+          "KST": "2026-10-28T01:00:00+09:00",
+          "text_sha256": "87f6859e0c167085ccaac090b37d45e435dcf0fba6293e1a2dfd75229eb94b1e"
+        },
+        {
+          "topic": "작은 화면에서의 작업",
+          "text": "Working from a small screen can turn a simple task into a hunt for a hidden button. Disanchor is still being developed, and the way a workspace fits the screen belongs in the design conversation alongside how much computing power it has.",
+          "ko": "작은 화면에서는 간단한 일도 숨어 있는 버튼을 찾는 일이 되곤 합니다. 개발 중인 Disanchor에서도 연산 성능과 함께 화면에 맞는 작업 경험을 살펴볼 필요가 있습니다.",
+          "id": "na27-threads-02",
+          "scheduled_date": "2026-10-27T19:00:00Z",
+          "ET": "2026-10-27T15:00:00-04:00",
+          "PT": "2026-10-27T12:00:00-07:00",
+          "KST": "2026-10-28T04:00:00+09:00",
+          "text_sha256": "04897dfa70d6f58fb84f46922a8842ec033d8801a928441e5e4e3df3e9d9fc02"
+        },
+        {
+          "topic": "긴 렌더 작업과 마감",
+          "text": "A long render has two timelines: when the machine finishes and when someone needs the result. We're developing Disanchor, and a useful workflow question is how to make that gap visible before starting the job.",
+          "ko": "긴 렌더에는 기계가 끝내는 시각과 사람이 결과를 필요로 하는 시각이 있습니다. Disanchor를 개발하면서 작업 전에 그 간격을 보여 주는 방법을 생각합니다.",
+          "id": "na27-threads-03",
+          "scheduled_date": "2026-10-28T16:00:00Z",
+          "ET": "2026-10-28T12:00:00-04:00",
+          "PT": "2026-10-28T09:00:00-07:00",
+          "KST": "2026-10-29T01:00:00+09:00",
+          "text_sha256": "1656f7114365125e3852da828d97943765cde847d00fcbeee22b2dad5a353679"
+        },
+        {
+          "topic": "조용한 앱과 멈춘 앱",
+          "text": "It is easy to mistake a quiet app for a frozen one. While we're developing Disanchor, a useful question is what feedback should appear during a long step that has no obvious progress bar.",
+          "ko": "조용한 앱을 멈춘 앱으로 오해하기 쉽습니다. Disanchor를 개발하면서 진행 표시가 뚜렷하지 않은 긴 단계에서 어떤 피드백을 보여 줄지 생각합니다.",
+          "id": "na27-threads-04",
+          "scheduled_date": "2026-10-28T19:00:00Z",
+          "ET": "2026-10-28T15:00:00-04:00",
+          "PT": "2026-10-28T12:00:00-07:00",
+          "KST": "2026-10-29T04:00:00+09:00",
+          "text_sha256": "528c0a5d2925387426d5d0ef3c1b0ad6c7e286f75ba3aeb4179c6502fe615098"
+        },
+        {
+          "topic": "최종 파일의 이름",
+          "text": "A folder full of files named final, final2, and final-revised can make a small handoff surprisingly hard. We're developing Disanchor, and the useful question is how someone can recognise the result they are supposed to use.",
+          "ko": "final·final2·final-revised가 쌓인 폴더에서는 인수인계가 어려워지기도 합니다. Disanchor를 개발하면서 사용할 결과물이 무엇인지 알아보게 하는 방법을 생각합니다.",
+          "id": "na27-threads-05",
+          "scheduled_date": "2026-10-29T16:00:00Z",
+          "ET": "2026-10-29T12:00:00-04:00",
+          "PT": "2026-10-29T09:00:00-07:00",
+          "KST": "2026-10-30T01:00:00+09:00",
+          "text_sha256": "0c62896aa2e2a6137884a3472d1b8cd4e01f22f3ef5e69311f9c6b6c0052fbdb"
+        },
+        {
+          "topic": "저장 공간도 작업 조건",
+          "text": "A full disk can interrupt a task that still has plenty of computing power available. Disanchor is still being developed, and storage headroom deserves a clear place in a workspace's status.",
+          "ko": "연산 자원이 남아 있어도 저장 공간이 가득 차면 작업이 막힐 수 있습니다. 개발 중인 Disanchor에서도 남은 저장 공간을 작업 상태에 분명히 보여 줄 필요가 있습니다.",
+          "id": "na27-threads-06",
+          "scheduled_date": "2026-10-29T19:00:00Z",
+          "ET": "2026-10-29T15:00:00-04:00",
+          "PT": "2026-10-29T12:00:00-07:00",
+          "KST": "2026-10-30T04:00:00+09:00",
+          "text_sha256": "4c5d37095040bf249b5ed7a84c55e7c0a6c6241cb6df8f4ed4324e25b600e0c4"
+        },
+        {
+          "topic": "빌린 컴퓨터에서 나올 때",
+          "text": "On a borrowed computer, finishing a task also means thinking about the files and sign-ins left behind. We're building Disanchor, and it raises an ordinary question: how does someone know what remains after leaving a workspace?",
+          "ko": "빌린 컴퓨터에서는 작업을 끝낸 뒤 남겨진 파일과 로그인도 생각해야 합니다. Disanchor를 만들면서 작업 환경을 떠난 뒤 무엇이 남는지 알아볼 수 있는지를 묻습니다.",
+          "id": "na27-threads-07",
+          "scheduled_date": "2026-10-30T16:00:00Z",
+          "ET": "2026-10-30T12:00:00-04:00",
+          "PT": "2026-10-30T09:00:00-07:00",
+          "KST": "2026-10-31T01:00:00+09:00",
+          "text_sha256": "9abb33abfd19fe918cd7009cdd16e58adf5cc1b88a59946939c63a957ae30992"
+        },
+        {
+          "topic": "화면 공유의 범위",
+          "text": "A screen-sharing menu asks you to make a quick choice: one window or the whole desktop. As we develop Disanchor, that small choice is a useful example of why boundaries should be visible before an action starts.",
+          "ko": "화면 공유에서는 창 하나와 전체 바탕화면 사이에서 빠르게 선택해야 합니다. Disanchor를 개발하면서 동작 전에 범위를 볼 수 있어야 하는 사례로 생각합니다.",
+          "id": "na27-threads-08",
+          "scheduled_date": "2026-10-30T19:00:00Z",
+          "ET": "2026-10-30T15:00:00-04:00",
+          "PT": "2026-10-30T12:00:00-07:00",
+          "KST": "2026-10-31T04:00:00+09:00",
+          "text_sha256": "51eacf223e06c6fac13c4547a1ff207e1dea6b72cedd77b3bfccf574a0c23c47"
+        },
+        {
+          "topic": "익숙한 키보드 배치",
+          "text": "A familiar keyboard layout can make a new machine feel less new. As we build Disanchor, that is a small example of how a workspace includes habits as well as applications. Which detail would you notice first if it changed?",
+          "ko": "익숙한 키보드 배치는 새 컴퓨터를 덜 낯설게 만들기도 합니다. Disanchor를 만들면서 작업 환경에는 앱뿐 아니라 습관도 포함된다고 생각합니다. 무엇이 바뀌면 가장 먼저 알아차릴까요?",
+          "id": "na27-threads-09",
+          "scheduled_date": "2026-10-31T16:00:00Z",
+          "ET": "2026-10-31T12:00:00-04:00",
+          "PT": "2026-10-31T09:00:00-07:00",
+          "KST": "2026-11-01T01:00:00+09:00",
+          "text_sha256": "cd8004c908989e7d321a262a7cffa6753f44f267b009280de9cb503a365361f4"
+        },
+        {
+          "topic": "짧은 작업과 큰 화면",
+          "text": "A short task can still need a large screen. We're developing Disanchor, and duration alone seems like a poor way to decide what equipment a workflow needs. Sometimes the difficult part is simply seeing enough of the work at once.",
+          "ko": "짧은 작업에도 큰 화면이 필요할 수 있습니다. Disanchor를 개발하면서 작업 시간만으로 필요한 장비를 판단하기 어렵다는 점을 생각합니다. 한 번에 충분히 보는 일이 중요할 때도 있으니까요.",
+          "id": "na27-threads-10",
+          "scheduled_date": "2026-10-31T19:00:00Z",
+          "ET": "2026-10-31T15:00:00-04:00",
+          "PT": "2026-10-31T12:00:00-07:00",
+          "KST": "2026-11-01T04:00:00+09:00",
+          "text_sha256": "816a1b4ef3e71336c406c0cd42892b522a41a3d46319cbae702c9e3748f26b08"
+        },
+        {
+          "topic": "긴 작업의 다음 단계",
+          "text": "Waiting feels different when the next step is clear. While we're developing Disanchor, a useful design question is what a person should see after submitting a long job: confirmation, its current stage, and a way to tell when attention is needed.",
+          "ko": "다음 단계가 분명하면 기다림도 달라집니다. Disanchor를 개발하면서 긴 작업을 제출한 뒤 확인·현재 단계·사용자 확인이 필요한 시점을 어떻게 보여 줄지 생각합니다.",
+          "id": "na27-threads-11",
+          "scheduled_date": "2026-11-01T17:00:00Z",
+          "ET": "2026-11-01T12:00:00-05:00",
+          "PT": "2026-11-01T09:00:00-08:00",
+          "KST": "2026-11-02T02:00:00+09:00",
+          "text_sha256": "2857364e2bf870be89cb9817f835a21303b8c1cbd473db4b864ff50ef6d8e2ed"
+        },
+        {
+          "topic": "사용량 단위의 설명",
+          "text": "A tool can be awkward to budget for if its units are unclear. We're developing Disanchor, and labels such as per hour, per session, or per task need enough context for someone to understand what they are choosing.",
+          "ko": "시간당·세션당·작업당 같은 단위가 모호하면 도구 사용량을 계획하기 어렵습니다. Disanchor를 개발하면서 이런 표기에 선택을 이해할 맥락이 필요하다고 생각합니다.",
+          "id": "na27-threads-12",
+          "scheduled_date": "2026-11-01T20:00:00Z",
+          "ET": "2026-11-01T15:00:00-05:00",
+          "PT": "2026-11-01T12:00:00-08:00",
+          "KST": "2026-11-02T05:00:00+09:00",
+          "text_sha256": "23a39fc6d1b7dd875ca97797f869258806999b8a469f3a3ad213d5c6b9d64718"
+        },
+        {
+          "topic": "파일이 존재하는 이유",
+          "text": "The most helpful project note may be a sentence explaining why a file exists. While we're developing Disanchor, that is a reminder that keeping work understandable involves a little context alongside the saved result.",
+          "ko": "파일이 왜 존재하는지 설명한 한 문장이 유용한 프로젝트 메모가 될 수 있습니다. Disanchor를 개발하면서 결과물과 함께 맥락도 남기는 일을 생각합니다.",
+          "id": "na27-threads-13",
+          "scheduled_date": "2026-11-02T17:00:00Z",
+          "ET": "2026-11-02T12:00:00-05:00",
+          "PT": "2026-11-02T09:00:00-08:00",
+          "KST": "2026-11-03T02:00:00+09:00",
+          "text_sha256": "9ff5ee109f03ecb7c9508c26749c110ca39a11513b2e2a436d8d16fd56b39285"
+        },
+        {
+          "topic": "처음 몇 분의 작업",
+          "text": "Someone joining a project needs a first task they can complete and check. Disanchor is still being developed, and that small milestone is a useful way to think about the first few minutes in an unfamiliar workspace.",
+          "ko": "프로젝트에 처음 참여한 사람에게는 완료하고 확인해 볼 첫 작업이 필요합니다. 개발 중인 Disanchor에서도 낯선 작업 환경의 첫 몇 분을 생각하는 기준이 됩니다.",
+          "id": "na27-threads-14",
+          "scheduled_date": "2026-11-02T20:00:00Z",
+          "ET": "2026-11-02T15:00:00-05:00",
+          "PT": "2026-11-02T12:00:00-08:00",
+          "KST": "2026-11-03T05:00:00+09:00",
+          "text_sha256": "65c7683631d3f0e006df8bf21a65048416b1d77e51e16a43e08952c059be3e82"
+        }
+      ]
+    }
+  },
+  "native_schedules_submitted": 35,
+  "plan_sha256": "6da3d712e8959b1ab0d20f53d51373247d6ebb8e7506beeb7ec93aa01c35530c",
+  "start_date_et": "2026-10-27",
+  "last_date_et": "2026-11-02",
+  "quantity_authorized": true,
+  "exact_text_approved": true,
+  "publication_mode": "fixed_native_provider_batch",
+  "cloud_publisher_enabled": false,
+  "provider_readback_verified": true,
+  "verified_at": "2026-10-26T07:25:28.283435+00:00"
+}

@@ -1,6 +1,9 @@
 # Disanchor · Cloud 마케팅 워커
 
-**현재 북미 시간표:** [화·수·목 계정별 게시 시간과 실제 큐 설정](docs/north-america-publishing-schedule.ko.md). 새 후보는 X·Threads 각각 3건·총 6건 이하이며 예약·자동 게시는 OFF입니다. 기존 수동 테스트 2건과 구분하고 $20·LinkedIn 차단을 유지합니다.
+**자동 발행 활성화 — 2026-10-26:** [승인·예약 검증한 35건의 영문·한국어 문구와 한미 시간표](docs/gtm-automatic-publishing-2026-10-27-35.en-ko.md). 공식 X 매일 3건(21건)·브랜드 Threads 매일 2건(14건)을 Upload-Post가 자동 발행합니다. 첫 발행 10/27 22:30 KST, 마지막 11/3 05:30 KST. Cloud 직접 게시·유료 모델·다른 계정은 OFF이며 $20 예산과 기존 staging 정지 예약을 유지합니다. 아래의 6건 설정은 Cloud 워커에 관한 별도 제한입니다.
+
+
+**Cloud 워커의 기존 제한:** [화·수·목 계정별 시간과 큐 설정](docs/north-america-publishing-schedule.ko.md). 워커의 6건 한도·직접 게시 OFF는 유지됩니다. 위의 승인된 35건 provider 예약과는 별도입니다. 아래 과거 준비·검토 기록의 OFF 표기도 해당 워커와 당시 작업 범위를 뜻합니다.
 
 
 **Cloud staging Telegram:** [상태·MCP 반입·제외 사유·sentiment 조회와 안전 조건](docs/telegram-cloud-staging.ko.md). 소유자 전용 조회 수신기이며 $20·API 게시 OFF·LinkedIn 차단을 유지합니다.
